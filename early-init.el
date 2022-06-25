@@ -22,3 +22,6 @@
 (push '(menu-bar-lines . 0) default-frame-alist)
 (push '(tool-bar-lines . 0) default-frame-alist)
 (push '(vertical-scroll-bars . nil) default-frame-alist)
+;;(push '(fullscreen . maximized) default-frame-alist)
+;;(push '(left . 0) default-frame-alist)
+;;(push '(top . 0) default-frame-alist)

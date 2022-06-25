@@ -23,6 +23,31 @@ Otherwise the startup will be very slow. "
   (when (not disabled)
     (load (file-truename (format "%s/%s" my-lisp-dir pkg)) t t)))
 
+(setq custom-file (expand-file-name (concat my-emacs-d "custom.el")))
+(if (file-exists-p custom-file) (load custom-file t t))
+
+(require 'package)
+(setq package-archives
+      '(("gnu" . "https://elpa.gnu.org/packages/")
+        ("melpa" . "https://melpa.org/packages/")))
+(package-initialize)
+
+;; Setup `use-package'
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+
+;; Should set before loading `use-package'
+;;(eval-and-compile
+;;  (setq use-package-always-ensure nil)
+;;  (setq use-package-always-defer nil)
+;;  (setq use-package-always-demand nil)
+;;  (setq use-package-expand-minimally nil)
+;;  (setq use-package-enable-imenu-support nil))
+
+(eval-when-compile
+  (require 'use-package))
+
 ;; @see https://www.reddit.com/r/emacs/comments/3kqt6e/2_easy_little_known_steps_to_speed_up_emacs_start/
 ;; Normally file-name-handler-alist is set to
 ;; (("\\`/[^/]*\\'" . tramp-completion-file-name-handler)
