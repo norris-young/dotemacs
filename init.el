@@ -38,12 +38,13 @@ Otherwise the startup will be very slow. "
   (package-install 'use-package))
 
 ;; Should set before loading `use-package'
-;;(eval-and-compile
-;;  (setq use-package-always-ensure nil)
-;;  (setq use-package-always-defer nil)
-;;  (setq use-package-always-demand nil)
-;;  (setq use-package-expand-minimally nil)
-;;  (setq use-package-enable-imenu-support nil))
+(eval-and-compile
+  (setq use-package-always-ensure t)
+  ;; (setq use-package-always-defer nil)
+  ;; (setq use-package-always-demand nil)
+  ;; (setq use-package-expand-minimally nil)
+  ;; (setq use-package-enable-imenu-support nil)
+  )
 
 (eval-when-compile
   (require 'use-package))

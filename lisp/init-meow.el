@@ -85,7 +85,6 @@
    '("<escape>" . ignore)))
 
 (use-package meow
-  :ensure t
   :config
   (meow-setup)
   (setq meow-keypad-ctrl-meta-prefix ?.)
