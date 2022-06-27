@@ -1,8 +1,28 @@
 ;; flx package is used for ivy fuzzy match engine
 (use-package flx)
+(use-package ivy
+  :bind (("C-x C-b" . ivy-switch-buffer)
+	 ("C-x b" . list-buffers)
+	 ("C-c v" . ivy-push-view)
+	 ("C-c V" . ivy-pop-view)
+	 ("C-c C-r" . ivy-resume)
+	 :map ivy-switch-buffer-map
+	 ("C-j" . ivy-next-line)
+	 ("C-k" . ivy-previous-line)
+	 :map ivy-reverse-i-search-map
+	 ("C-j" . ivy-next-line)
+	 ("C-k" . ivy-previous-line)
+	 :map ivy-minibuffer-map
+	 ("C-j" . ivy-next-line)
+	 ("C-k" . ivy-previous-line)
+	 ("C-RET" . ivy-alt-done))
+  :config
+  (setq ivy-use-virtual-buffers t
+	ivy-count-format "(%d/%d) ")
+  (ivy-mode 1))
+(use-package swiper :bind (("C-s" . swiper-isearch)))
 (use-package counsel
-  :bind (("C-s" . swiper-isearch)
- 	 ("M-x" . counsel-M-x)
+  :bind (("M-x" . counsel-M-x)
 	 ("C-x C-f" . counsel-find-file)
 	 ("M-y" . counsel-yank-pop)
 	 ("<f1> f" . counsel-describe-function)
@@ -10,13 +30,4 @@
 	 ("<f1> l" . counsel-find-library)
 	 ("<f2> i" . counsel-info-lookup-symbol)
 	 ("<f2> u" . counsel-unicode-char)
-	 ("<f2> j" . counsel-set-variable)
-	 ("C-x C-b" . ivy-switch-buffer)
-	 ("C-x b" . list-buffers)
-	 ("C-c v" . ivy-push-view)
-	 ("C-c V" . ivy-pop-view)
-	 ("C-c C-r" . ivy-resume))
-  :config
-  (setq ivy-use-virtual-buffers t
-	ivy-count-format "(%d/%d) ")
-  (ivy-mode 1))
+	 ("<f2> j" . counsel-set-variable)))
