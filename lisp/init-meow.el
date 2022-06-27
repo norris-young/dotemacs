@@ -3,11 +3,15 @@
   (meow-motion-overwrite-define-key
    '("j" . meow-next)
    '("k" . meow-prev)
+   '("h" . meow-left)
+   '("l" . meow-right)
    '("<escape>" . ignore))
   (meow-leader-define-key
-   ;; SPC j/k will run the original command in MOTION state.
+   ;; SPC j/k/h/l will run the original command in MOTION state.
    '("j" . "H-j")
    '("k" . "H-k")
+   '("h" . "H-h")
+   '("l" . "H-l")
    ;; Use SPC (0-9) for digit arguments.
    '("1" . winum-select-window-1)
    '("2" . winum-select-window-2)
@@ -87,5 +91,6 @@
 (use-package meow
   :config
   (meow-setup)
-  (setq meow-keypad-ctrl-meta-prefix ?.)
+  (setq meow-keypad-ctrl-meta-prefix ?.
+	meow-keypad-start-keys '((?c . ?c) (?b . ?h) (?x. ?x)))
   (meow-global-mode 1))
