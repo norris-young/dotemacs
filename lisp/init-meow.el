@@ -7,6 +7,8 @@
    '("l" . meow-right)
    '("<escape>" . ignore))
   (meow-leader-define-key
+   ;; SPC SPC for M-x quickly
+   '("SPC" . counsel-M-x)
    ;; SPC j/k/h/l will run the original command in MOTION state.
    '("j" . "H-j")
    '("k" . "H-k")
@@ -92,5 +94,6 @@
   :config
   (meow-setup)
   (setq meow-keypad-ctrl-meta-prefix ?.
+	meow-keypad-literal-prefix ?,
 	meow-keypad-start-keys '((?c . ?c) (?b . ?h) (?x. ?x)))
   (meow-global-mode 1))
