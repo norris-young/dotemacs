@@ -57,6 +57,7 @@ Otherwise the startup will be very slow. "
 (let* ((file-name-handler-alist nil))
   (require-init 'init-ui)
   (require-init 'init-git)
+  (require-init 'init-window)
   (require-init 'init-meow)
   )
 
