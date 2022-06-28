@@ -80,6 +80,7 @@
      '("/" . meow-keypad-describe-key)
      '("?" . meow-cheatsheet))
     (meow-normal-define-key
+     '("DEL" . ignore)
      '("0" . meow-expand-0)
      '("9" . meow-expand-9)
      '("8" . meow-expand-8)
@@ -146,4 +147,10 @@
 	meow-keypad-literal-prefix   ?,
 	meow--kbd-kill-region        "C-S-k"
 	meow-keypad-start-keys       '((?c . ?c) (?b . ?h) (?x. ?x) (?w . ?w)))
+  
+  (defun meow--keypad-lookup-key (keys)
+    (let ((overriding-local-map meow--keypad-base-keymap))
+      (key-binding keys t)))
+  (let ((map (alist-get 'leader meow-keymap-alist)))
+    (define-key map [t] #'undefined))
   (meow-global-mode 1))
