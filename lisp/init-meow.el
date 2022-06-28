@@ -39,10 +39,17 @@
   (defun meow-setup ()
     (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
     (meow-motion-overwrite-define-key
+     '(";" . meow-reverse)
      '("j" . meow-next)
      '("k" . meow-prev)
      '("h" . meow-left)
      '("l" . meow-right)
+     '("J" . meow-next-expand)
+     '("K" . meow-prev-expand)
+     '("H" . meow-left-expand)
+     '("L" . meow-right-expand)
+     '("n" . meow-search)
+     '("v" . meow-visit)
      '("<escape>" . ignore))
     (meow-leader-define-key
      ;; SPC SPC for M-x quickly
@@ -52,6 +59,13 @@
      '("k" . "H-k")
      '("h" . "H-h")
      '("l" . "H-l")
+     '("J" . "H-J")
+     '("K" . "H-K")
+     '("H" . "H-H")
+     '("L" . "H-L")
+     '("n" . "H-n")
+     '("v" . "H-v")
+     '(";" . "H-;")
      ;; Use SPC (0-9) for digit arguments.
      '("1" . winum-select-window-1)
      '("2" . winum-select-window-2)
