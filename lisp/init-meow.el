@@ -1,5 +1,41 @@
 (use-package meow
   :config
+  (defvar meow-escape-key-sequence (kbd "jj"))
+  (defvar meow-escape-delay 0.2)
+
+  (defun meow-escape-p ()
+    (and meow-escape-key-sequence
+	 (equal (string-to-char (this-command-keys)) (elt meow-escape-key-sequence 0))))
+
+  (defun meow-escape-insert ()
+    (condition-case err
+	(progn (self-insert-command 1) t)
+      ('error nil)))
+
+  (defun meow-escape-pre-command-hook ()
+    "meow escape pre-command hook."
+    (with-demoted-errors "meow escape: Error %S"
+      (when (meow-escape-p)
+        (let* ((modified (buffer-modified-p))
+               (inserted (meow-escape-insert))
+               (fkey (elt meow-escape-key-sequence 0))
+               (skey (elt meow-escape-key-sequence 1))
+               (evt (read-event nil nil meow-escape-delay)))
+          (when inserted (message "delete") (delete-char -1))
+          (set-buffer-modified-p modified)
+          (cond
+           ((and (characterp evt)
+                 (char-equal evt skey))
+	    (setq this-command #'meow-escape-or-normal-modal)
+	    (setq this-original-command #'meow-escape-or-normal-modal))
+           ((null evt))
+           (t (setq unread-command-events
+                    (append unread-command-events (list evt)))))))))
+  (add-hook 'meow-insert-enter-hook (lambda ()
+				      (add-hook 'pre-command-hook 'meow-escape-pre-command-hook)))
+  (add-hook 'meow-insert-exit-hook (lambda ()
+				     (remove-hook 'pre-command-hook 'meow-escape-pre-command-hook)))
+  
   (defun meow-setup ()
     (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
     (meow-motion-overwrite-define-key
