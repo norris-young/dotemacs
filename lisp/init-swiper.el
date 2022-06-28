@@ -13,9 +13,10 @@
 	 ("C-j" . ivy-next-line)
 	 ("C-k" . ivy-previous-line)
 	 :map ivy-minibuffer-map
+	 ("C-<return>" . ivy-immediate-done)
 	 ("C-j" . ivy-next-line)
 	 ("C-k" . ivy-previous-line)
-	 ("C-RET" . ivy-alt-done))
+	 ("M-RET" . ivy-alt-done))
   :config
   (defun ivy-yank-action (x)
     (kill-new x))
