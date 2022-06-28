@@ -17,6 +17,18 @@
 	 ("C-k" . ivy-previous-line)
 	 ("C-RET" . ivy-alt-done))
   :config
+  (defun ivy-yank-action (x)
+    (kill-new x))
+
+  (defun ivy-copy-to-buffer-action (x)
+    (with-ivy-window
+      (insert x)))
+
+  (ivy-set-actions
+   t
+   '(("i" ivy-copy-to-buffer-action "insert")
+     ("y" ivy-yank-action "yank")))
+  
   (setq ivy-use-virtual-buffers t
 	ivy-count-format "(%d/%d) ")
   (ivy-mode 1))
