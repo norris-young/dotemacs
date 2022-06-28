@@ -143,6 +143,7 @@
      '("<escape>" . ignore)))
   (meow-setup)
   (setq meow-keypad-ctrl-meta-prefix ?.
-	meow-keypad-literal-prefix ?,
-	meow-keypad-start-keys '((?c . ?c) (?b . ?h) (?x. ?x)))
+	meow-keypad-literal-prefix   ?,
+	meow--kbd-kill-region        "C-S-k"
+	meow-keypad-start-keys       '((?c . ?c) (?b . ?h) (?x. ?x) (?w . ?w)))
   (meow-global-mode 1))
