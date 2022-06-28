@@ -16,3 +16,5 @@
 (global-set-key (kbd "M-k") #'scroll-down-line)
 (global-set-key (kbd "M-j") #'scroll-up-line)
 (global-set-key (kbd "C-M-j") #'join-line)
+
+(add-hook 'prog-mode-hook #'display-line-numbers-mode)
