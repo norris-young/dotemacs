@@ -9,8 +9,7 @@
 	    :weight 'normal))
 
 (use-package color-theme-sanityinc-tomorrow
-  :config
-  (color-theme-sanityinc-tomorrow-eighties))
+  :hook (after-init . color-theme-sanityinc-tomorrow-eighties))
 
 (with-eval-after-load 'whitespace
   (setq whitespace-style '(face trailing tabs tab-mark)))
