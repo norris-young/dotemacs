@@ -19,4 +19,4 @@
 (global-set-key (kbd "M-j") #'scroll-up-line)
 (global-set-key (kbd "C-M-j") #'join-line)
 
-
+(add-hook 'before-save-hook #'delete-trailing-whitespace)
