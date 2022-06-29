@@ -22,3 +22,6 @@
   (setq whitespace-style '(face trailing tabs tab-mark)))
 (add-hook 'prog-mode-hook #'display-fill-column-indicator-mode)
 (add-hook 'prog-mode-hook #'whitespace-mode)
+
+(use-package hl-line
+  :hook ((after-init . global-hl-line-mode)))
