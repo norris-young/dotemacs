@@ -11,3 +11,12 @@
 (use-package color-theme-sanityinc-tomorrow
   :config
   (color-theme-sanityinc-tomorrow-eighties))
+
+(with-eval-after-load 'whitespace
+  (setq whitespace-style '(face trailing tabs tab-mark)))
+(add-hook 'prog-mode-hook #'whitespace-mode)
+(add-hook 'prog-mode-hook #'display-fill-column-indicator-mode)
+(add-hook 'prog-mode-hook #'display-line-numbers-mode)
+
+(use-package hl-line
+  :hook ((after-init . global-hl-line-mode)))

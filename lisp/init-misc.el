@@ -19,11 +19,4 @@
 (global-set-key (kbd "M-j") #'scroll-up-line)
 (global-set-key (kbd "C-M-j") #'join-line)
 
-(add-hook 'prog-mode-hook #'display-line-numbers-mode)
-(with-eval-after-load 'whitespace
-  (setq whitespace-style '(face trailing tabs tab-mark)))
-(add-hook 'prog-mode-hook #'display-fill-column-indicator-mode)
-(add-hook 'prog-mode-hook #'whitespace-mode)
 
-(use-package hl-line
-  :hook ((after-init . global-hl-line-mode)))
