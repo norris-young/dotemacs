@@ -1,5 +1,7 @@
-(setq indent-tabs-mode nil)
-(save-place-mode 1)
+;; Do not insert tab and save file place by default
+(add-hook 'after-init-hook (lambda ()
+                             (setq-default indent-tabs-mode nil)
+                             (setq-default save-place-mode t)))
 
 ;;scroll configuration
 (setq scroll-up-aggressively 0.1
