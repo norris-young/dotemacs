@@ -5,11 +5,11 @@
 
   (defun meow-escape-p ()
     (and meow-escape-key-sequence
-	 (equal (string-to-char (this-command-keys)) (elt meow-escape-key-sequence 0))))
+         (equal (string-to-char (this-command-keys)) (elt meow-escape-key-sequence 0))))
 
   (defun meow-escape-insert ()
     (condition-case err
-	(progn (self-insert-command 1) t)
+        (progn (self-insert-command 1) t)
       ('error nil)))
 
   (defun meow-escape-pre-command-hook ()
@@ -26,16 +26,16 @@
           (cond
            ((and (characterp evt)
                  (char-equal evt skey))
-	    (setq this-command #'meow-escape-or-normal-modal)
-	    (setq this-original-command #'meow-escape-or-normal-modal))
+            (setq this-command #'meow-escape-or-normal-modal)
+            (setq this-original-command #'meow-escape-or-normal-modal))
            ((null evt))
            (t (setq unread-command-events
                     (append unread-command-events (list evt)))))))))
   (add-hook 'meow-insert-enter-hook (lambda ()
-				      (add-hook 'pre-command-hook 'meow-escape-pre-command-hook)))
+                                      (add-hook 'pre-command-hook 'meow-escape-pre-command-hook)))
   (add-hook 'meow-insert-exit-hook (lambda ()
-				     (remove-hook 'pre-command-hook 'meow-escape-pre-command-hook)))
-  
+                                     (remove-hook 'pre-command-hook 'meow-escape-pre-command-hook)))
+
   (defun meow-setup ()
     (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
     (meow-motion-overwrite-define-key
@@ -144,10 +144,10 @@
      '("<escape>" . ignore)))
   (meow-setup)
   (setq meow-keypad-ctrl-meta-prefix ?.
-	meow-keypad-literal-prefix   ?,
-	meow--kbd-kill-region        "C-S-k"
-	meow-keypad-start-keys       '((?c . ?c) (?b . ?h) (?x. ?x) (?w . ?w)))
-  
+        meow-keypad-literal-prefix   ?,
+        meow--kbd-kill-region        "C-S-k"
+        meow-keypad-start-keys       '((?c . ?c) (?b . ?h) (?x. ?x) (?w . ?w)))
+
   (defun meow--keypad-lookup-key (keys)
     (let ((overriding-local-map meow--keypad-base-keymap))
       (key-binding keys t)))

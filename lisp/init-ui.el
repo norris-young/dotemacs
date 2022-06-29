@@ -4,9 +4,9 @@
 
 (set-frame-font
  (font-spec :name "Sarasa Mono SC"
-	    :size 14.0
-	    :width 'normal
-	    :weight 'normal))
+            :size 14.0
+            :width 'normal
+            :weight 'normal))
 
 (use-package color-theme-sanityinc-tomorrow
   :hook (after-init . color-theme-sanityinc-tomorrow-eighties))
