@@ -39,7 +39,7 @@ Otherwise the startup will be very slow. "
 ;; Should set before loading `use-package'
 (eval-and-compile
   (setq use-package-always-ensure t)
-  ;; (setq use-package-always-defer nil)
+  (setq use-package-always-defer t)
   ;; (setq use-package-always-demand nil)
   ;; (setq use-package-expand-minimally nil)
   ;; (setq use-package-enable-imenu-support nil)

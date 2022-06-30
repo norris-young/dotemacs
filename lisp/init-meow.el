@@ -1,4 +1,5 @@
 (use-package meow
+  :demand t
   :config
   (defvar meow-escape-key-sequence (kbd "jj"))
   (defvar meow-escape-delay 0.2)
