@@ -40,6 +40,7 @@
 (use-package swiper :bind ("C-s C-s" . swiper-isearch))
 (use-package counsel
   :bind (("M-x" . counsel-M-x)
+         ("C-s C-r" . counsel-rg)
          ("C-s C-j" . counsel-jump-in-buffer)
          ("C-x C-f" . counsel-find-file)
          ("M-y" . counsel-yank-pop)
