@@ -146,7 +146,7 @@
   (setq meow-keypad-ctrl-meta-prefix ?.
         meow-keypad-literal-prefix   ?,
         meow--kbd-kill-region        "C-S-k"
-        meow-keypad-start-keys       '((?c . ?c) (?b . ?h) (?x. ?x) (?w . ?w)))
+        meow-keypad-start-keys       '((?c . ?c) (?b . ?h) (?x. ?x) (?w . ?w) (?s . ?s)))
 
   (defun meow--keypad-lookup-key (keys)
     (let ((overriding-local-map meow--keypad-base-keymap))

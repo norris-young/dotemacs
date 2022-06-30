@@ -33,9 +33,12 @@
   (setq ivy-use-virtual-buffers t
         ivy-count-format "(%d/%d) ")
   (ivy-mode 1))
-(use-package swiper :bind (("C-s" . swiper-isearch)))
+
+(global-set-key (kbd "C-s") (make-sparse-keymap))
+(use-package swiper :bind ("C-s C-s" . swiper-isearch))
 (use-package counsel
   :bind (("M-x" . counsel-M-x)
+         ("C-s C-j" . counsel-jump-in-buffer)
          ("C-x C-f" . counsel-find-file)
          ("M-y" . counsel-yank-pop)
          ("<f1> f" . counsel-describe-function)
@@ -43,4 +46,13 @@
          ("<f1> l" . counsel-find-library)
          ("<f2> i" . counsel-info-lookup-symbol)
          ("<f2> u" . counsel-unicode-char)
-         ("<f2> j" . counsel-set-variable)))
+         ("<f2> j" . counsel-set-variable))
+  :config
+  (defun counsel-jump-in-buffer ()
+    "Jump in buffer with `counsel-imenu' or `counsel-org-goto' if in org-mode"
+    (interactive)
+    (call-interactively
+     (cond
+      ((eq major-mode 'org-mode) 'counsel-org-goto)
+      (t 'counsel-imenu))))
+)
