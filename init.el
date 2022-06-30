@@ -24,7 +24,6 @@ Otherwise the startup will be very slow. "
     (load (file-truename (format "%s/%s" my-lisp-dir pkg)) t t)))
 
 (setq custom-file (expand-file-name (concat my-emacs-d "custom.el")))
-(if (file-exists-p custom-file) (load custom-file t t))
 
 (require 'package)
 (setq package-archives
@@ -62,6 +61,7 @@ Otherwise the startup will be very slow. "
   (require-init 'init-git)
   (require-init 'init-window)
   (require-init 'init-meow)
+  (if (file-exists-p custom-file) (load custom-file t t))
   )
 
 ;; (setq garbage-collection-messages t) ; for debug
