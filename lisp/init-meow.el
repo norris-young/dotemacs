@@ -148,6 +148,6 @@
   (setq meow-keypad-ctrl-meta-prefix ?.
         meow-keypad-literal-prefix   ?,
         meow--kbd-kill-region        "C-S-k"
-        meow-keypad-start-keys       '((?c . ?c) (?b . ?h) (?x. ?x) (?w . ?w) (?s . ?s)))
+        meow-keypad-start-keys       '((?c . ?c) (?b . ?h) (?x. ?x) (?w . ?w) (?s . ?s) (?t . ?t)))
 
   (meow-global-mode 1))
