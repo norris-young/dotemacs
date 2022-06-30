@@ -19,3 +19,8 @@
 
 (use-package hl-line
   :hook ((after-init . global-hl-line-mode)))
+
+(use-package highlight-indent-guides
+  :config
+  (setq highlight-indent-guides-method 'character))
+(add-hook 'prog-mode-hook #'highlight-indent-guides-mode)
