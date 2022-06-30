@@ -58,4 +58,4 @@
      (cond
       ((eq major-mode 'org-mode) 'counsel-org-goto)
       (t 'counsel-imenu))))
-)
+  )
