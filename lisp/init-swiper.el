@@ -31,6 +31,8 @@
      ("y" ivy-yank-action "yank")))
 
   (setq ivy-use-virtual-buffers t
+        ivy-initial-inputs-alist nil
+        ivy-re-builders-alist '((t . ivy--regex-ignore-order))
         ivy-count-format "(%d/%d) ")
   (ivy-mode 1))
 
