@@ -94,5 +94,6 @@
   (setq org-startup-with-inline-images t)
   (setq org-pretty-entities t)
   (setq org-mobile-directory "/mnt/d/Documents/NutCloud/orgmobile")
-  (setq org-agenda-include-diary nil)
-  (global-set-key (kbd "C-c o") 'org-cycle-agenda-files))
+  (setq org-agenda-include-diary nil))
+
+(global-set-key (kbd "C-c o") 'org-cycle-agenda-files)
