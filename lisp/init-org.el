@@ -1,4 +1,7 @@
 (use-package org
+  :bind (:map org-mode-map
+              ("C-c C-o" . nil)
+              ("C-c o" .  org-open-at-point))
   :custom
   (org-clock-in-switch-to-state "STARTED")
   (org-clock-out-remove-zero-time-clocks t)
@@ -101,4 +104,4 @@
   (setq org-mobile-directory "/mnt/d/Documents/NutCloud/orgmobile")
   (setq org-agenda-include-diary nil))
 
-(global-set-key (kbd "C-c o") 'org-cycle-agenda-files)
+(global-set-key (kbd "C-c C-o") 'org-cycle-agenda-files)
