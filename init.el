@@ -57,6 +57,7 @@ Otherwise the startup will be very slow. "
 (let* ((file-name-handler-alist nil))
   (require-init 'init-ui)
   (require-init 'init-misc)
+  (require-init 'init-org)
   (require-init 'init-swiper)
   (require-init 'init-git)
   (require-init 'init-window)
