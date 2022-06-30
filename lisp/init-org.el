@@ -31,7 +31,12 @@
         (expand-file-name "life.org" org-files-dir))
   (setq org-file-journal
         (expand-file-name "journal.org" org-files-dir))
-  (setq org-agenda-files (list org-files-dir))
+  (setq org-agenda-files (list org-file-note org-file-work org-file-study org-file-life org-file-journal))
+  (if (not (file-directory-p org-files-dir))
+      (make-directory org-files-dir))
+  (dolist (org-file org-agenda-files)
+    (if (not (file-exists-p org-file))
+        (with-temp-buffer (write-file org-file))))
   (setq org-refile-targets
         '((nil :maxlevel . 10)
           (org-agenda-files :maxlevel . 10)))
