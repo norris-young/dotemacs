@@ -55,13 +55,13 @@ Otherwise the startup will be very slow. "
 ;; ("\\`/:" . file-name-non-special))
 ;; Which means on every .el and .elc file loaded during start up, it has to runs those regexps against the filename.
 (let* ((file-name-handler-alist nil))
-  (require-init 'init-ui)
+  (require-init 'init-git)
+  (require-init 'init-meow)
   (require-init 'init-misc)
   (require-init 'init-org)
   (require-init 'init-swiper)
-  (require-init 'init-git)
+  (require-init 'init-ui)
   (require-init 'init-window)
-  (require-init 'init-meow)
   (if (file-exists-p custom-file) (load custom-file t t))
   )
 
