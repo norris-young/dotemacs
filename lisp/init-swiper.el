@@ -59,3 +59,8 @@
       ((eq major-mode 'org-mode) 'counsel-org-goto)
       (t 'counsel-imenu))))
   )
+
+(defun my-show-file-name ()
+  (interactive)
+  (message (buffer-file-name)))
+(global-set-key (kbd "C-s C-f") #'my-show-file-name)
