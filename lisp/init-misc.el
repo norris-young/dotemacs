@@ -44,5 +44,5 @@
   )
 
 (use-package evil-matchit
-  :config
+  :init
   (global-set-key (kbd "%") 'evilmi-jump-items-native))
