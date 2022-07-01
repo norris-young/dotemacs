@@ -15,3 +15,13 @@
 (global-set-key (kbd "C-w C-d") #'delete-window)
 (global-set-key (kbd "C-w C--") #'split-window-below)
 (global-set-key (kbd "C-w C-/") #'split-window-right)
+
+(use-package shackle
+  :custom
+  (shackle-select-reused-windows nil)
+  (shackle-inhibit-window-quit-on-same-windows t)
+  (shackle-default-alignment 'below)
+  (shackle-default-size 0.3)
+  (shackle-rules '(("*Help*" :select t :align t)))
+  (shackle-default-rule '(:select t))
+  :hook ((after-init . shackle-mode)))

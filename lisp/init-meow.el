@@ -38,6 +38,8 @@
   (add-hook 'meow-insert-exit-hook (lambda ()
                                      (remove-hook 'pre-command-hook 'meow-escape-pre-command-hook)))
 
+  (setf (alist-get 'help-mode meow-mode-state-list) 'motion)
+
   (defun meow-setup ()
     (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
     (meow-motion-overwrite-define-key
