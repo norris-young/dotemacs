@@ -1,3 +1,6 @@
+(use-package org-superstar
+  :hook (org-mode . (lambda () (org-superstar-mode 1))))
+
 (use-package org
   :bind (:map org-mode-map
               ("C-c C-o" . nil)
