@@ -56,6 +56,7 @@ Otherwise the startup will be very slow. "
 ;; Which means on every .el and .elc file loaded during start up, it has to runs those regexps against the filename.
 (let* ((file-name-handler-alist nil))
   (require-init 'init-git)
+  (require-init 'init-input)
   (require-init 'init-lisp)
   (require-init 'init-meow)
   (require-init 'init-misc)
