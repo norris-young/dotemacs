@@ -3,8 +3,8 @@
 
 (use-package org
   :bind (:map org-mode-map
-              ("C-c C-o" . nil)
-              ("C-c o" .  org-open-at-point))
+              ("C-o" . nil)
+              ("C-o C-o" .  org-open-line))
   :custom
   (org-clock-in-switch-to-state "STARTED")
   (org-clock-out-remove-zero-time-clocks t)
@@ -107,4 +107,7 @@
   (setq org-mobile-directory "/mnt/d/Documents/NutCloud/orgmobile")
   (setq org-agenda-include-diary nil))
 
-(global-set-key (kbd "C-c C-o") 'org-cycle-agenda-files)
+(global-set-key (kbd "C-o") (make-sparse-keymap))
+(global-set-key (kbd "C-o C-f") 'org-cycle-agenda-files)
+(global-set-key (kbd "C-o C-c") 'org-capture)
+(global-set-key (kbd "C-o C-a") 'org-agenda)
