@@ -1,3 +1,5 @@
+(use-package evil-matchit)
+
 (use-package meow
   :demand t
   :custom (meow-keypad-self-insert-undefined nil)
@@ -84,6 +86,7 @@
      '("/" . meow-keypad-describe-key)
      '("?" . meow-cheatsheet))
     (meow-normal-define-key
+     '("%" . evilmi-jump-items-native)
      '("DEL" . ignore)
      '("0" . meow-expand-0)
      '("9" . meow-expand-9)

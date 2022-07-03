@@ -42,7 +42,3 @@
                (sp-wrap-with-pair (car pair))
                (cl-return))))))
   )
-
-(use-package evil-matchit
-  :init
-  (global-set-key (kbd "%") 'evilmi-jump-items-native))
