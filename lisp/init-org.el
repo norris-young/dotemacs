@@ -25,6 +25,8 @@
   (setq org-refile-allow-creating-parent-nodes 'confirm)
   (setq org-attach-id-dir "attaches/")
   (setq org-attach-store-link-p t)
+  (setq org-adapt-indentation t
+        org-hide-leading-stars t)
 
   (setq org-files-dir "~/org")
   (setq org-file-note
