@@ -1,0 +1,57 @@
+[submodule "use-package"]
+	path = packages/use-package
+	url = https://github.com/jwiegley/use-package.gitvil-matchit-20220608.1134                    smartparens-20220623.1523
+[submodule "color-theme-sanityinc-tomorrow"]
+	path = packages/color-theme-sanityinc-tomorrow
+	url = https://github.com/purcell/color-theme-sanityinc-tomorrow.git
+[submodule "compat"]
+	path = packages/compat
+	url = https://github.com/emacs-compat/compat.git
+[submodule "swiper"]
+	path = packages/swiper
+	url = https://github.com/abo-abo/swiper.git
+[submodule "dash"]
+	path = packages/dash
+	url = https://github.com/magnars/dash.el.git
+[submodule "evil-matchit"]
+	path = packages/evil-matchit
+	url = https://github.com/redguardtoo/evil-matchit.git
+[submodule "flx"]
+	path = packages/flx
+	url = https://github.com/lewang/flx.git
+[submodule "transient"]
+	path = packages/transient
+	url = https://github.com/magit/transient.git
+[submodule "with-editor"]
+	path = packages/with-editor
+	url = https://github.com/magit/with-editor.git
+[submodule "magit"]
+	path = packages/magit
+	url = https://github.com/magit/magit.git
+[submodule "highlight-indent-guides"]
+	path = packages/highlight-indent-guides
+	url = https://github.com/DarthFennec/highlight-indent-guides.git
+[submodule "meow"]
+	path = packages/meow
+	url = https://github.com/meow-edit/meow.git
+[submodule "org-superstar-mode"]
+	path = packages/org-superstar
+	url = https://github.com/integral-dw/org-superstar-mode.git
+[submodule "popup"]
+	path = packages/popup
+	url = https://github.com/auto-complete/popup-el.git
+[submodule "posframe"]
+	path = packages/posframe
+	url = https://github.com/tumashu/posframe.git
+[submodule "emacs-rime"]
+	path = packages/rime
+	url = https://github.com/DogLooksGood/emacs-rime.git
+[submodule "shackle"]
+	path = packages/shackle
+	url = https://depp.brause.cc/shackle.git
+[submodule "smartparens"]
+	path = packages/smartparens
+	url = https://github.com/Fuco1/smartparens.git
+[submodule "emacs-winum"]
+	path = packages/winum
+	url = https://github.com/deb0ch/emacs-winum.git

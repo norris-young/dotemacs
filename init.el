@@ -1,22 +1,48 @@
 ;;; Code:
 
+(require 'cl-lib)
+
 (setq user-init-file (or load-file-name (buffer-file-name)))
 (setq user-emacs-directory (file-name-directory user-init-file))
 (defconst my-emacs-d (file-name-as-directory user-emacs-directory)
   "Directory of emacs.d.")
 
-(defconst my-site-lisp-dir (concat my-emacs-d "site-lisp")
+(defconst my-packages-dir (concat my-emacs-d "packages")
   "Directory of site-lisp.")
 
 (defconst my-lisp-dir (concat my-emacs-d "lisp")
   "Directory of personal configuration.")
 
-(defun add-subdirs-to-load-path (&rest _)
-  "Add subdirectories to `load-path'.
-Don't put large files in `site-lisp' directory, e.g. EAF.
-Otherwise the startup will be very slow. "
-  (let ((default-directory my-site-lisp-dir))
-    (normal-top-level-add-subdirs-to-load-path)))
+(defun add-subdirs-to-load-path (search-dir)
+  (interactive)
+  (let* ((dir (file-name-as-directory search-dir)))
+    (dolist (subdir
+             ;; 过滤出不必要的目录，提升Emacs启动速度
+             (cl-remove-if
+              #'(lambda (subdir)
+                  (or
+                   ;; 不是目录的文件都移除
+                   (not (file-directory-p (concat dir subdir)))
+                   ;; 父目录、 语言相关和版本控制目录都移除
+                   (member subdir '("." ".."
+                                    "dist" "node_modules" "__pycache__"
+                                    "RCS" "CVS" "rcs" "cvs" ".git" ".github"))))
+              (directory-files dir)))
+      (let ((subdir-path (concat dir (file-name-as-directory subdir))))
+        ;; 目录下有 .el .so .dll 文件的路径才添加到 `load-path' 中，提升Emacs启动速度
+        (when (cl-some #'(lambda (subdir-file)
+                           (and (file-regular-p (concat subdir-path subdir-file))
+                                ;; .so .dll 文件指非Elisp语言编写的Emacs动态库
+                                (member (file-name-extension subdir-file) '("el" "so" "dll"))))
+                       (directory-files subdir-path))
+
+          ;; 注意：`add-to-list' 函数的第三个参数必须为 t ，表示加到列表末尾
+          ;; 这样Emacs会从父目录到子目录的顺序搜索Elisp插件，顺序反过来会导致Emacs无法正常启动
+          (add-to-list 'load-path subdir-path t))
+
+        ;; 继续递归搜索子目录
+        (add-subdirs-to-load-path subdir-path)))))
+(add-subdirs-to-load-path my-packages-dir)
 
 (defun require-init (pkg &optional disabled)
   "Load PKG if DISABLED is nil."
@@ -38,8 +64,7 @@ Otherwise the startup will be very slow. "
 
 ;; Should set before loading `use-package'
 (eval-and-compile
-  (setq use-package-always-ensure t)
-  (setq use-package-always-defer t)
+  ;; (setq use-package-always-defer t)
   ;; (setq use-package-always-demand nil)
   ;; (setq use-package-expand-minimally nil)
   ;; (setq use-package-enable-imenu-support nil)
