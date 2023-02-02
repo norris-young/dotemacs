@@ -89,6 +89,8 @@
   (require-init 'init-swiper)
   (require-init 'init-ui)
   (require-init 'init-window)
+  (require-init 'init-c)
+  (require-init 'init-lsp)
   (if (file-exists-p custom-file) (load custom-file t t))
   )
 

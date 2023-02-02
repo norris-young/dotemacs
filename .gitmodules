@@ -55,3 +55,12 @@
 [submodule "emacs-winum"]
 	path = packages/winum
 	url = https://github.com/deb0ch/emacs-winum.git
+[submodule "markdown-mode"]
+	path = packages/markdown-mode
+	url = https://github.com/jrblevin/markdown-mode.git
+[submodule "yasnippet"]
+	path = packages/yasnippet
+	url = https://github.com/joaotavora/yasnippet.git
+[submodule "lsp-bridge"]
+	path = packages/lsp-bridge
+	url = https://github.com/manateelazycat/lsp-bridge.git
