@@ -25,3 +25,5 @@
   (shackle-rules '(("*Help*" :select t :align t)))
   (shackle-default-rule '(:select t))
   :hook ((after-init . shackle-mode)))
+
+(provide 'init-window)

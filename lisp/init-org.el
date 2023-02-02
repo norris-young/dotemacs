@@ -113,3 +113,5 @@
 (global-set-key (kbd "C-o C-f") 'org-cycle-agenda-files)
 (global-set-key (kbd "C-o C-c") 'org-capture)
 (global-set-key (kbd "C-o C-a") 'org-agenda)
+
+(provide 'init-org)

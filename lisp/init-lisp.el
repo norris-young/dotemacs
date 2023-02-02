@@ -9,3 +9,5 @@
 
 (global-set-key (kbd "C-t") (make-sparse-keymap))
 (global-set-key (kbd "C-t C-l") #'my-elisp-find-function-or-variable-at-point)
+
+(provide 'init-lisp)

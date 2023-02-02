@@ -64,3 +64,5 @@
   (interactive)
   (message (buffer-file-name)))
 (global-set-key (kbd "C-s C-f") #'my-show-file-name)
+
+(provide 'init-swiper)

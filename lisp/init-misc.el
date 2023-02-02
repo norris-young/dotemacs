@@ -42,3 +42,5 @@
                (sp-wrap-with-pair (car pair))
                (cl-return))))))
   )
+
+(provide 'init-misc)

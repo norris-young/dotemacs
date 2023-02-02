@@ -157,3 +157,5 @@
         meow-keypad-start-keys       '((?o . ?o) (?c . ?c) (?b . ?h) (?x. ?x) (?w . ?w) (?s . ?s) (?t . ?t)))
 
   (meow-global-mode 1))
+
+(provide 'init-meow)
