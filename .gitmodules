@@ -1,6 +1,3 @@
-[submodule "use-package"]
-	path = packages/use-package
-	url = https://github.com/jwiegley/use-package.gitvil-matchit-20220608.1134                    smartparens-20220623.1523
 [submodule "color-theme-sanityinc-tomorrow"]
 	path = packages/color-theme-sanityinc-tomorrow
 	url = https://github.com/purcell/color-theme-sanityinc-tomorrow.git
