@@ -13,10 +13,10 @@
 
 ;; This minor mode cannot be the first function in hook, so move it here for fix bug
 ;; @see https://github.com/DarthFennec/highlight-indent-guides/issues/15#issuecomment-300233767
-(use-package highlight-indent-guides
-  :config
-  (setq highlight-indent-guides-method 'character))
-(add-hook 'prog-mode-hook #'highlight-indent-guides-mode)
+;; (use-package highlight-indent-guides
+;;   :config
+;;   (setq highlight-indent-guides-method 'column))
+;; (add-hook 'prog-mode-hook #'highlight-indent-guides-mode)
 
 (with-eval-after-load 'whitespace
   (setq whitespace-style '(face trailing tabs tab-mark)))
