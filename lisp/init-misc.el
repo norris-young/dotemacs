@@ -1,25 +1,13 @@
-;; Do not insert tab and save file place by default
-(add-hook 'after-init-hook (lambda ()
-                             (setq-default indent-tabs-mode nil)
-                             (setq-default save-place-mode t)))
+;; Save file place by default
+(use-package saveplace
+  :config
+  (setq-default save-place-mode t))
 
-;;scroll configuration
-(setq scroll-up-aggressively 0.1
-      scroll-down-aggressively 0.1
-      scroll-preserve-screen-position t
-      scroll-margin 3
-      scroll-step 1)
-
-(defadvice scroll-up-command (before scroll-up-less-line activate compile)
-  (if (not arg) (setq arg 15)))
-(defadvice scroll-down-command (before scroll-down-less-line activate compile)
-  (if (not arg) (setq arg 15)))
-
-(global-set-key (kbd "M-k") #'scroll-down-line)
-(global-set-key (kbd "M-j") #'scroll-up-line)
-(global-set-key (kbd "C-M-j") #'join-line)
-
-(add-hook 'before-save-hook #'delete-trailing-whitespace)
+(use-package simple
+  :bind ("C-M-j" . join-line)
+  :hook ((before-save . delete-trailing-whitespace))
+  :config
+  (setq-default indent-tabs-mode nil))
 
 (use-package smartparens
   :bind (("M--" . sp-unwrap-sexp)
@@ -27,11 +15,9 @@
          ("M-]" . sp-forward-slurp-sexp)
          ("M-{" . sp-backward-barf-sexp)
          ("M-}" . sp-forward-barf-sexp))
-  :hook ((after-init . (lambda ()
-                         (require 'smartparens-config)
-                         (show-smartparens-global-mode)
-                         (smartparens-global-mode))))
+  :hook (after-init . smartparens-global-mode)
   :config
+  (require 'smartparens-config)
   (defun my-wrap-with-pair (c)
     (interactive "c")
     (let ((active-pair (char-to-string c)))
@@ -40,7 +26,6 @@
                  (equal (cdr pair) active-pair))
              (progn
                (sp-wrap-with-pair (car pair))
-               (cl-return))))))
-  )
+               (cl-return)))))))
 
 (provide 'init-misc)

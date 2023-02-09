@@ -1,20 +1,34 @@
 (use-package winum
-  :config
-  (set-face-attribute 'winum-face nil :foreground "DeepPink" :underline "DeepPink" :weight 'bold)
-  (winum-mode 1))
+  :custom-face (winum-face ((nil (:foregound "DeepPink") (:underline "DeepPink") (:weight 'bold))))
+  :hook (after-init . winum-mode))
 
 ;; window management
-(defadvice split-window-below (after move-after-split-below activate compile)
-  (windmove-down))
-(defadvice split-window-right (after move-after-split-right activate compile)
-  (windmove-right))
-;; rebind kill-region to C-S-k, meanwhile meow--kbd-kill-region needs to be changed.
-(global-set-key (kbd "C-S-k") #'kill-region)
-(global-set-key (kbd "C-w") (make-sparse-keymap))
-(global-set-key (kbd "C-w m") #'delete-other-windows)
-(global-set-key (kbd "C-w C-d") #'delete-window)
-(global-set-key (kbd "C-w C--") #'split-window-below)
-(global-set-key (kbd "C-w C-/") #'split-window-right)
+(use-package window
+  :bind (("M-j" . scroll-up-line)
+         ("M-k" . scroll-down-line)
+         :map my-window-map
+         ("-" . split-window-below)
+         ("/" . split-window-right)
+         ("m" . delete-other-windows)
+         ("d" . delete-window))
+  :config
+  (defun switch-to-minibuffer ()
+    "Switch to minibuffer window."
+    (interactive)
+    (if (active-minibuffer-window)
+        (select-window (active-minibuffer-window))))
+
+  ;;scroll configuration
+  (setq scroll-up-aggressively 0.1
+        scroll-down-aggressively 0.1
+        scroll-preserve-screen-position t
+        scroll-margin 3
+        scroll-step 1)
+
+  (advice-add #'split-window-below :after #'windmove-down)
+  (advice-add #'split-window-right :after #'windmove-right)
+  (advice-add #'scroll-up-command :filter-args (lambda (x) (if (not x) (setq x 15))))
+  (advice-add #'scroll-down-command :filter-args (lambda (x) (if (not x) (setq x 15)))))
 
 (use-package shackle
   :custom
@@ -24,6 +38,6 @@
   (shackle-default-size 0.3)
   (shackle-rules '(("*Help*" :select t :align t)))
   (shackle-default-rule '(:select t))
-  :hook ((after-init . shackle-mode)))
+  :hook (after-init . shackle-mode))
 
 (provide 'init-window)

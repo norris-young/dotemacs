@@ -1,15 +1,17 @@
 (use-package yasnippet
-  :config
-  (yas-global-mode 1))
+  :hook (after-init . yas-global-mode))
 
 (use-package lsp-bridge
+  :bind (:map my-function-map
+         ("d" . my-find-def)
+         ("r" . my-find-ref)
+         ("b" . xref-go-back))
+  :hook (after-init . global-lsp-bridge-mode)
   :custom
   (acm-enable-citre t)
   (lsp-bridge-find-def-fallback-function #'my-after-lsp-find-def-failure)
   (lsp-bridge-find-ref-fallback-function #'my-after-lsp-find-ref-failure)
   :config
-  (global-lsp-bridge-mode)
-  (setq lsp-bridge-c-lsp-server "ccls"))
   (defun my-find-def ()
     (interactive)
     (xref-push-marker-stack (point-marker))

@@ -1,10 +1,11 @@
 (use-package org-superstar
-  :hook (org-mode . (lambda () (org-superstar-mode 1))))
+  :hook (org-mode . org-superstar-mode))
 
 (use-package org
-  :bind (:map org-mode-map
-              ("C-o" . nil)
-              ("C-o C-o" .  org-open-line))
+  :bind (:map my-org-map
+        ("f" . org-cycle-agenda-files)
+        ("c" . org-capture)
+        ("a" . org-agenda))
   :custom
   (org-clock-in-switch-to-state "STARTED")
   (org-clock-out-remove-zero-time-clocks t)
@@ -106,12 +107,6 @@
           ("a)" . "-") ("-" . ".") ("." . "+")))
   (setq org-startup-with-inline-images t)
   (setq org-pretty-entities t)
-  (setq org-mobile-directory "/mnt/d/Documents/NutCloud/orgmobile")
   (setq org-agenda-include-diary nil))
-
-(global-set-key (kbd "C-o") (make-sparse-keymap))
-(global-set-key (kbd "C-o C-f") 'org-cycle-agenda-files)
-(global-set-key (kbd "C-o C-c") 'org-capture)
-(global-set-key (kbd "C-o C-a") 'org-agenda)
 
 (provide 'init-org)

@@ -1,5 +1,7 @@
 (use-package cc-mode
+  :hook (c-mode . my-choose-c-style)
   :config
+  (setq-default tab-width 4)
   (c-add-style "linux-user" '("linux"
                               (c-basic-offset . 4)
                               (tab-width . 4)
@@ -8,15 +10,18 @@
                                 (c-basic-offset . 8)
                                 (tab-width . 8)
                                 (indent-tabs-mode . t)))
-  (setq-default fill-column 80
-                tab-width 4)
-  (add-hook 'c-mode-hook
-            (lambda ()
-              (if (string-match "linux" (buffer-file-name))
-                  (c-set-style "linux-kernel")
-                (c-set-style "linux-user")))))
+  (defun my-choose-c-style ()
+    (if (string-match "linux" (buffer-file-name))
+        (c-set-style "linux-kernel")
+      (c-set-style "linux-user"))))
+
 (use-package citre
   :commands (citre-update-tags-file citre-update-this-tags-file citre-edit-tags-file-recipe citre-create-tags-file citre-global-create-database citre-global-update-database)
+  :bind (:map my-function-map
+         ("p" . citre-peek)
+         ("R" . citre-peek-reference)
+         ("u" . citre-global-update-database)
+         ("C" . citre-global-create-database))
   :hook (prog-mode . citre-auto-enable-citre-mode)
   :custom
   (citre-auto-enable-citre-mode-modes '(prog-mode))

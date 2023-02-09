@@ -7,8 +7,11 @@
 (defconst my-emacs-d (file-name-as-directory user-emacs-directory)
   "Directory of emacs.d.")
 
-(defconst my-packages-dir (concat my-emacs-d "packages")
+(defconst my-sitelisp-dir (concat my-emacs-d "site-lisp")
   "Directory of site-lisp.")
+
+(defconst my-packages-dir (concat my-emacs-d "packages")
+  "Directory of packages.")
 
 (defconst my-lisp-dir (concat my-emacs-d "lisp")
   "Directory of personal configuration.")
@@ -42,7 +45,10 @@
 
         ;; 继续递归搜索子目录
         (add-subdirs-to-load-path subdir-path)))))
+
 (add-subdirs-to-load-path my-packages-dir)
+(add-to-list 'load-path my-sitelisp-dir)
+(add-subdirs-to-load-path my-sitelisp-dir)
 
 (defun require-init (pkg &optional disabled)
   "Load PKG if DISABLED is nil."
@@ -80,10 +86,10 @@
 ;; ("\\`/:" . file-name-non-special))
 ;; Which means on every .el and .elc file loaded during start up, it has to runs those regexps against the filename.
 (let* ((file-name-handler-alist nil))
+  (require-init 'init-meow)
   (require-init 'init-git)
   (require-init 'init-input)
   (require-init 'init-lisp)
-  (require-init 'init-meow)
   (require-init 'init-misc)
   (require-init 'init-org)
   (require-init 'init-swiper)
@@ -97,7 +103,7 @@
 ;; (setq garbage-collection-messages t) ; for debug
 (defun post-init-gc ()
   "Do the gc we deferred in early-init.el"
-  (setq gc-cons-threshold (* 16 1024 1024)) ; 16M
+  (setq gc-cons-threshold (* 128 1024 1024)) ; 128M
   (setq gc-cons-percentage 0.1) ; original value
   (garbage-collect))
 
