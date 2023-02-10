@@ -21,7 +21,10 @@
           (if (and symb (not (fboundp symb)))
               (find-variable symb)
             (find-function symb)))
-      (lsp-bridge-find-def)))
+      (if lsp-bridge-mode
+          (lsp-bridge-find-def)
+        (if citre-mode
+            (citre-jump)))))
 
   (defun my-after-lsp-find-def-failure (position)
     (deactivate-mark t)
@@ -39,9 +42,12 @@
             (eq major-mode 'lisp-interaction-mode))
         (let ((identifier (xref-backend-identifier-at-point 'elisp)))
           (xref--find-xrefs identifier 'references identifier nil))
-      (progn
-        (xref-push-marker-stack (point-marker))
-        (lsp-bridge-find-references))))
+      (if lsp-bridge-mode
+          (progn
+            (xref-push-marker-stack (point-marker))
+            (lsp-bridge-find-references))
+        (if citre-mode
+            (call-interactively #'citre-jump-to-reference)))))
 
   (defun my-after-lsp-find-ref-failure (position)
     (deactivate-mark t)
