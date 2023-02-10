@@ -10,7 +10,12 @@
          ("m" . my-switch-to-message-buffer)
          ("n" . next-buffer)
          ("s" . my-switch-to-scratch-buffer)
-         ("p" . previous-buffer))
+         ("p" . previous-buffer)
+         :map my-project-map
+         ("p" . project-switch-project)
+         ("f" . project-find-file)
+         ("b" . project-switch-to-buffer)
+         ("d" . project-dired))
   :defer 0.2
   :custom
   (meow-keypad-self-insert-undefined nil)
@@ -43,6 +48,7 @@
   (defvar my-window-map (make-sparse-keymap))
   (defvar my-buffer-map (make-sparse-keymap))
   (defvar my-search-map (make-sparse-keymap))
+  (defvar my-project-map (make-sparse-keymap))
   (defvar my-function-map (make-sparse-keymap))
   :config
   (setf (alist-get 'help-mode meow-mode-state-list) 'motion)
@@ -159,6 +165,7 @@
    (cons "w" my-window-map)
    (cons "s" my-search-map)
    (cons "b" my-buffer-map)
+   (cons "p" my-project-map)
    '("?" . meow-cheatsheet))
 
   (meow-normal-define-key
