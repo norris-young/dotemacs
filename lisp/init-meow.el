@@ -11,7 +11,7 @@
          ("n" . next-buffer)
          ("s" . my-switch-to-scratch-buffer)
          ("p" . previous-buffer))
-  :hook (after-init . meow-global-mode)
+  :defer 0.2
   :custom
   (meow-keypad-self-insert-undefined nil)
   (meow-keypad-literal-prefix ?,)
@@ -230,6 +230,8 @@
    '("Y" . meow-sync-grab)
    '("z" . meow-pop-selection)
    '("'" . repeat)
-   '("<escape>" . ignore)))
+   '("<escape>" . ignore))
+
+  (meow-global-mode 1))
 
 (provide 'init-meow)
