@@ -15,12 +15,13 @@
   (defun my-find-def ()
     (interactive)
     (xref-push-marker-stack (point-marker))
-    (if (eq major-mode 'emacs-lisp-mode)
+    (if (or (eq major-mode 'emacs-lisp-mode)
+            (eq major-mode 'lisp-interaction-mode))
         (let ((symb (symbol-at-point)))
           (if (and symb (not (fboundp symb)))
               (find-variable symb)
-            (find-function symb))))
-      (lsp-bridge-find-def))
+            (find-function symb)))
+      (lsp-bridge-find-def)))
 
   (defun my-after-lsp-find-def-failure (position)
     (deactivate-mark t)
@@ -34,7 +35,8 @@
 
   (defun my-find-ref ()
     (interactive)
-    (if (eq major-mode 'emacs-lisp-mode)
+    (if (or (eq major-mode 'emacs-lisp-mode)
+            (eq major-mode 'lisp-interaction-mode))
         (let ((identifier (xref-backend-identifier-at-point 'elisp)))
           (xref--find-xrefs identifier 'references identifier nil))
       (progn
