@@ -4,6 +4,6 @@
 (add-to-list 'load-path my-autoloads-dir)
 
 (cl-dolist (alf (directory-files my-autoloads-dir nil "^[^.].*"))
-  (load (file-name-base alf)))
+  (load (file-name-base alf) nil t))
 
 (provide 'init-autoloads)
