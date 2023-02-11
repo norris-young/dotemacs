@@ -39,6 +39,7 @@
   :bind (:map my-search-map
          ("s" . swiper-isearch)
          ("w" . swiper-isearch-thing-at-point)))
+
 (use-package counsel
   :bind (("M-x"     . counsel-M-x)
          ("M-y"     . counsel-yank-pop)

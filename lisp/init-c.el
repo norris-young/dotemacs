@@ -32,7 +32,6 @@
   )
 
 (use-package citre
-  :commands (citre-update-tags-file citre-update-this-tags-file citre-edit-tags-file-recipe citre-create-tags-file citre-global-create-database citre-global-update-database)
   :bind (:map my-function-map
          ("p" . citre-peek)
          ("R" . citre-peek-reference)

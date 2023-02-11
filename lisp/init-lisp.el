@@ -4,7 +4,6 @@
 (use-package help-fns+ :defer 1)
 
 (use-package package
-  :commands (my-generate-autoloads)
   :config
   (defun my-collect-package-generated-autoloads (pkg-dir name)
     (let* ((filename (format "%s-autoloads.el" name))

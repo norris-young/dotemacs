@@ -1,6 +1,3 @@
-(use-package evil-matchit
-  :commands evilmi-jump-items-native)
-
 (use-package meow
   :bind (:map my-file-map
          ("n" . my-show-file-name)

@@ -1,7 +1,6 @@
 ;; Save file place by default
 (use-package saveplace
-  :config
-  (setq-default save-place-mode t))
+  :hook (after-init . save-place-mode))
 
 (use-package simple
   :bind ("C-M-j" . join-line)
