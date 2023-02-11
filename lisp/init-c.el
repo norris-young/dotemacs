@@ -1,4 +1,5 @@
 (use-package cc-mode
+  :bind ("M-;" . my-comment-dwim)
   :hook (c-mode . my-choose-c-style)
   :config
   (setq-default tab-width 4)
@@ -13,7 +14,22 @@
   (defun my-choose-c-style ()
     (if (string-match "linux" (buffer-file-name))
         (c-set-style "linux-kernel")
-      (c-set-style "linux-user"))))
+      (c-set-style "linux-user")))
+
+  (defun my-comment-dwim ()
+    (interactive)
+    (let ((lines (if (use-region-p)
+                     (count-lines (region-beginning) (region-end))
+                   1)))
+      (if (eq lines 1)
+          (setq comment-style 'indent)
+        (setq comment-style 'extra-line))
+      (if (and (use-region-p)
+               (eq lines 1))
+          (progn
+            (comment-or-uncomment-region (region-beginning) (region-end)))
+        (comment-line nil))))
+  )
 
 (use-package citre
   :commands (citre-update-tags-file citre-update-this-tags-file citre-edit-tags-file-recipe citre-create-tags-file citre-global-create-database citre-global-update-database)
