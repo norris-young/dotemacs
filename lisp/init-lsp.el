@@ -8,7 +8,7 @@
          ("b" . xref-go-back))
   :hook (after-init . global-lsp-bridge-mode)
   :custom
-  (acm-enable-citre t)
+  (acm-enable-citre nil)
   (lsp-bridge-find-def-fallback-function #'my-after-lsp-find-def-failure)
   (lsp-bridge-find-ref-fallback-function #'my-after-lsp-find-ref-failure)
   :config
