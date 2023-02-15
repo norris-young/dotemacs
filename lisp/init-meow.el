@@ -50,14 +50,6 @@
   :config
   (setf (alist-get 'help-mode meow-mode-state-list) 'motion)
 
-  ;; Change to motion mode for magit-blame
-  (with-eval-after-load 'magit
-    (add-hook 'magit-blame-read-only-mode-hook
-              (lambda ()
-                (if magit-blame-read-only-mode
-                    (meow-motion-mode)
-                  (meow-normal-mode)))))
-
   (defun my-switch-to-message-buffer ()
     (interactive)
     (switch-to-buffer "*Messages*"))
