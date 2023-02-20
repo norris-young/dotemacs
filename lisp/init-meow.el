@@ -15,6 +15,7 @@
          ("d" . project-dired))
   :defer 0.2
   :custom
+  (meow-use-clipboard t)
   (meow-keypad-self-insert-undefined nil)
   (meow-keypad-literal-prefix ?,)
   (meow-keypad-ctrl-meta-prefix  ?.)
