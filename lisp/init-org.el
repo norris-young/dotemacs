@@ -59,28 +59,20 @@
 
   ;; Show no blank lines at the end of tree
   (org-cycle-separator-lines 0)
-  :config
+  :init
   ;; Org files
   (setq org-files-dir "~/org")
-  (setq org-file-note
-        (expand-file-name "note.org" org-files-dir))
-  (setq org-file-source
-        (expand-file-name "source.org" org-files-dir))
-  (setq org-file-improve
-        (expand-file-name "improve.org" org-files-dir))
-  (setq org-file-interest
-        (expand-file-name "interest.org" org-files-dir))
-  (setq org-file-meaning
-        (expand-file-name "meaning.org" org-files-dir))
-  (setq org-file-shopping
-        (expand-file-name "shopping.org" org-files-dir))
-  (setq org-agenda-files (directory-files org-files-dir t "^[^.].*" t))
   (if (not (file-directory-p org-files-dir))
       (make-directory org-files-dir))
-  (dolist (f org-agenda-files)
-    (if (not (file-exists-p f))
-        (make-empty-file f)))
-
+  (defvar org-agenda-files nil)
+  (dolist (file '("note" "source" "improve" "interest" "meanning" "shopping"))
+    (add-to-list 'org-agenda-files
+                 (setf (symbol-value (intern (concat "org-file-" file)))
+                       (expand-file-name (concat file ".org") org-files-dir))))
+  (dolist (file org-agenda-files)
+    (if (not (file-exists-p file))
+        (make-empty-file file)))
+  :config
   ;; Capture templates
   (setq org-capture-templates
         '(("b" "Buy" entry (file+headline org-file-shopping "Shopping")
