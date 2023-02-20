@@ -67,3 +67,6 @@
 [submodule "acm-terminal"]
 	path = packages/acm-terminal
 	url = "https://github.com/twlz0ne/acm-terminal.git "
+[submodule "edebug-x"]
+	path = packages/edebug-x
+	url = https://github.com/ScottyB/edebug-x.git
