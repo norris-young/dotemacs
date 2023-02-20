@@ -39,6 +39,9 @@
          ("C" . citre-global-create-database))
   :hook (prog-mode . citre-auto-enable-citre-mode)
   :custom
+  (citre-enable-imenu-integration nil)
+  ;; (citre-tags-in-buffer-backends '(global))
+  ;; (citre-tags-imenu-create-tags-file-threshold nil)
   (citre-auto-enable-citre-mode-modes '(prog-mode))
   (citre-use-project-root-when-creating-tags t)
   (citre-gtags-args '("--compact"))
