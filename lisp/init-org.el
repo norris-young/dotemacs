@@ -7,6 +7,10 @@
         ("c" . org-capture)
         ("a" . org-agenda))
   :custom
+  ;; Enable indentation
+  (org-startup-indented t)
+
+  ;; Org clock config
   (org-clock-in-switch-to-state "STARTED")
   (org-clock-out-remove-zero-time-clocks t)
   (org-clock-idle-time 15)
