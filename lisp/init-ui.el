@@ -4,15 +4,16 @@
 
 (use-package frame
   :config
-  (set-frame-font (font-spec :name "JetBrainsMono Nerd Font"
-                             :size 14.0
+  (set-frame-font (font-spec :name "JetBrainsMono Nerd Font Mono"
+                             :size 15.0
                              :width 'normal
-                             :weight 'normal))
+                             :weight 'semi-bold))
   (cl-dolist (face '(variable-pitch fixed-pitch fixed-pitch-serif))
-    (set-face-font face (font-spec :name "JetBrainsMono Nerd Font"
+    (set-face-font face (font-spec :name "JetBrainsMono Nerd Font Mono"
                                    :size 14.0
                                    :width 'normal
-                                   :weight 'normal))))
+                                   :weight 'semi-bold)))
+  )
 
 (use-package color-theme-sanityinc-tomorrow
   :hook (after-init . color-theme-sanityinc-tomorrow-eighties))
@@ -34,5 +35,10 @@
 
 (use-package hl-line
   :hook (after-init . global-hl-line-mode))
+
+(use-package cnfonts
+  :custom
+  (cnfonts-personal-fontnames `(,(font-family-list) ,(font-family-list) ,(font-family-list) ,(font-family-list) ,(font-family-list)))
+  :hook (after-init . cnfonts-mode))
 
 (provide 'init-ui)
