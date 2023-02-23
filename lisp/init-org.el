@@ -63,6 +63,9 @@
 
   ;; Show no blank lines at the end of tree
   (org-cycle-separator-lines 0)
+
+  ;; Set default bookmark file
+  (bookmark-default-file (expand-file-name "bookmarks" org-files-dir))
   :init
   ;; Org files
   (setq org-files-dir "~/org")
