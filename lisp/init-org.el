@@ -66,9 +66,27 @@
 
   ;; Set default bookmark file
   (bookmark-default-file (expand-file-name "bookmarks" org-files-dir))
+
+  ;; Capture templates
+  (org-capture-templates
+   '(("b" "Buy" entry (file+headline org-file-shopping "Shopping")
+      "* TODO %?\n%U"
+      :prepend t :empty-lines-after 1)
+     ("m" "Meeting" entry (file+headline org-file-note "Meetings")
+      "* %?\n%U\n%i"
+      :prepend t :jump-to-captured t :empty-lines-after 1)
+     ("n" "Notes" entry (file+headline org-file-note "Quick notes")
+      "* %?\n%U\n%i"
+      :prepend t :empty-lines-after 1)
+     ("t" "TODO" entry (file+headline org-file-note "Unclassified todos")
+      "* TODO %?\n%U\n%i\n%^{Effort}p"
+      :prepend t :empty-lines-after 1)
+     ("w" "Work" entry (file+headline org-file-source "Unclassified tasks")
+      "* TODO %?\n%U\n%i\n%^{Effort}p"
+      :prepend t :jump-to-captured t :empty-lines-after 1)))
   :init
   ;; Org files
-  (setq org-files-dir "~/org")
+  (defvar org-files-dir "~/org")
   (if (not (file-directory-p org-files-dir))
       (make-directory org-files-dir))
   (defvar org-agenda-files nil)
@@ -80,23 +98,6 @@
     (if (not (file-exists-p file))
         (make-empty-file file)))
   :config
-  ;; Capture templates
-  (setq org-capture-templates
-        '(("b" "Buy" entry (file+headline org-file-shopping "Shopping")
-           "* TODO %?\n%U"
-           :prepend t :empty-lines-after 1)
-          ("m" "Meeting" entry (file+headline org-file-note "Meetings")
-           "* %?\n%U\n%i"
-           :prepend t :jump-to-captured t :empty-lines-after 1)
-          ("n" "Notes" entry (file+headline org-file-note "Quick notes")
-           "* %?\n%U\n%i"
-           :prepend t :empty-lines-after 1)
-          ("t" "TODO" entry (file+headline org-file-note "Unclassified todos")
-           "* TODO %?\n%U\n%i\n%^{Effort}p"
-           :prepend t :empty-lines-after 1)
-          ("w" "Work" entry (file+headline org-file-source "Unclassified tasks")
-           "* TODO %?\n%U\n%i\n%^{Effort}p"
-           :prepend t :jump-to-captured t :empty-lines-after 1)))
   )
 
 (provide 'init-org)
