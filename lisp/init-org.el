@@ -80,19 +80,19 @@
   ;; Capture templates
   (setq org-capture-templates
         '(("b" "Buy" entry (file+headline org-file-shopping "Shopping")
-           "* TODO %?\n  %U"
+           "* TODO %?\n%U"
            :prepend t :empty-lines-after 1)
           ("m" "Meeting" entry (file+headline org-file-note "Meetings")
-           "* %?\n  %U\n  %i"
+           "* %?\n%U\n%i"
            :prepend t :jump-to-captured t :empty-lines-after 1)
           ("n" "Notes" entry (file+headline org-file-note "Quick notes")
-           "* %?\n  %U\n  %i"
+           "* %?\n%U\n%i"
            :prepend t :empty-lines-after 1)
           ("t" "TODO" entry (file+headline org-file-note "Unclassified todos")
-           "* TODO %?\n  %U\n  %i\n  %^{Effort}p"
+           "* TODO %?\n%U\n%i\n%^{Effort}p"
            :prepend t :empty-lines-after 1)
           ("w" "Work" entry (file+headline org-file-source "Unclassified tasks")
-           "* TODO %?\n  %U\n  %i\n  %^{Effort}p"
+           "* TODO %?\n%U\n%i\n%^{Effort}p"
            :prepend t :jump-to-captured t :empty-lines-after 1)))
   )
 
