@@ -1,5 +1,6 @@
 (use-package meow
-  :bind (:map my-file-map
+  :bind (("C-x C-S-r" . restart-emacs)
+         :map my-file-map
          ("n" . my-show-file-name)
          ("s" . save-buffer)
          :map my-buffer-map
