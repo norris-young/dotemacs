@@ -37,6 +37,8 @@
   :hook (after-init . global-hl-line-mode))
 
 (use-package cnfonts
+  :bind (("C--" . cnfonts-decrease-fontsize)
+         ("C-=" . cnfonts-increase-fontsize))
   :custom
   (cnfonts-personal-fontnames `(,(font-family-list) ,(font-family-list) ,(font-family-list) ,(font-family-list) ,(font-family-list)))
   :hook (after-init . cnfonts-mode))
