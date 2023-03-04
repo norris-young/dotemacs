@@ -5,6 +5,7 @@
   :bind (:map my-org-map
         ("f" . org-cycle-agenda-files)
         ("c" . org-capture)
+        ("s" . org-schedule)
         ("a" . org-agenda))
   :custom
   ;; Enable indentation
