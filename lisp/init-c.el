@@ -1,8 +1,11 @@
 (use-package cc-mode
   :bind ("M-;" . my-comment-dwim)
-  :hook (c-mode . my-choose-c-style)
+  :hook ((gdb-many-windows-hook . tool-bar-mode)
+         (c-mode . my-choose-c-style))
   :config
   (setq-default tab-width 4)
+  (setq gdb-many-windows t)
+
   (c-add-style "linux-user" '("linux"
                               (c-basic-offset . 4)
                               (tab-width . 4)
