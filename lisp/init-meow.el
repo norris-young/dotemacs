@@ -3,6 +3,7 @@
          :map my-file-map
          ("n" . my-show-file-name)
          ("s" . save-buffer)
+         ("R" . my-rename-file)
          :map my-buffer-map
          ("d" . kill-current-buffer)
          ("m" . my-switch-to-message-buffer)
@@ -51,6 +52,18 @@
   (defvar my-function-map (make-sparse-keymap))
   :config
   (setf (alist-get 'help-mode meow-mode-state-list) 'motion)
+
+  (defun my-rename-file (newname)
+    (interactive (list (ivy-read "new file name: " 'read-file-name-internal
+                                 :initial-input (buffer-file-name))))
+    (let ((oname (buffer-file-name)))
+      (if (not (equal oname newname))
+          (progn
+            (set-visited-file-name newname t t)
+            (rename-file oname newname)
+            ))
+      )
+    )
 
   (defun my-switch-to-message-buffer ()
     (interactive)
