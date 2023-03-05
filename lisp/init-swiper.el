@@ -1,5 +1,6 @@
 ;; flx package is used for ivy fuzzy match engine
 (use-package ivy
+  :defer 0.5
   :bind (("C-x b". ivy-switch-buffer)
          :map my-buffer-map
          ("b" . ivy-switch-buffer)

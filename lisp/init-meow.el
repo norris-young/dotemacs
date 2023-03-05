@@ -50,6 +50,7 @@
   (defvar my-search-map (make-sparse-keymap))
   (defvar my-project-map (make-sparse-keymap))
   (defvar my-function-map (make-sparse-keymap))
+  (defvar my-codefold-map (make-sparse-keymap))
   :config
   (setf (alist-get 'help-mode meow-mode-state-list) 'motion)
 
@@ -186,6 +187,7 @@
    '("2" . meow-expand-2)
    '("1" . meow-expand-1)
    '("-" . negative-argument)
+   '(":" . meow-goto-line)
    '(";" . meow-reverse)
    '("," . meow-inner-of-thing)
    '("." . meow-bounds-of-thing)
@@ -202,7 +204,7 @@
    '("E" . meow-next-symbol)
    `("f" . ,my-function-map)
    '("F" . meow-find)
-   '("g" . meow-goto-line)
+   '("g" . meow-pop-selection)
    '("G" . meow-grab)
    '("h" . meow-left)
    '("H" . meow-left-expand)
@@ -239,7 +241,7 @@
    '("X" . meow-swap-grab)
    '("y" . meow-save)
    '("Y" . meow-sync-grab)
-   '("z" . meow-pop-selection)
+   `("z" . ,my-codefold-map)
    '("'" . repeat)
    '("<escape>" . ignore))
 

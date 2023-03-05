@@ -90,6 +90,7 @@
   (require-init 'init-window)
   (require-init 'init-c)
   (require-init 'init-lsp)
+  (require-init 'init-tree-sitter)
   (if (file-exists-p custom-file) (load custom-file t t))
   )
 

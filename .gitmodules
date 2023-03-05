@@ -73,3 +73,18 @@
 [submodule "cnfonts"]
 	path = packages/cnfonts
 	url = https://github.com/tumashu/cnfonts.git
+[submodule "treesit-auto"]
+	path = packages/treesit-auto
+	url = https://github.com/renzmann/treesit-auto.git
+[submodule "tree-sitter"]
+	path = packages/tree-sitter
+	url = https://github.com/emacs-tree-sitter/elisp-tree-sitter.git
+[submodule "ts-fold"]
+	path = packages/ts-fold
+	url = https://github.com/emacs-tree-sitter/ts-fold.git
+[submodule "s"]
+	path = packages/s
+	url = https://github.com/magnars/s.el.git
+[submodule "fringe-helper"]
+	path = packages/fringe-helper
+	url = https://github.com/nschum/fringe-helper.el.git
