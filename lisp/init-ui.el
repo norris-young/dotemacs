@@ -16,7 +16,14 @@
   )
 
 (use-package color-theme-sanityinc-tomorrow
-  :hook (after-init . color-theme-sanityinc-tomorrow-eighties))
+  :hook (after-init . color-theme-sanityinc-tomorrow-eighties)
+  :config
+  (color-theme-sanityinc-tomorrow--with-colors
+   'eighties
+   (set-face-attribute 'font-lock-operator-face nil :foreground `,green)
+   (set-face-attribute 'font-lock-number-face nil :foreground `,blue)
+   (set-face-attribute 'font-lock-property-use-face nil :foreground "#9370db" :slant 'italic))
+  )
 
 ;; This minor mode cannot be the first function in hook, so move it here for fix bug
 ;; @see https://github.com/DarthFennec/highlight-indent-guides/issues/15#issuecomment-300233767
