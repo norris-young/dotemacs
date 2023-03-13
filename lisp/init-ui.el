@@ -22,6 +22,7 @@
    'eighties
    (set-face-attribute 'font-lock-operator-face nil :foreground `,green)
    (set-face-attribute 'font-lock-number-face nil :foreground `,blue)
+   (set-face-attribute 'font-lock-escape-face nil :foreground "#9370db")
    (set-face-attribute 'font-lock-property-use-face nil :foreground "#9370db" :slant 'italic))
   )
 
