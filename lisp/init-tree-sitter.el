@@ -82,18 +82,18 @@
   (add-hook 'c-ts-mode-hook #'c-ts-mode-setup)
   )
 
-;; (use-package ts-fold
-;;   :bind (:map my-codefold-map
-;;          ("t" . ts-fold-toggle)
-;;          ("m" . ts-fold-close-all)
-;;          ("M" . ts-fold-open-all)
-;;          ("c" . ts-fold-close)
-;;          ("o" . ts-fold-open)
-;;          ("O" . ts-fold-open-recursively))
-;;   :hook (tree-sitter-mode . ts-fold-mode)
-;;   :config
-;;   (global-ts-fold-indicators-mode)
-;;   (add-hook 'ts-fold-mode-hook #'ts-fold-line-comment-mode)
-;;   )
+(use-package ts-fold
+  :bind (:map my-codefold-map
+         ("t" . ts-fold-toggle)
+         ("m" . ts-fold-close-all)
+         ("M" . ts-fold-open-all)
+         ("c" . ts-fold-close)
+         ("o" . ts-fold-open)
+         ("O" . ts-fold-open-recursively))
+  :hook (after-init . global-ts-fold-mode)
+  :config
+  (global-ts-fold-indicators-mode)
+  (add-hook 'ts-fold-mode-hook #'ts-fold-line-comment-mode)
+  )
 
 (provide 'init-tree-sitter)
