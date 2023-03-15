@@ -2,7 +2,6 @@
   :hook ((after-init . global-treesit-auto-mode))
   :custom
   (treesit-auto-install 'promot)
-  (treesit-auto-langs '(bash c cpp css go html java javascript json python rust typescript))
   :config
 
   (defun my-subscript-identifier (node)
