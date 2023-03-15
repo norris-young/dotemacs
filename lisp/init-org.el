@@ -5,6 +5,7 @@
   :bind (:map my-org-map
         ("f" . org-cycle-agenda-files)
         ("c" . org-capture)
+        ("r" . org-refile)
         ("s" . org-schedule)
         ("a" . org-agenda))
   :custom
@@ -99,6 +100,10 @@
     (if (not (file-exists-p file))
         (make-empty-file file)))
   :config
+  ;; Auto save org buffers after refile.
+  (advice-add #'org-refile :after (lambda (&rest _) (org-save-all-org-buffers)))
+
+  ;; Auto update todo state after children's todo state changes.
   (defun org-todo-if-needed (state)
     "Change header state to STATE unless the current item is in STATE already."
     (unless (string-equal (org-get-todo-state) state)
