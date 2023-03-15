@@ -1,11 +1,8 @@
+(setq-default tab-width 4)
 (use-package cc-mode
   :bind ("M-;" . my-comment-dwim)
-  :hook ((gdb-many-windows-hook . tool-bar-mode)
-         (c-mode . my-choose-c-style))
+  :hook (c-mode . my-choose-c-style)
   :config
-  (setq-default tab-width 4)
-  (setq gdb-many-windows t)
-
   (c-add-style "linux-user" '("linux"
                               (c-basic-offset . 4)
                               (tab-width . 4)
@@ -32,6 +29,29 @@
           (progn
             (comment-or-uncomment-region (region-beginning) (region-end)))
         (comment-line nil))))
+  )
+
+(use-package c-ts-mode
+  :hook (c-ts-mode . my-choose-c-ts-style)
+  :config
+  (defun my-choose-c-ts-style ()
+    (if (string-match "linux" (buffer-file-name))
+        (setq c-ts-mode-indent-style 'linux
+              c-ts-mode-indent-offset 8
+              tab-width 8
+              indent-tabs-mode t)
+      (setq c-ts-mode-indent-style 'gnu
+            c-ts-mode-indent-offset 4
+            tab-width 4
+            indent-tabs-mode nil)))
+  )
+
+(use-package gdb-mi
+  :hook (gdb-many-windows-hook . tool-bar-mode)
+  :custom
+  (gdb-debuginfod-enable-setting nil)
+  :config
+  (setq gdb-many-windows t)
   )
 
 (use-package citre
