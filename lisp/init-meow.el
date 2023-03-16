@@ -52,7 +52,9 @@
   (defvar my-function-map (make-sparse-keymap))
   (defvar my-codefold-map (make-sparse-keymap))
   :config
+  ;; Set state for some special modes
   (setf (alist-get 'help-mode meow-mode-state-list) 'motion)
+  (add-to-list 'meow-mode-state-list '(lsp-bridge-ref-mode . motion))
 
   (defun my-rename-file (newname)
     (interactive (list (ivy-read "new file name: " 'read-file-name-internal
