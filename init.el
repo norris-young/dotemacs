@@ -59,6 +59,7 @@
     (load (file-truename (format "%s/%s" my-lisp-dir pkg)) t t)))
 
 (setq custom-file (expand-file-name (concat my-emacs-d "custom.el")))
+(if (file-exists-p custom-file) (load custom-file t t))
 
 ;; Should set before loading `use-package'
 (eval-and-compile
@@ -92,7 +93,6 @@
   (require-init 'init-lsp)
   (require-init 'init-tree-sitter)
   (require-init 'init-prog)
-  (if (file-exists-p custom-file) (load custom-file t t))
   )
 
 ;; (setq garbage-collection-messages t) ; for debug

@@ -16,7 +16,7 @@
   )
 
 (use-package color-theme-sanityinc-tomorrow
-  :hook (after-init . color-theme-sanityinc-tomorrow-eighties)
+  :demand t
   :config
   (color-theme-sanityinc-tomorrow--with-colors
    'eighties
@@ -24,6 +24,7 @@
    (set-face-attribute 'font-lock-number-face nil :foreground `,blue)
    (set-face-attribute 'font-lock-escape-face nil :foreground "#9370db")
    (set-face-attribute 'font-lock-property-use-face nil :foreground "#9370db" :slant 'italic))
+  (color-theme-sanityinc-tomorrow-eighties)
   )
 
 ;; This minor mode cannot be the first function in hook, so move it here for fix bug
