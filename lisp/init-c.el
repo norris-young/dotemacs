@@ -58,6 +58,7 @@
   :bind (:map my-function-map
          ("p" . citre-peek)
          ("R" . citre-peek-reference)
+         ("D" . citre-jump)
          ("u" . citre-global-update-database)
          ("C" . citre-global-create-database))
   :hook (prog-mode . citre-auto-enable-citre-mode)
