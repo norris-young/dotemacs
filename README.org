@@ -1,0 +1,16 @@
+#+TITLE: Artoo's personal emacs configuration
+
+* Dependencies
+1. git
+2. ctags
+3. gtags
+4. fonts
+   1) UbuntuMono Nerd Font Mono
+   2) WenQuanYi Micro Hei Mono
+   3) HanaMinB
+   4) Sarasa Mono SC Nerd
+5. lsp server
+   1) clangd
+   2) pyright
+   3) ruff
+6. tree-sitter and grammars
