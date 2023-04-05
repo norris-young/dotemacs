@@ -7,6 +7,7 @@
         ("c" . org-capture)
         ("r" . org-refile)
         ("s" . org-schedule)
+        ("A" . my-org-attach)
         ("a" . org-agenda))
   :custom
   ;; Enable indentation
@@ -153,6 +154,15 @@
                            (org-todo-if-needed "STARTED")))
                   (org-todo-if-needed "STARTED"))))))))
   (add-hook 'org-checkbox-statistics-hook #'org-summary-checkbox-cookie)
+
+  (defun my-org-attach ()
+    (interactive)
+    (pcase major-mode
+      ('dired-mode
+       (call-interactively #'org-attach-dired-to-subtree))
+      ('org-mode
+       (call-interactively #'org-attach))))
+
   )
 
 (provide 'init-org)
