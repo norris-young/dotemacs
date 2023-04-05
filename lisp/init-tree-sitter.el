@@ -92,7 +92,7 @@
   :hook (after-init . global-ts-fold-mode)
   :config
   (global-ts-fold-indicators-mode)
-  (add-hook 'ts-fold-mode-hook #'ts-fold-line-comment-mode)
+  ;; (add-hook 'ts-fold-mode-hook #'ts-fold-line-comment-mode)
   )
 
 (provide 'init-tree-sitter)
