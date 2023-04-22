@@ -1,16 +1,16 @@
 #+TITLE: Artoo's personal emacs configuration
 
 * Dependencies
-1. git
-2. ctags
-3. gtags
+1. [[https://git-scm.com/][git]]
+2. [[https://ctags.io/][ctags]]
+3. [[https://www.gnu.org/software/global/][gtags]]
 4. fonts
-   1) UbuntuMono Nerd Font Mono
-   2) WenQuanYi Micro Hei Mono
-   3) HanaMinB
-   4) Sarasa Mono SC Nerd
+   1) [[https://github.com/ryanoasis/nerd-fonts][UbuntuMono Nerd Font Mono]]
+   2) [[https://wenq.org/][WenQuanYi Micro Hei Mono]]
+   3) [[http://fonts.jp/hanazono/][HanaMinB]]
+   4) [[https://github.com/laishulu/Sarasa-Term-SC-Nerd][Sarasa Mono SC Nerd]]
 5. lsp server
-   1) clangd
-   2) pyright
-   3) ruff
-6. tree-sitter and grammars
+   1) [[https://clangd.llvm.org/][clangd]]
+   2) [[https://github.com/microsoft/pyright][pyright]]
+   3) [[https://github.com/charliermarsh/ruff][ruff]]
+6. [[https://github.com/tree-sitter/tree-sitter][tree-sitter]] and [[https://github.com/orgs/tree-sitter/repositories][grammars]]
