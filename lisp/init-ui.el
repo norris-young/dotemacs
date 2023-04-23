@@ -2,18 +2,18 @@
   :custom (pixel-scroll-precision-large-scroll-height 40.0)
   :hook (after-init . pixel-scroll-precision-mode))
 
-(use-package frame
-  :config
-  (set-frame-font (font-spec :name "JetBrainsMono Nerd Font Mono"
-                             :size 15.0
-                             :width 'normal
-                             :weight 'semi-bold))
-  (cl-dolist (face '(variable-pitch fixed-pitch fixed-pitch-serif))
-    (set-face-font face (font-spec :name "JetBrainsMono Nerd Font Mono"
-                                   :size 14.0
-                                   :width 'normal
-                                   :weight 'semi-bold)))
-  )
+;; (use-package frame
+;;   :config
+;;   (set-frame-font (font-spec :name "JetBrainsMono Nerd Font Mono"
+;;                              :size 15.0
+;;                              :width 'normal
+;;                              :weight 'semi-bold))
+;;   (cl-dolist (face '(variable-pitch fixed-pitch fixed-pitch-serif))
+;;     (set-face-font face (font-spec :name "JetBrainsMono Nerd Font Mono"
+;;                                    :size 14.0
+;;                                    :width 'normal
+;;                                    :weight 'semi-bold)))
+;;   )
 
 (use-package color-theme-sanityinc-tomorrow
   :demand t
