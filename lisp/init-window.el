@@ -19,16 +19,23 @@
         (select-window (active-minibuffer-window))))
 
   ;;scroll configuration
-  (setq scroll-up-aggressively 0.1
-        scroll-down-aggressively 0.1
-        scroll-preserve-screen-position t
+  (setq-default scroll-up-aggressively 0.1
+                scroll-down-aggressively 0.1)
+  (setq scroll-preserve-screen-position t
         scroll-margin 3
         scroll-step 1)
 
   (advice-add #'split-window-below :after #'windmove-down)
   (advice-add #'split-window-right :after #'windmove-right)
-  (advice-add #'scroll-up-command :filter-args (lambda (x) (if (not x) (setq x 15))))
-  (advice-add #'scroll-down-command :filter-args (lambda (x) (if (not x) (setq x 15)))))
+  (advice-add #'scroll-up-command :around (lambda (old &optional x)
+                                            (if (not x)
+                                                (funcall old 20)
+                                              (funcall old x))))
+  (advice-add #'scroll-down-command :around (lambda (old &optional x)
+                                              (if (not x)
+                                                  (funcall old 20)
+                                                (funcall old x))))
+  )
 
 (use-package shackle
   :custom
