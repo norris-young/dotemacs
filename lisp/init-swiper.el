@@ -55,6 +55,7 @@
          ("f" . counsel-find-file)
          :map my-search-map
          ("g" . counsel-rg)
+         ("G" . counsel-rg-thing-at-point)
          ("j" . counsel-jump-in-buffer))
   :config
   (defun counsel-jump-in-buffer ()
@@ -63,6 +64,14 @@
     (call-interactively
      (cond
       ((eq major-mode 'org-mode) 'counsel-org-goto)
-      (t 'counsel-imenu)))))
+      (t 'counsel-imenu))))
+
+  (defun counsel-rg-thing-at-point ()
+    (interactive)
+    (let ((thing (ivy-thing-at-point)))
+      (when (use-region-p)
+        (deactivate-mark))
+      (counsel-rg (regexp-quote thing))))
+  )
 
 (provide 'init-swiper)
