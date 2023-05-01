@@ -18,6 +18,9 @@
   :hook (after-init . smartparens-global-mode)
   :config
   (require 'smartparens-config)
+  (eval-after-load 'c-ts-mode '(require 'smartparens-c))
+  (eval-after-load 'c++-ts-mode '(require 'smartparens-c))
+
   (defun my-wrap-with-pair (c)
     (interactive "c")
     (let ((active-pair (char-to-string c)))
