@@ -9,6 +9,8 @@
         ("s" . org-schedule)
         ("A" . my-org-attach)
         ("a" . org-agenda))
+
+
   :custom
   ;; Enable indentation
   (org-startup-indented t)
@@ -19,13 +21,21 @@
   (org-clock-idle-time 15)
 
   ;; TODO keywords
-  (org-todo-keywords '((sequence "TODO(t)" "STARTED(s)" "|" "DONE(d)")
-                       (sequence "REPORT(r)" "BUG(b)" "KNOWNCAUSE(k)" "|" "FIXED(f)")
-                       (sequence "|" "CANCELED(c)")))
+  (org-todo-keywords '((sequence "TODO(t)" "RUN(r!)" "|" "DONE(d!)")
+                       (sequence "INTR(i!)" "SUSPEND(s!)" "BLOCK(b@/!)" "|" "CANCELED(c@/!)")))
+  (org-todo-keyword-faces '(("TODO"     :foreground "orange"      :weight bold)
+                            ("RUN"      :foreground "yellow"      :weight bold)
+                            ("DONE"     :foreground "light green" :weight bold)
+                            ("INTR"     :foreground "tomato"      :weight bold)
+                            ("SUSPEND"  :foreground "dark red"    :weight bold)
+                            ("BLOCK"    :foreground "red"         :weight bold)
+                            ("CANCELED" :foreground "light green" :weight bold)))
+  ;; Log task state changing events into LOGBOOK
   (org-log-into-drawer t)
 
-  (org-global-properties '(("Effort_ALL" . "0 0:10 0:30 1:00 2:00 3:00 4:00 5:00 6:00 7:00")))
-  (org-columns-default-format "%25ITEM(Task) %TODO %PRIORITY %TAGS %Effort(Estimated Effort){:} %CLOCKSUM")
+  ;; Effort larger than 4 hours should be divided into smaller pieces
+  (org-global-properties '(("Effort_ALL" . "0 0:10 0:30 1:00 2:00 3:00 4:00")))
+  ;; (org-columns-default-format "%25ITEM(Task) %TODO %PRIORITY %TAGS %Effort(Estimated Effort){:} %CLOCKSUM")
 
   ;; Insert new notes at the beginning
   (org-reverse-note-order t)
@@ -53,16 +63,26 @@
                    (org-agenda-start-with-log-mode nil)
                    (org-agenda-log-mode-items '(closed clock state))
                    (org-agenda-clockreport-mode t)))))
-     ("p" "Following Day(s) Plan"
+     ("p" "Planning"
       ((agenda "" ((org-agenda-span 'day)
                    (org-agenda-start-day "+1d")))
+       (tags "refile"
+             ((org-agenda-overriding-header "Tasks to refile")
+              (org-tags-match-list-sublevels nil)))
        (todo "" ((org-agenda-skip-function
-                  '(org-agenda-skip-entry-if 'scheduled))))))))
+                  '(org-agenda-skip-entry-if 'scheduled)))))
+      ((org-agenda-window-setup 'only-window)
+       (org-agenda-restore-windows-after-quit t))
+      )))
 
   ;; Org list bullet
   (org-list-allow-alphabetical t)
-  (org-list-demote-modify-bullet '(("1." . "1)") ("1)" . "a.") ("a." . "a)")
-                                   ("a)" . "-") ("-" . ".") ("." . "+")))
+  (org-list-demote-modify-bullet '(("1." . "1)")
+                                   ("1)" . "a.")
+                                   ("a." . "a)")
+                                   ("a)" . "-")
+                                   ("-" . ".")
+                                   ("." . "+")))
 
   ;; Show no blank lines at the end of tree
   (org-cycle-separator-lines 0)
@@ -87,6 +107,14 @@
      ("w" "Work" entry (file+headline org-file-source "Unclassified tasks")
       "* TODO %?\n%U\n%i\n%^{Effort}p"
       :prepend t :jump-to-captured t :empty-lines-after 1)))
+
+  ;; mobile files sync directory
+  (org-mobile-directory "~/Dropbox/org")
+
+  ;; org tags list
+  (org-tags-alist '(("shopping" . ?s)))
+
+
   :init
   ;; Org files
   (defvar org-files-dir "~/org")
@@ -100,6 +128,8 @@
   (dolist (file org-agenda-files)
     (if (not (file-exists-p file))
         (make-empty-file file)))
+
+
   :config
   ;; Auto save org buffers after refile.
   (advice-add #'org-refile :after (lambda (&rest _) (org-save-all-org-buffers)))
@@ -155,6 +185,7 @@
                   (org-todo-if-needed "STARTED"))))))))
   (add-hook 'org-checkbox-statistics-hook #'org-summary-checkbox-cookie)
 
+  ;; Add function for different behaviours of attachments in different modes.
   (defun my-org-attach ()
     (interactive)
     (pcase major-mode
