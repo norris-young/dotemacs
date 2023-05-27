@@ -22,10 +22,14 @@
 
   ;; TODO keywords
   (org-todo-keywords '((sequence "TODO(t)" "RUN(r!)" "|" "DONE(d!)")
+                       (sequence "TOBUY(u)" "ORDERED(o@)" "|" "RECVED(!)")
                        (sequence "INTR(i!)" "SUSPEND(s!)" "BLOCK(b@/!)" "|" "CANCELED(c@/!)")))
   (org-todo-keyword-faces '(("TODO"     :foreground "orange"      :weight bold)
+                            ("TOBUY"    :foreground "orange"      :weight bold)
                             ("RUN"      :foreground "yellow"      :weight bold)
+                            ("ORDERED"  :foreground "yellow"      :weight bold)
                             ("DONE"     :foreground "light green" :weight bold)
+                            ("RECVED"   :foreground "light green" :weight bold)
                             ("INTR"     :foreground "tomato"      :weight bold)
                             ("SUSPEND"  :foreground "dark red"    :weight bold)
                             ("BLOCK"    :foreground "red"         :weight bold)
@@ -93,7 +97,7 @@
   ;; Capture templates
   (org-capture-templates
    '(("b" "Buy" entry (file+headline org-file-shopping "Shopping")
-      "* TODO %?\n%U"
+      "* TOBUY %?\n%U"
       :prepend t :empty-lines-after 1)
      ("m" "Meeting" entry (file+headline org-file-note "Meetings")
       "* %?\n%U\n%i"
