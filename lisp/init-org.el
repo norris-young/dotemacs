@@ -7,6 +7,7 @@
         ("c" . org-capture)
         ("r" . org-refile)
         ("s" . org-schedule)
+        ("p" . org-set-property)
         ("A" . my-org-attach)
         ("a" . org-agenda))
 
