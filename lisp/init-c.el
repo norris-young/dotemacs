@@ -34,7 +34,7 @@
 (use-package c-ts-mode
   :hook (c-ts-mode . my-choose-c-ts-style)
   :config
-  (setq-default c-ts-mode-indent-style 'bsd)
+  (setq-default c-ts-mode-indent-style 'linux)
   (defun my-choose-c-ts-style ()
     (if (string-match "linux" (buffer-file-name))
         (setq c-ts-mode-indent-offset 8
@@ -44,16 +44,18 @@
             tab-width 4
             indent-tabs-mode nil)))
 
-  (defun tweak-bsd-style (style)
+  (defun tweak-linux-style (style)
     (let ((name (car style))
           (rules (cdr style)))
-      (if (eq name 'bsd)
-          (setcdr style `(((node-is "labeled_statement") column-0 0)
+      (if (eq name 'linux)
+          (setcdr style `(;; Opening bracket.
+                          ((node-is "compound_statement") standalone-parent 0)
+                          ((node-is "}") standalone-parent 0)
                           ,@rules)))))
   (advice-add #'c-ts-mode--indent-styles :around
               (lambda (fn mode)
                 (let ((styles (funcall fn mode)))
-                  (mapcar #'tweak-bsd-style styles)
+                  (mapcar #'tweak-linux-style styles)
                   styles)))
   )
 
