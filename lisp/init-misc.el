@@ -31,4 +31,7 @@
                (sp-wrap-with-pair (car pair))
                (cl-return)))))))
 
+(use-package auto-revert-mode
+  :hook (after-init . global-auto-revert-mode))
+
 (provide 'init-misc)
