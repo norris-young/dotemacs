@@ -70,8 +70,9 @@
 (use-package citre
   :bind (:map my-function-map
          ("p" . citre-peek)
-         ("R" . citre-peek-reference)
+         ("P" . citre-peek-reference)
          ("D" . citre-jump)
+         ("R" . citre-jump-to-reference)
          ("u" . citre-global-update-database)
          ("C" . citre-global-create-database))
   :hook (prog-mode . citre-auto-enable-citre-mode)
