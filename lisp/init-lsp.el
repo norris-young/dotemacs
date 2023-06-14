@@ -12,6 +12,9 @@
   (lsp-bridge-find-def-fallback-function #'my-after-lsp-find-def-failure)
   (lsp-bridge-find-ref-fallback-function #'my-after-lsp-find-ref-failure)
   :config
+
+  (add-to-list 'lsp-bridge-default-mode-hooks 'rust-ts-mode-hook)
+
   (defun my-find-def ()
     (interactive)
     (xref-push-marker-stack (point-marker))
