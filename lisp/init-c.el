@@ -86,6 +86,9 @@
   :config
   (with-eval-after-load 'cc-mode (require 'citre-lang-c))
   (with-eval-after-load 'dired (require 'citre-lang-fileref))
-  (with-eval-after-load 'verilog-mode (require 'citre-lang-verilog)))
+  (with-eval-after-load 'verilog-mode (require 'citre-lang-verilog))
+  (advice-add #'citre-jump :before (lambda () (xref-push-marker-stack (point-marker))))
+  (advice-add #'citre-jump-to-reference :before (lambda () (xref-push-marker-stack (point-marker))))
+  )
 
 (provide 'init-c)
