@@ -1,4 +1,5 @@
 (use-package treesit-auto
+  :mode ("\\.rs\\'" . rust-ts-mode)
   :hook ((after-init . global-treesit-auto-mode))
   :custom
   (treesit-auto-install 'promot)
