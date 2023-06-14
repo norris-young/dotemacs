@@ -57,6 +57,8 @@
          ("g" . counsel-rg)
          ("G" . counsel-rg-thing-at-point)
          ("j" . counsel-jump-in-buffer))
+  :custom
+  (counsel-find-file-ignore-regexp "\\.o\\'\\|\\.o\\.d\\'\\|\\`#\\|.*\\..*~\\'\\|\\`\\..*\\.cmd\\'")
   :config
   (defun counsel-jump-in-buffer ()
     "Jump in buffer with `counsel-imenu' or `counsel-org-goto' if in org-mode"
