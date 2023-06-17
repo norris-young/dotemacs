@@ -51,7 +51,7 @@
 	url = https://github.com/Fuco1/smartparens.git
 [submodule "emacs-winum"]
 	path = packages/winum
-	url = https://github.com/deb0ch/emacs-winum.git
+	url = https://github.com/norris-young/emacs-winum.git
 [submodule "markdown-mode"]
 	path = packages/markdown-mode
 	url = https://github.com/jrblevin/markdown-mode.git
@@ -69,7 +69,7 @@
 	url = https://github.com/twlz0ne/acm-terminal.git
 [submodule "edebug-x"]
 	path = packages/edebug-x
-	url = https://github.com/ScottyB/edebug-x.git
+	url = https://github.com/norris-young/edebug-x.git
 [submodule "cnfonts"]
 	path = packages/cnfonts
 	url = https://github.com/tumashu/cnfonts.git
