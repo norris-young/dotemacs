@@ -94,3 +94,6 @@
 [submodule "dts-mode"]
 	path = packages/dts-mode
 	url = https://github.com/bgamari/dts-mode.git
+[submodule "lua-mode"]
+	path = packages/lua-mode
+	url = https://github.com/immerrr/lua-mode.git
