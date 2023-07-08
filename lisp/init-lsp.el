@@ -12,6 +12,7 @@
   (lsp-bridge-find-def-fallback-function #'my-after-lsp-find-def-failure)
   (lsp-bridge-find-ref-fallback-function #'my-after-lsp-find-ref-failure)
   :config
+  (if (eq system-type 'windows-nt) (setq lsp-bridge-python-command "python.exe"))
 
   (add-to-list 'lsp-bridge-default-mode-hooks 'rust-ts-mode-hook)
 
