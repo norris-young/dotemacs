@@ -16,7 +16,7 @@
          ("f" . project-find-file)
          ("b" . project-switch-to-buffer)
          ("d" . project-dired))
-  :defer 0.2
+  :demand
   :custom
   (meow-use-clipboard t)
   (meow-keypad-self-insert-undefined nil)
@@ -52,7 +52,14 @@
   (defvar my-project-map (make-sparse-keymap))
   (defvar my-function-map (make-sparse-keymap))
   (defvar my-codefold-map (make-sparse-keymap))
+  (defvar meow-window-resize-map (make-sparse-keymap))
   :config
+  ;; Add a state for resizing current window
+  (meow-define-state window-resize
+    "meow state for resizing current window"
+    :lighter " [WR]"
+    :keymap meow-window-resize-map)
+  (setq meow-cursor-type-window-resize 'hollow)
   ;; Set state for some special modes
   (setf (alist-get 'help-mode meow-mode-state-list) 'motion)
   (add-to-list 'meow-mode-state-list '(lsp-bridge-ref-mode . motion))
