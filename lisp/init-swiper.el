@@ -39,7 +39,7 @@
 (use-package swiper
   :bind (:map my-search-map
          ("s" . swiper-isearch)
-         ("w" . swiper-isearch-thing-at-point)))
+         ("S" . swiper-isearch-thing-at-point)))
 
 (use-package counsel
   :bind (("M-x"     . counsel-M-x)
@@ -56,6 +56,8 @@
          :map my-search-map
          ("g" . counsel-rg)
          ("G" . counsel-rg-thing-at-point)
+         ("d" . counsel-rg-thing-in-directory)
+         ("D" . counsel-rg-thing-at-point-in-directory)
          ("j" . counsel-jump-in-buffer))
   :custom
   (counsel-find-file-ignore-regexp "\\.o\\'\\|\\.o\\.d\\'\\|\\`#\\|.*\\..*~\\'\\|\\`\\..*\\.cmd\\'")
@@ -74,6 +76,17 @@
       (when (use-region-p)
         (deactivate-mark))
       (counsel-rg (regexp-quote thing))))
+
+  (defun counsel-rg-thing-in-directory (path)
+    (interactive "DDirectory for ripgrep:")
+    (counsel-rg nil path))
+
+  (defun counsel-rg-thing-at-point-in-directory (path)
+    (interactive "DDirectory for ripgrep:")
+    (let ((thing (ivy-thing-at-point)))
+      (when (use-region-p)
+        (deactivate-mark))
+      (counsel-rg (regexp-quote thing) path)))
   )
 
 (provide 'init-swiper)
