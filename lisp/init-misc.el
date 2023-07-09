@@ -34,4 +34,7 @@
 (use-package auto-revert-mode
   :hook (after-init . global-auto-revert-mode))
 
+(use-package dts-mode
+  :hook (dts-mode . indent-tabs-mode))
+
 (provide 'init-misc)
