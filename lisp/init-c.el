@@ -37,10 +37,10 @@
   (setq-default c-ts-mode-indent-style 'linux)
   (defun my-choose-c-ts-style ()
     (if (string-match "linux" (buffer-file-name))
-        (setq c-ts-mode-indent-offset 8
+        (setq-local c-ts-mode-indent-offset 8
               tab-width 8
               indent-tabs-mode t)
-      (setq c-ts-mode-indent-offset 4
+      (setq-local c-ts-mode-indent-offset 4
             tab-width 4
             indent-tabs-mode nil)))
 
