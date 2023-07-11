@@ -5,6 +5,13 @@
   (treesit-auto-install 'promot)
   :config
 
+  (add-to-list 'treesit-auto-recipe-list
+               (make-treesit-auto-recipe
+                :lang 'c
+                :ts-mode 'c-or-c++-ts-mode
+                :remap 'c-or-c++-mode
+                :url "https://github.com/tree-sitter/tree-sitter-c"))
+
   (defun my-subscript-identifier (node)
     (pcase (treesit-node-type node)
       ;; Recurse.
