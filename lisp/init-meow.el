@@ -1,3 +1,10 @@
+(use-package which-key
+  :custom
+  (which-key-show-early-on-C-h t)
+  (which-key-idle-delay 0.5)
+  (which-key-idle-secondary-delay 0.05)
+  :hook (after-init . which-key-mode))
+
 (use-package meow
   :bind (("C-x C-S-r" . restart-emacs)
          :map my-file-map
@@ -213,13 +220,13 @@
    '("9" . winum-select-window-9)
    '("0" . meow-digit-argument)
    '("/" . meow-keypad-describe-key)
-   (cons "f" my-file-map)
-   (cons "g" my-git-map)
-   (cons "o" my-org-map)
-   (cons "w" my-window-map)
-   (cons "s" my-search-map)
-   (cons "b" my-buffer-map)
-   (cons "p" my-project-map)
+   `("f" . ,my-file-map)
+   `("g" . ,my-git-map)
+   `("o" . ,my-org-map)
+   `("w" . ,my-window-map)
+   `("s" . ,my-search-map)
+   `("b" . ,my-buffer-map)
+   `("p" . ,my-project-map)
    '("?" . meow-cheatsheet))
 
   (meow-normal-define-key

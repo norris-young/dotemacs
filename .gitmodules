@@ -100,3 +100,6 @@
 [submodule "yasnippet-snippets"]
 	path = packages/yasnippet-snippets
 	url = https://github.com/AndreaCrotti/yasnippet-snippets.git
+[submodule "which-key"]
+	path = packages/which-key
+	url = https://github.com/justbur/emacs-which-key.git
