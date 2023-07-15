@@ -5,8 +5,10 @@
 (use-package simple
   :bind ("C-M-j" . join-line)
   :hook ((before-save . delete-trailing-whitespace))
-  :config
-  (setq-default indent-tabs-mode nil))
+  :init
+  (setq-default indent-tabs-mode nil)
+  (setq column-number-mode t)
+  )
 
 (use-package smartparens
   :bind (("M--" . sp-unwrap-sexp)
