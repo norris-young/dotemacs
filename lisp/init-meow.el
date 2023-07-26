@@ -14,6 +14,7 @@
          ("E" . my-sudo-edit)
          :map my-buffer-map
          ("d" . kill-current-buffer)
+         ("M" . switch-to-minibuffer)
          ("m" . my-switch-to-message-buffer)
          ("n" . next-buffer)
          ("s" . my-switch-to-scratch-buffer)
