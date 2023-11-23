@@ -15,6 +15,10 @@
           (meow-motion-mode 1))
       (meow-mode 1)))
   (add-hook 'magit-blame-read-only-mode-hook #'magit-motion)
+  (advice-add  'git-commit-turn-on-auto-fill
+               :before
+               (lambda ()
+                 (setq fill-column 72)))
   )
 
 (provide 'init-git)
