@@ -39,4 +39,9 @@
 (use-package dts-mode
   :hook (dts-mode . indent-tabs-mode))
 
+(use-package files
+  :custom
+  (require-final-newline nil)
+  (mode-require-final-newline nil))
+
 (provide 'init-misc)
