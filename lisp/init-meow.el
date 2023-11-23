@@ -20,6 +20,7 @@
          ("s" . my-switch-to-scratch-buffer)
          ("p" . previous-buffer)
          :map my-project-map
+         ("k" . project-kill-buffers)
          ("p" . project-switch-project)
          ("f" . project-find-file)
          ("b" . project-switch-to-buffer)
