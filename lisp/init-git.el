@@ -1,3 +1,4 @@
+(use-package transient :load-path "packages/transient/lisp")
 (use-package magit
   :bind (:map my-git-map
         ("s" . magit-status)
