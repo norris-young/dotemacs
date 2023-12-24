@@ -15,7 +15,13 @@
       (message "generating autoloads for package [%s] in [%s]..." name pkg-dir)
       (package-generate-autoloads name pkg-dir)
       (delete-file target)
-      (rename-file file target)))
+      (rename-file file target)
+      (message "byte compiling for package [%s] in [%s]..." name pkg-dir)
+      (byte-recompile-directory pkg-dir 0)
+      ;; (message "native compilation for package [%s] in [%s] started" name pkg-dir)
+      ;; (native-compile-async pkg-dir t)
+      )
+    )
 
   (defun my-generate-autoloads (path pkg)
     (interactive (list (ivy-read "Generate path:" 'read-file-name-internal
