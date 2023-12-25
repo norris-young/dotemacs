@@ -1,0 +1,14 @@
+{
+  "name": "clangd",
+  "languageId": "c++",
+  "command": [
+    "clangd",
+    "--all-scopes-completion",
+    "--clang-tidy",
+    "--enable-config",
+    "--header-insertion=never",
+    "--background-index",
+    "--background-index-priority=low"
+  ],
+  "settings": {}
+}

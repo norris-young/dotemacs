@@ -12,6 +12,7 @@
   (acm-enable-citre nil)
   (lsp-bridge-find-def-fallback-function #'my-after-lsp-find-def-failure)
   (lsp-bridge-find-ref-fallback-function #'my-after-lsp-find-ref-failure)
+  (lsp-bridge-user-langserver-dir (expand-file-name "lsp.server.conf" user-emacs-directory))
   :config
   (if (eq system-type 'windows-nt) (setq lsp-bridge-python-command "python.exe"))
 
