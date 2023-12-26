@@ -102,7 +102,8 @@
   (defun my-escape-pre-command-hook ()
     "my escape pre-command hook for quickly escape insert state."
     (with-demoted-errors "my escape: Error %S"
-      (when (and (equal (string-to-char (this-command-keys))
+      (when (and (equal (string-to-char (let ((key (this-command-keys)))
+                                          (if (stringp key) key "n")))
                         (elt my-escape-key-sequence 0)))
         (let* ((modified (buffer-modified-p))
                (inserted (condition-case err
@@ -122,12 +123,18 @@
            (t (setq unread-command-events
                     (cons evt unread-command-events))))))))
 
-  (add-hook 'meow-insert-enter-hook
-            (lambda ()
-              (add-hook 'pre-command-hook 'my-escape-pre-command-hook)))
-  (add-hook 'meow-insert-exit-hook
-            (lambda ()
-              (remove-hook 'pre-command-hook 'my-escape-pre-command-hook)))
+  (defun enable-escape-key ()
+    (add-hook 'pre-command-hook 'my-escape-pre-command-hook))
+  (defun disable-escape-key ()
+    (remove-hook 'pre-command-hook 'my-escape-pre-command-hook))
+
+  (add-hook 'meow-insert-enter-hook #'enable-escape-key)
+  (add-hook 'meow-insert-exit-hook #'disable-escape-key)
+  (advice-add #'switch-to-buffer :after
+              (lambda (&rest _)
+                (if meow-insert-mode
+                    (enable-escape-key)
+                  (disable-escape-key))))
 
   ;; copy from spacemacs
   (defun my-sudo-edit (&optional arg)
