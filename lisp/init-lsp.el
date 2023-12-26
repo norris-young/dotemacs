@@ -1,6 +1,9 @@
 (use-package yasnippet
   :hook (after-init . yas-global-mode))
 
+(use-package xref
+  :autoload xref-push-marker-stack)
+
 (use-package lsp-bridge
   :bind (:map my-function-map
          ("d" . my-find-def)
