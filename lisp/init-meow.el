@@ -136,6 +136,8 @@
                     (enable-escape-key)
                   (disable-escape-key))))
 
+  (advice-add #'meow-insert-exit :after #'acm-hide)
+
   ;; copy from spacemacs
   (defun my-sudo-edit (&optional arg)
     (interactive "P")
