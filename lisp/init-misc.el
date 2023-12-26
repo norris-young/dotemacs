@@ -33,7 +33,7 @@
                (sp-wrap-with-pair (car pair))
                (cl-return)))))))
 
-(use-package auto-revert-mode
+(use-package autorevert
   :hook (after-init . global-auto-revert-mode))
 
 (use-package dts-mode
