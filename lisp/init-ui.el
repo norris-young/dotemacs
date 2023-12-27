@@ -49,7 +49,8 @@
   :bind (("C--" . cnfonts-decrease-fontsize)
          ("C-=" . cnfonts-increase-fontsize))
   :custom
-  (cnfonts-personal-fontnames `(,(font-family-list) ,(font-family-list) ,(font-family-list) ,(font-family-list) ,(font-family-list)))
+  (cnfonts-default-fontsize 15.0)
+  (cnfonts-profiles '("default-fonts"))
   :hook (after-init . cnfonts-mode))
 
 (provide 'init-ui)
