@@ -49,6 +49,7 @@
   :bind (("C--" . cnfonts-decrease-fontsize)
          ("C-=" . cnfonts-increase-fontsize))
   :custom
+  (cnfonts-use-system-type t)
   (cnfonts-default-fontsize 15.0)
   (cnfonts-profiles '("default-fonts"))
   :hook (after-init . cnfonts-mode))
