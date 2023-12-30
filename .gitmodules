@@ -106,3 +106,6 @@
 [submodule "packages/f"]
 	path = packages/f
 	url = https://github.com/rejeep/f.el.git
+[submodule "auto-compile"]
+	path = packages/auto-compile
+	url = https://github.com/emacscollective/auto-compile.git

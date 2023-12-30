@@ -58,8 +58,21 @@
   (when (not disabled)
     (load (file-truename (format "%s/%s" my-lisp-dir pkg)) t t)))
 
+(use-package auto-compile
+  :init
+  (setq load-prefer-newer t)
+  :demand
+  :config
+  (auto-compile-on-load-mode)
+  (auto-compile-on-save-mode))
+
 (setq custom-file (expand-file-name (concat my-emacs-d "custom.el")))
 (if (file-exists-p custom-file) (load custom-file t t))
+
+(if (not (file-exists-p (expand-file-name "init-autoloads.elc" my-lisp-dir)))
+    (progn
+      (byte-recompile-directory my-lisp-dir 0 t)
+      (byte-recompile-directory my-sitelisp-dir 0 t)))
 
 ;; Should set before loading `use-package'
 (eval-and-compile
