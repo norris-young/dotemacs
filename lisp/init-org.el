@@ -10,8 +10,6 @@
         ("p" . org-set-property)
         ("A" . my-org-attach)
         ("a" . org-agenda))
-
-
   :custom
   ;; Enable indentation
   (org-startup-indented t)
@@ -134,8 +132,8 @@
     (if (not (file-exists-p file))
         (make-empty-file file)))
 
-
   :config
+  (eval-when-compile (require 'org))
   ;; Auto save org buffers after refile.
   (advice-add #'org-refile :after (lambda (&rest _) (org-save-all-org-buffers)))
 
@@ -146,7 +144,8 @@
       (org-todo state)))
 
   (defun org-summary-todo-cookie (n-done n-not-done)
-    "Switch header state to DONE when all subentries are DONE, to TODO when none are DONE, and to STARTED otherwise"
+    "Switch header state to DONE when all subentries are DONE, to TODO when none
+are DONE, and to STARTED otherwise"
     (let (org-log-done org-log-states)   ; turn off logging
       (org-todo-if-needed (cond ((= n-done 0)
                                  "TODO")
@@ -157,7 +156,8 @@
   (add-hook 'org-after-todo-statistics-hook #'org-summary-todo-cookie)
 
   (defun org-summary-checkbox-cookie ()
-    "Switch header state to DONE when all checkboxes are ticked, to TODO when none are ticked, and to STARTED otherwise"
+    "Switch header state to DONE when all checkboxes are ticked, to TODO when
+none are ticked, and to STARTED otherwise"
     (let (beg end)
       (unless (not (org-get-todo-state))
         (save-excursion
@@ -198,7 +198,6 @@
        (call-interactively #'org-attach-dired-to-subtree))
       ('org-mode
        (call-interactively #'org-attach))))
-
   )
 
 (provide 'init-org)

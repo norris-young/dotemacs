@@ -5,6 +5,7 @@
         ("b" . magit-blame-addition)
         ("q" . magit-blame-quit))
   :config
+  (eval-when-compile (require 'magit))
   (transient-replace-suffix 'magit-log 'magit-log:--since
     '(magit-log:--since :init-value (lambda (obj) (oset obj value "1.year"))))
 

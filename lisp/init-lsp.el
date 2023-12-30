@@ -2,7 +2,9 @@
   :hook (after-init . yas-global-mode))
 
 (use-package xref
-  :autoload xref-push-marker-stack)
+  :autoload
+  xref-push-marker-stack
+  xref--find-xrefs)
 
 (use-package lsp-bridge
   :bind (:map my-function-map
@@ -41,7 +43,7 @@
         (let ((line (1+ (nth 1 position)))
               (col (nth 3 position)))
           (message "lsp-bridge find no reference try citre line: %d col: %d" line col)
-          (goto-line line)
+          (forward-line line)
           (goto-char (+ (line-beginning-position) col))
           (citre-jump))))
 
@@ -64,7 +66,7 @@
         (let ((line (1+ (nth 1 position)))
               (col (nth 3 position)))
           (message "lsp-bridge find no reference try citre line: %d col: %d" line col)
-          (goto-line line)
+          (forward-line line)
           (goto-char (+ (line-beginning-position) col))
           (citre-jump-to-reference))))
   )
