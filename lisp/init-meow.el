@@ -24,7 +24,7 @@
          ("f" . project-find-file)
          ("b" . project-switch-to-buffer)
          ("d" . project-dired))
-  :demand
+  :hook (after-init . (lambda () (require 'meow)))
   :custom
   (meow-use-clipboard t)
   (meow-keypad-self-insert-undefined nil)

@@ -9,13 +9,15 @@
     '(magit-log:--since :init-value (lambda (obj) (oset obj value "1.year"))))
 
   ;; Change to motion mode for magit-blame
-  (defun magit-motion ()
-    (if magit-blame-read-only-mode
-        (progn
-          (meow-mode -1)
-          (meow-motion-mode 1))
-      (meow-mode 1)))
-  (add-hook 'magit-blame-read-only-mode-hook #'magit-motion)
+  (with-eval-after-load 'meow
+    (defun magit-motion ()
+      (if magit-blame-read-only-mode
+          (progn
+            (meow-mode -1)
+            (meow-motion-mode 1))
+        (meow-mode 1)))
+    (add-hook 'magit-blame-read-only-mode-hook #'magit-motion))
+
   (advice-add  'git-commit-turn-on-auto-fill
                :before
                (lambda ()

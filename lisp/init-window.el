@@ -95,18 +95,19 @@
     (if (not (= (nth 3 (window-edges))
                 (nth 3 (windmove-frame-edges (selected-window)))))
         (shrink-window 1)))
-  (meow-define-keys 'window-resize
-    '("<escape>" . meow-normal-mode)
-    '("h" . my-move-window-left-border-left)
-    '("j" . my-move-window-bottom-border-down)
-    '("k" . my-move-window-top-border-up)
-    '("l" . my-move-window-right-border-right)
-    '("H" . my-move-window-right-border-left)
-    '("J" . my-move-window-top-border-down)
-    '("K" . my-move-window-bottom-border-up)
-    '("L" . my-move-window-left-border-right)
-    '("SCP" . meow-keypad)
-    )
+
+  (with-eval-after-load 'meow
+    (meow-define-keys 'window-resize
+      '("<escape>" . meow-normal-mode)
+      '("h" . my-move-window-left-border-left)
+      '("j" . my-move-window-bottom-border-down)
+      '("k" . my-move-window-top-border-up)
+      '("l" . my-move-window-right-border-right)
+      '("H" . my-move-window-right-border-left)
+      '("J" . my-move-window-top-border-down)
+      '("K" . my-move-window-bottom-border-up)
+      '("L" . my-move-window-left-border-right)
+      '("SCP" . meow-keypad)))
   )
 
 (use-package shackle
