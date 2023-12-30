@@ -76,9 +76,6 @@
 [submodule "treesit-auto"]
 	path = packages/treesit-auto
 	url = https://github.com/renzmann/treesit-auto.git
-[submodule "tree-sitter"]
-	path = packages/tree-sitter
-	url = https://github.com/emacs-tree-sitter/elisp-tree-sitter.git
 [submodule "ts-fold"]
 	path = packages/ts-fold
 	url = https://github.com/emacs-tree-sitter/ts-fold.git
