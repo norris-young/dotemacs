@@ -44,6 +44,9 @@
   (require-final-newline nil)
   (mode-require-final-newline nil))
 
+(use-package auto-sudoedit
+  :hook (after-init . auto-sudoedit-mode))
+
 (use-package markdown-mode
   :mode ("README\\.md\\'" . gfm-mode)
   :init (setq markdown-command "multimarkdown")
