@@ -129,11 +129,13 @@
 
   (add-hook 'meow-insert-enter-hook #'enable-escape-key)
   (add-hook 'meow-insert-exit-hook #'disable-escape-key)
-  (advice-add #'switch-to-buffer :after
-              (lambda (&rest _)
-                (if meow-insert-mode
-                    (enable-escape-key)
-                  (disable-escape-key))))
+
+  (defun check-meow-state (&rest _)
+    (if meow-insert-mode
+        (enable-escape-key)
+      (disable-escape-key)))
+  (advice-add #'switch-to-buffer :after #'check-meow-state)
+  (advice-add #'select-window :after #'check-meow-state)
 
   (advice-add #'meow-insert-exit :after #'acm-hide)
 
