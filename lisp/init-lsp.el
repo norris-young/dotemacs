@@ -10,11 +10,15 @@
   :bind (:map my-function-map
          ("d" . my-find-def)
          ("r" . my-find-ref)
-         ("b" . xref-go-back))
+         ("b" . xref-go-back)
+         :map lsp-bridge-ref-mode-map
+         ("d" . lsp-bridge-ref-open-file))
   :hook (after-init . global-lsp-bridge-mode)
   :custom
   (acm-enable-tabnine nil)
   (acm-enable-citre nil)
+  (lsp-bridge-ref-delete-other-windows nil)
+  (lsp-bridge-ref-open-file-in-requset-window t)
   (lsp-bridge-find-def-fallback-function #'my-after-lsp-find-def-failure)
   (lsp-bridge-find-ref-fallback-function #'my-after-lsp-find-ref-failure)
   (lsp-bridge-user-langserver-dir (expand-file-name "lsp.server.conf" user-emacs-directory))
