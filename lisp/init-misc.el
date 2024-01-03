@@ -53,4 +53,7 @@
   :bind (:map markdown-mode-map
          ("C-c C-e" . markdown-do)))
 
+(use-package tramp
+  :load-path "packages/tramp/lisp")
+
 (provide 'init-misc)
