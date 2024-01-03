@@ -23,15 +23,16 @@
       )
     )
 
-  (defun my-generate-autoloads (path pkg)
+  (defun my-generate-autoloads (path)
     (interactive (list (ivy-read "Generate path:" 'read-file-name-internal
-                                 :initial-input my-packages-dir)
-                       (completing-read "Package name:" '(""))))
-    (if (> (length pkg) 0)
+                                 :initial-input my-packages-dir)))
+    (let ((pkg (file-name-base (directory-file-name path))))
+      (if (equal pkg "packages")
+          (package-subdirs-recurse #'my-collect-package-generated-autoloads path)
         (progn
           (my-collect-package-generated-autoloads path pkg)
-          (package-subdirs-recurse #'my-collect-package-generated-autoloads path pkg))
-      (package-subdirs-recurse #'my-collect-package-generated-autoloads path)))
+          (package-subdirs-recurse #'my-collect-package-generated-autoloads path pkg))))
+    )
   )
 
 (use-package edebug
