@@ -1,5 +1,9 @@
 (use-package yasnippet
-  :hook (after-init . yas-global-mode))
+  :hook (after-init . yas-global-mode)
+  :config
+  (define-key yas-minor-mode-map [(tab)] nil)
+  (define-key yas-minor-mode-map (kbd "TAB") nil)
+  (define-key yas-minor-mode-map (kbd "C-<tab>") yas-maybe-expand))
 
 (use-package xref
   :autoload
