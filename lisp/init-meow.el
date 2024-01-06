@@ -98,7 +98,9 @@
 
   (defun my-show-file-name ()
     (interactive)
-    (message (buffer-file-name)))
+    (let ((name (buffer-file-name)))
+      (message name)
+      (kill-new name)))
 
   (defvar my-escape-key-sequence (kbd "jj"))
   (defvar my-escape-delay 0.2)
