@@ -23,7 +23,9 @@
          ("p" . project-switch-project)
          ("f" . project-find-file)
          ("b" . project-switch-to-buffer)
-         ("d" . project-dired))
+         ("d" . project-dired)
+         :map my-visit-map
+         ("m" . meow-visit))
   :hook (after-init . (lambda () (require 'meow)))
   :custom
   (meow-use-clipboard t)
@@ -54,6 +56,7 @@
   (defvar my-org-map (make-sparse-keymap))
   (defvar my-git-map (make-sparse-keymap))
   (defvar my-file-map (make-sparse-keymap))
+  (defvar my-visit-map (make-sparse-keymap))
   (defvar my-window-map (make-sparse-keymap))
   (defvar my-buffer-map (make-sparse-keymap))
   (defvar my-search-map (make-sparse-keymap))
@@ -254,7 +257,7 @@
    '("T" . meow-till)
    '("u" . meow-undo)
    '("U" . undo-redo)
-   '("v" . meow-visit)
+   `("v" . ,my-visit-map)
    '("V" . rectangle-mark-mode)
    '("w" . meow-mark-word)
    '("W" . meow-mark-symbol)

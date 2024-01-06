@@ -112,3 +112,6 @@
 [submodule "tramp"]
 	path = packages/tramp
 	url = https://git.savannah.gnu.org/git/tramp.git
+[submodule "avy"]
+	path = packages/avy
+	url = https://github.com/abo-abo/avy.git
