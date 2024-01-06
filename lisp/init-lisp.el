@@ -36,7 +36,8 @@
   )
 
 (use-package edebug
-  :bind (:map edebug-mode-map
+  :bind (:map
+         edebug-mode-map
          ("A" . 'my-elisp-add-to-watch))
   :config
   ;; Simple watch window from emacswiki @https://www.emacswiki.org/emacs/SourceLevelDebugger

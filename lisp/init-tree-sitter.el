@@ -90,7 +90,8 @@
   )
 
 (use-package ts-fold
-  :bind (:map my-codefold-map
+  :bind (:map
+         my-codefold-map
          ("t" . ts-fold-toggle)
          ("m" . ts-fold-close-all)
          ("M" . ts-fold-open-all)

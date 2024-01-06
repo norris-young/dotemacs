@@ -27,11 +27,12 @@
     (interactive "c")
     (let ((active-pair (char-to-string c)))
       (cl-dolist (pair sp-pair-list)
-         (if (or (equal (car pair) active-pair)
-                 (equal (cdr pair) active-pair))
-             (progn
-               (sp-wrap-with-pair (car pair))
-               (cl-return)))))))
+        (if (or (equal (car pair) active-pair)
+                (equal (cdr pair) active-pair))
+            (progn
+              (sp-wrap-with-pair (car pair))
+              (cl-return))))))
+  )
 
 (use-package autorevert
   :hook (after-init . global-auto-revert-mode))
@@ -50,7 +51,8 @@
 (use-package markdown-mode
   :mode ("README\\.md\\'" . gfm-mode)
   :init (setq markdown-command "multimarkdown")
-  :bind (:map markdown-mode-map
+  :bind (:map
+         markdown-mode-map
          ("C-c C-e" . markdown-do)))
 
 (use-package tramp

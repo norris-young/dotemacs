@@ -2,17 +2,25 @@
 (use-package ivy
   :defer 0.5
   :bind (("C-x b". ivy-switch-buffer)
-         :map my-buffer-map
+         :map
+         my-file-map
+         ("R" . my-rename-file)
+         :map
+         my-buffer-map
          ("b" . ivy-switch-buffer)
-         :map my-search-map
+         :map
+         my-search-map
          ("r" . ivy-resume)
-         :map ivy-switch-buffer-map
+         :map
+         ivy-switch-buffer-map
          ("C-j" . ivy-next-line)
          ("C-k" . ivy-previous-line)
-         :map ivy-reverse-i-search-map
+         :map
+         ivy-reverse-i-search-map
          ("C-j" . ivy-next-line)
          ("C-k" . ivy-previous-line)
-         :map ivy-minibuffer-map
+         :map
+         ivy-minibuffer-map
          ("C-j" . ivy-next-line)
          ("C-k" . ivy-previous-line)
          ("M-RET" . ivy-alt-done)
@@ -23,21 +31,31 @@
   (ivy-count-format "(%d/%d) ")
   :load (flx)
   :config
+
+  (defun my-rename-file (newname)
+    (interactive (list (ivy-read "new file name: " 'read-file-name-internal
+                                 :initial-input (buffer-file-name))))
+    (let ((oname (buffer-file-name)))
+      (if (not (equal oname newname))
+          (progn
+            (set-visited-file-name newname t t)
+            (rename-file oname newname)))))
+
   (defun ivy-yank-action (x)
     (kill-new x))
 
   (defun ivy-copy-to-buffer-action (x)
     (with-ivy-window (insert x)))
 
-  (ivy-set-actions t
-   '(("i" ivy-copy-to-buffer-action "insert")
-     ("y" ivy-yank-action "yank")))
+  (ivy-set-actions t '(("i" ivy-copy-to-buffer-action "insert")
+                       ("y" ivy-yank-action "yank")))
 
   (setq ivy-re-builders-alist '((t . ivy--regex-ignore-order)))
   (ivy-mode 1))
 
 (use-package swiper
-  :bind (:map my-search-map
+  :bind (:map
+         my-search-map
          ("s" . swiper-isearch)
          ("S" . swiper-isearch-thing-at-point)))
 
@@ -51,9 +69,11 @@
          ("<f2> i"  . counsel-info-lookup-symbol)
          ("<f2> u"  . counsel-unicode-char)
          ("<f2> j"  . counsel-set-variable)
-         :map my-file-map
+         :map
+         my-file-map
          ("f" . counsel-find-file)
-         :map my-search-map
+         :map
+         my-search-map
          ("g" . counsel-rg)
          ("G" . counsel-rg-thing-at-point)
          ("d" . counsel-rg-thing-in-directory)
@@ -90,13 +110,11 @@
   )
 
 (use-package avy
-  :bind
-  (:map
-   my-visit-map
-   ("v" . avy-goto-word-1)
-   ("l" . avy-goto-line))
-  :custom
-  (avy-all-windows t)
+  :bind (:map
+         my-visit-map
+         ("v" . avy-goto-word-1)
+         ("l" . avy-goto-line))
+  :custom (avy-all-windows t)
   :config
   (avy-setup-default))
 

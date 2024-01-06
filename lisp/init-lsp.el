@@ -11,11 +11,13 @@
   xref--find-xrefs)
 
 (use-package lsp-bridge
-  :bind (:map my-function-map
+  :bind (:map
+         my-function-map
          ("d" . my-find-def)
          ("r" . my-find-ref)
          ("b" . xref-go-back)
-         :map lsp-bridge-ref-mode-map
+         :map
+         lsp-bridge-ref-mode-map
          ("d" . lsp-bridge-ref-open-file))
   :hook (after-init . global-lsp-bridge-mode)
   :custom

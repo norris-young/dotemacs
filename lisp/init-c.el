@@ -70,7 +70,8 @@
   )
 
 (use-package citre
-  :bind (:map my-function-map
+  :bind (:map
+         my-function-map
          ("p" . citre-peek)
          ("P" . citre-peek-reference)
          ("D" . citre-jump)

@@ -1,9 +1,10 @@
 (use-package transient :load-path "packages/transient/lisp")
 (use-package magit
-  :bind (:map my-git-map
-        ("s" . magit-status)
-        ("b" . magit-blame-addition)
-        ("q" . magit-blame-quit))
+  :bind (:map
+         my-git-map
+         ("s" . magit-status)
+         ("b" . magit-blame-addition)
+         ("q" . magit-blame-quit))
   :config
   (eval-when-compile (require 'magit))
   (transient-replace-suffix 'magit-log 'magit-log:--since

@@ -2,14 +2,15 @@
   :hook (org-mode . org-superstar-mode))
 
 (use-package org
-  :bind (:map my-org-map
-        ("f" . org-cycle-agenda-files)
-        ("c" . org-capture)
-        ("r" . org-refile)
-        ("s" . org-schedule)
-        ("p" . org-set-property)
-        ("A" . my-org-attach)
-        ("a" . org-agenda))
+  :bind (:map
+         my-org-map
+         ("f" . org-cycle-agenda-files)
+         ("c" . org-capture)
+         ("r" . org-refile)
+         ("s" . org-schedule)
+         ("p" . org-set-property)
+         ("A" . my-org-attach)
+         ("a" . org-agenda))
   :custom
   ;; Enable indentation
   (org-startup-indented t)
