@@ -115,3 +115,6 @@
 [submodule "avy"]
 	path = packages/avy
 	url = https://github.com/abo-abo/avy.git
+[submodule "better-jumper"]
+	path = packages/better-jumper
+	url = https://github.com/gilbertw1/better-jumper.git
