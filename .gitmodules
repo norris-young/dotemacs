@@ -133,3 +133,6 @@
 [submodule "hydra"]
 	path = packages/hydra
 	url = https://github.com/abo-abo/hydra.git
+[submodule "emacs-popon"]
+	path = packages/emacs-popon
+	url = https://codeberg.org/akib/emacs-popon.git
