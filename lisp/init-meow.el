@@ -107,8 +107,9 @@
 
   (add-hook 'pre-command-hook #'my-escape-pre-command-hook)
 
-  (advice-add #'meow-insert-exit :after #'acm-hide)
-  (advice-add #'meow-insert-exit :after #'acm-doc-hide)
+  (advice-add #'meow-insert-exit :after (lambda (&rest _)
+                                          (acm-hide)
+                                          (acm-doc-hide)))
 
   (defun my-show-file-name ()
     (interactive)
