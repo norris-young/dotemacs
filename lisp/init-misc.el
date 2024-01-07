@@ -54,4 +54,7 @@
 (use-package tramp
   :load-path "packages/tramp/lisp")
 
+(use-package conf-mode
+  :mode ("\\.\\(fio\\|bb\\|bbappend\\)\\'" . conf-mode))
+
 (provide 'init-misc)
