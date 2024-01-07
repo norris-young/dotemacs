@@ -48,7 +48,9 @@
   :init (setq markdown-command "multimarkdown")
   :bind (:map
          markdown-mode-map
-         ("C-c C-e" . markdown-do)))
+         ("C-c C-e" . markdown-do))
+  :config
+  (add-hook 'markdown-mode-hook #'conditionally-turn-on-pandoc))
 
 (use-package tramp
   :load-path "packages/tramp/lisp")

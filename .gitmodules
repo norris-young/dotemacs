@@ -127,3 +127,9 @@
 [submodule "better-jumper"]
 	path = packages/better-jumper
 	url = https://github.com/gilbertw1/better-jumper.git
+[submodule "pandoc-mode"]
+	path = packages/pandoc-mode
+	url = https://github.com/joostkremers/pandoc-mode.git
+[submodule "hydra"]
+	path = packages/hydra
+	url = https://github.com/abo-abo/hydra.git
