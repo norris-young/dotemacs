@@ -42,7 +42,7 @@
   (lsp-bridge-ref-kill-temp-buffer-p nil)
   (lsp-bridge-find-def-fallback-function #'my-after-lsp-find-def-failure)
   (lsp-bridge-find-ref-fallback-function #'my-after-lsp-find-ref-failure)
-  (lsp-bridge-user-langserver-dir (expand-file-name "lsp.server.conf" user-emacs-directory))
+  (lsp-bridge-user-langserver-dir "~/.emacs.d/lsp.server.conf")
   :config
   (if (eq system-type 'windows-nt) (setq lsp-bridge-python-command "python.exe"))
 
