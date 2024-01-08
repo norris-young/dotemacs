@@ -70,6 +70,7 @@
 [submodule "acm-terminal"]
 	path = packages/acm-terminal
 	url = https://github.com/twlz0ne/acm-terminal.git
+	ignore = untracked
 [submodule "edebug-x"]
 	path = packages/edebug-x
 	url = https://github.com/norris-young/edebug-x.git
@@ -133,6 +134,8 @@
 [submodule "hydra"]
 	path = packages/hydra
 	url = https://github.com/abo-abo/hydra.git
+	ignore = untracked
 [submodule "emacs-popon"]
 	path = packages/emacs-popon
 	url = https://codeberg.org/akib/emacs-popon.git
+	ignore = untracked
