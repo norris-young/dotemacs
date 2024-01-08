@@ -5,10 +5,10 @@
   (define-key yas-minor-mode-map (kbd "TAB") nil)
   (define-key yas-minor-mode-map (kbd "C-<tab>") yas-maybe-expand))
 
-;; (use-package xref
-;;   :autoload
-;;   xref-backend-identifier-at-point
-;;   xref--find-xrefs)
+(use-package xref
+  :autoload
+  xref-backend-identifier-at-point
+  xref--find-xrefs)
 
 (use-package better-jumper
   :bind (:map
@@ -54,11 +54,10 @@
       (better-jumper-set-jump)
       (if (or (eq major-mode 'emacs-lisp-mode)
               (eq major-mode 'lisp-interaction-mode))
-          (call-interactively #'xref-find-definitions)
-          ;; (let ((symb (symbol-at-point)))
-          ;;   (if (and symb (not (fboundp symb)))
-          ;;       (find-variable symb)
-          ;;     (find-function symb)))
+          (let ((symb (symbol-at-point)))
+            (if (and symb (not (fboundp symb)))
+                (find-variable symb)
+              (find-function symb)))
         (if lsp-bridge-mode
             (lsp-bridge-find-def)
           (if citre-mode
@@ -69,9 +68,8 @@
       (better-jumper-set-jump)
       (if (or (eq major-mode 'emacs-lisp-mode)
               (eq major-mode 'lisp-interaction-mode))
-          (call-interactively #'xref-find-references)
-          ;; (let ((identifier (xref-backend-identifier-at-point 'elisp)))
-          ;;   (xref--find-xrefs identifier 'references identifier nil))
+          (let ((identifier (xref-backend-identifier-at-point 'elisp)))
+            (xref--find-xrefs identifier 'references identifier nil))
         (if lsp-bridge-mode
             (lsp-bridge-find-references)
           (if citre-mode
