@@ -22,6 +22,8 @@
               (lambda ()
                 (color-theme-sanityinc-tomorrow--with-colors
                  'eighties
+                 (set-face-attribute 'font-lock-bracket-face nil
+                                     :foreground `,foreground)
                  (set-face-attribute 'font-lock-operator-face nil
                                      :foreground `,green)
                  (set-face-attribute 'font-lock-number-face nil
