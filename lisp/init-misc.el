@@ -57,4 +57,17 @@
 (use-package conf-mode
   :mode ("\\.\\(fio\\|bb\\|bbappend\\)\\'" . conf-mode))
 
+(use-package gdb-mi
+  :custom (gdb-default-window-configuration-file "gdb-window-config.el")
+  :config
+  (defun move-to-gud-after-first-memory-udpate ()
+    (winum-select-window-7)
+    (advice-remove #'gdb-read-memory-handler
+                   #'move-to-gud-after-first-memory-udpate))
+
+  (advice-add #'gdb-setup-windows :before
+              (lambda () (advice-add #'gdb-read-memory-handler :after
+                                     #'move-to-gud-after-first-memory-udpate)))
+  )
+
 (provide 'init-misc)
