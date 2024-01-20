@@ -80,7 +80,9 @@
          ("C" . citre-global-create-database))
   :hook
   (find-file . citre-auto-enable-citre-mode)
-  (after-save . citre-global-update-file)
+  (after-save . (lambda () (if (and citre--global-dbpath
+                                    (not (equal citre--global-dbpath 'none)))
+                               (citre-global-update-file))))
   :custom
   (citre-enable-imenu-integration nil)
   ;; (citre-tags-in-buffer-backends '(global))
