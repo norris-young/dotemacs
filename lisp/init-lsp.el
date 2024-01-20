@@ -24,6 +24,8 @@
               (lambda (&rest r)
                 (better-jumper-set-jump)))
   (advice-add #'counsel-jump-in-buffer :before #'better-jumper-set-jump)
+  (advice-add #'find-file :before (lambda ()
+                                    (better-jumper-set-jump)))
   )
 
 (use-package lsp-bridge
