@@ -1,4 +1,5 @@
 (use-package yasnippet
+  :custom (yas-prompt-functions '(yas-no-prompt))
   :hook (after-init . yas-global-mode)
   :config
   (define-key yas-minor-mode-map [(tab)] nil)
