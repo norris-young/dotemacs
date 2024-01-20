@@ -100,7 +100,7 @@
 
   (defun is-lsp-bridge-process-buffer (buffer)
     (let* ((epc-con (cl-struct-slot-value 'lsp-bridge-epc-manager 'connection lsp-bridge-epc-process))
-           (epc-process (if epg-con (cl-struct-slot-value 'lsp-bridge-epc-connection 'process epc-con))))
+           (epc-process (if epc-con (cl-struct-slot-value 'lsp-bridge-epc-connection 'process epc-con))))
       (or (eq buffer (process-buffer lsp-bridge-internal-process))
           (eq buffer (process-buffer epc-process)))))
   )
