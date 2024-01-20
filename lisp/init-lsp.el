@@ -97,6 +97,12 @@
           (goto-line line)
           (goto-char (+ (line-beginning-position) col))
           (call-interactively 'citre-jump-to-reference))))
+
+  (defun is-lsp-bridge-process-buffer (buffer)
+    (let* ((epc-con (cl-struct-slot-value 'lsp-bridge-epc-manager 'connection lsp-bridge-epc-process))
+           (epc-process (if epg-con (cl-struct-slot-value 'lsp-bridge-epc-connection 'process epc-con))))
+      (or (eq buffer (process-buffer lsp-bridge-internal-process))
+          (eq buffer (process-buffer epc-process)))))
   )
 
 (provide 'init-lsp)

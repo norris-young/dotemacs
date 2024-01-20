@@ -70,4 +70,12 @@
                                      #'move-to-gud-after-first-memory-udpate)))
   )
 
+(use-package project
+  :config
+  (eval-when-compile (require 'lsp-bridge))
+  (with-eval-after-load 'lsp-bridge
+    (add-to-list 'project-ignore-buffer-conditions #'is-lsp-bridge-process-buffer)
+    (advice-add 'project--buffers-to-kill :filter-return
+                (lambda (bufs) (cl-remove-if #'is-lsp-bridge-process-buffer bufs)))))
+
 (provide 'init-misc)
