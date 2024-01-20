@@ -17,7 +17,6 @@
   (defvar my-window-map (make-sparse-keymap))
   (defvar my-buffer-map (make-sparse-keymap))
   (defvar my-search-map (make-sparse-keymap))
-  (defvar my-project-map (make-sparse-keymap))
   (defvar my-function-map (make-sparse-keymap))
   (defvar my-codefold-map (make-sparse-keymap))
   (defvar meow-window-resize-map (make-sparse-keymap))
@@ -27,14 +26,7 @@
          ("s" . save-buffer)
          :map
          my-visit-map
-         ("m" . meow-visit)
-         :map
-         my-project-map
-         ("k" . project-kill-buffers)
-         ("p" . project-switch-project)
-         ("f" . project-find-file)
-         ("b" . project-switch-to-buffer)
-         ("d" . project-dired))
+         ("m" . meow-visit))
   :hook (after-init . (lambda () (require 'meow)))
   :custom
   (meow-use-clipboard t)
@@ -178,7 +170,7 @@
    `("w" . ,my-window-map)
    `("s" . ,my-search-map)
    `("b" . ,my-buffer-map)
-   `("p" . ,my-project-map)
+   `("p" . ,project-prefix-map)
    '("?" . meow-cheatsheet))
 
   (with-eval-after-load 'smartparens
