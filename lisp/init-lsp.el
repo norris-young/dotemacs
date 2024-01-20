@@ -21,10 +21,10 @@
   :hook (after-init . better-jumper-mode)
   :config
   (advice-add #'switch-to-buffer :before
-              (lambda (&rest r)
+              (lambda (&rest _)
                 (better-jumper-set-jump)))
   (advice-add #'counsel-jump-in-buffer :before #'better-jumper-set-jump)
-  (advice-add #'find-file :before (lambda ()
+  (advice-add #'find-file :before (lambda (&rest _)
                                     (better-jumper-set-jump)))
   )
 
