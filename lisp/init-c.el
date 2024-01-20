@@ -78,7 +78,9 @@
          ("R" . citre-jump-to-reference)
          ("u" . citre-global-update-database)
          ("C" . citre-global-create-database))
-  :hook (find-file . citre-auto-enable-citre-mode)
+  :hook
+  (find-file . citre-auto-enable-citre-mode)
+  (after-save . citre-global-update-file)
   :custom
   (citre-enable-imenu-integration nil)
   ;; (citre-tags-in-buffer-backends '(global))
