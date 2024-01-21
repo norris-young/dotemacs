@@ -4,13 +4,15 @@
 1. [[https://git-scm.com/][git]]
 2. [[https://ctags.io/][ctags]]
 3. [[https://www.gnu.org/software/global/][gtags]]
-4. fonts
+4. [[https://github.com/pygments/pygments][Pygments]]
+5. fonts
    1) [[https://github.com/ryanoasis/nerd-fonts][UbuntuMono Nerd Font Mono]]
-   2) [[http://wenq.org/wqy2/index.cgi][WenQuanYi Micro Hei Mono]]
-   3) [[http://fonts.jp/hanazono/][HanaMinB]]
-   4) [[https://github.com/laishulu/Sarasa-Term-SC-Nerd][Sarasa Mono SC Nerd]]
-5. lsp server
+   2) [[http://wenq.org/wqy2/index.cgi][WenQuanYi Micro Hei Mono]] (linux only, Microsoft Yahei is used on windows)
+   3) [[http://fonts.jp/hanazono/][HanaMinB]] (linux only, PMingLiu-ExtB is used on windows)
+   4) [[https://github.com/laishulu/Sarasa-Term-SC-Nerd][Sarasa Term SC Nerd]]
+6. lsp servers
    1) [[https://clangd.llvm.org/][clangd]]
    2) [[https://github.com/microsoft/pyright][pyright]]
    3) [[https://github.com/charliermarsh/ruff][ruff]]
-6. [[https://github.com/tree-sitter/tree-sitter][tree-sitter]] and [[https://github.com/orgs/tree-sitter/repositories][grammars]]
+7. [[https://github.com/manateelazycat/lsp-bridge][lsp-bridge]] python dpendencies
+8. [[https://github.com/tree-sitter/tree-sitter][tree-sitter]] and [[https://github.com/orgs/tree-sitter/repositories][grammars]] ([[https://github.com/renzmann/treesit-auto][treesit-auto]] package will help)
