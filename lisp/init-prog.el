@@ -4,7 +4,9 @@
          ("i" . imenu-list-smart-toggle)
          :map
          imenu-list-major-mode-map
-         ("d" . imenu-list-display-dwim)))
+         ("d" . imenu-list-display-dwim))
+  :custom
+  (imenu-list-size 0.12))
 
 (use-package yaml-ts-mode
   :defer t
