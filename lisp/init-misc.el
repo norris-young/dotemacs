@@ -53,7 +53,14 @@
 
 (use-package tramp
   :load-path "packages/tramp/lisp"
-  :custom (tramp-inline-compress-start-size 1048576))
+  :custom
+  (tramp-inline-compress-start-size 1048576)
+  (tramp-default-method "ssh")
+  (tramp-syntax 'simplified)
+  :config
+  (add-to-list 'tramp-connection-properties
+               (list nil "remote-shell" "/usr/bin/env bash"))
+  )
 
 (use-package conf-mode
   :mode ("\\.\\(fio\\|bb\\|bbappend\\)\\'" . conf-mode))
