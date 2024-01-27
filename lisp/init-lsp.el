@@ -77,6 +77,7 @@
   (lsp-bridge-user-langserver-dir "~/.emacs.d/lsp.server.conf")
   (lsp-bridge-remote-start-automatically t)
   :config
+  (eval-when-compile (require 'lsp-bridge))
   (if (eq system-type 'windows-nt) (setq lsp-bridge-python-command "python.exe"))
 
   (add-to-list 'lsp-bridge-default-mode-hooks 'rust-ts-mode-hook)
@@ -114,7 +115,8 @@
         (let ((line (1+ (nth 1 position)))
               (col (nth 3 position)))
           (message "lsp-bridge find no reference try citre line: %d col: %d" line col)
-          (goto-line line)
+          (goto-char 1)
+          (forward-line line)
           (goto-char (+ (line-beginning-position) col))
           (call-interactively 'citre-jump))))
 
@@ -124,7 +126,8 @@
         (let ((line (1+ (nth 1 position)))
               (col (nth 3 position)))
           (message "lsp-bridge find no reference try citre line: %d col: %d" line col)
-          (goto-line line)
+          (goto-char 1)
+          (forward-line line)
           (goto-char (+ (line-beginning-position) col))
           (call-interactively 'citre-jump-to-reference))))
 
