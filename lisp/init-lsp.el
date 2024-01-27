@@ -75,6 +75,7 @@
   (lsp-bridge-find-def-fallback-function #'my-after-lsp-find-def-failure)
   (lsp-bridge-find-ref-fallback-function #'my-after-lsp-find-ref-failure)
   (lsp-bridge-user-langserver-dir "~/.emacs.d/lsp.server.conf")
+  (lsp-bridge-remote-start-automatically t)
   :config
   (if (eq system-type 'windows-nt) (setq lsp-bridge-python-command "python.exe"))
 
