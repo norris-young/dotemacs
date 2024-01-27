@@ -82,6 +82,7 @@
   :custom
   (counsel-find-file-ignore-regexp "\\.o\\'\\|\\.o\\.d\\'\\|\\`#\\|.*\\..*~\\'\\|\\`\\..*\\.cmd\\'")
   :config
+  (setq counsel-find-file-speedup-remote nil)
   (defun counsel-jump-in-buffer ()
     "Jump in buffer with `counsel-imenu' or `counsel-org-goto' if in org-mode"
     (interactive)
