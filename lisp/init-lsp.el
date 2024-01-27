@@ -20,12 +20,41 @@
   (better-jumper-add-jump-behavior 'replace)
   :hook (after-init . better-jumper-mode)
   :config
-  (advice-add #'switch-to-buffer :before
-              (lambda (&rest _)
-                (better-jumper-set-jump)))
-  (advice-add #'counsel-jump-in-buffer :before #'better-jumper-set-jump)
-  (advice-add #'find-file :before (lambda (&rest _)
-                                    (better-jumper-set-jump)))
+  ;; Set jumper in 2 cases:
+  ;; 1. jump more than 50 lines or advise some jump functions
+
+  ;; (defconst better-jumper-line-threshold 50)
+  ;; (defun my-post-command-set-jumper ()
+  ;;   (if (and (not (eq this-command #'better-jumper-jump-forward))
+  ;;            (not (eq this-command #'better-jumper-jump-backward)))
+  ;;       (let* ((oldp (window-old-point))
+  ;;              (newp (window-point))
+  ;;              (oldl (line-number-at-pos oldp))
+  ;;              (newl (line-number-at-pos newp)))
+  ;;         (if (> (abs (- oldl newl))
+  ;;                better-jumper-line-threshold)
+  ;;             (better-jumper-set-jump oldp)))))
+  ;; (add-hook 'post-command-hook #'my-post-command-set-jumper)
+
+  (defun my-set-jump (&rest _)
+    (better-jumper-set-jump))
+
+  (with-eval-after-load 'meow
+    (advice-add #'meow-beginning-of-thing :before #'my-set-jump)
+    (advice-add #'meow-end-of-thing :before #'my-set-jump))
+  (with-eval-after-load 'counsel
+    (advice-add #'counsel-jump-in-buffer :before #'my-set-jump))
+  (with-eval-after-load 'swiper
+    (advice-add #'swiper-isearch :before #'my-set-jump))
+  (with-eval-after-load 'lsp-bridge
+    (advice-add #'my-find-def :before #'my-set-jump)
+    (advice-add #'my-find-ref :before #'my-set-jump))
+  (with-eval-after-load 'citre
+    (advice-add #'citre-jump :before #'my-set-jump)
+    (advice-add #'citre-jump-to-reference :before #'my-set-jump))
+
+  ;; 2. jump to another buffer
+  (advice-add #'set-window-buffer :before #'my-set-jump)
   )
 
 (use-package lsp-bridge
