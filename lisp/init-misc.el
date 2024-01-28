@@ -60,7 +60,7 @@
   (tramp-syntax 'simplified)
   :config
   (add-to-list 'tramp-connection-properties
-               (list nil "remote-shell" "/usr/bin/env bash"))
+               (list nil "remote-shell" "/usr/bin/bash"))
   )
 
 (use-package conf-mode
