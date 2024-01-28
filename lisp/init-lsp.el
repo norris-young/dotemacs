@@ -113,9 +113,9 @@
   (defun my-after-lsp-find-def-failure (position)
     (deactivate-mark t)
     (if citre-mode
-        (let ((line (1+ (nth 1 position)))
+        (let ((line (nth 1 position))
               (col (nth 3 position)))
-          (message "lsp-bridge find no reference try citre line: %d col: %d" line col)
+          (message "lsp-bridge find no reference try citre line: %d col: %d" (1+ line) col)
           (goto-char 1)
           (forward-line line)
           (goto-char (+ (line-beginning-position) col))
@@ -124,9 +124,9 @@
   (defun my-after-lsp-find-ref-failure (position)
     (deactivate-mark t)
     (if citre-mode
-        (let ((line (1+ (nth 1 position)))
+        (let ((line (nth 1 position))
               (col (nth 3 position)))
-          (message "lsp-bridge find no reference try citre line: %d col: %d" line col)
+          (message "lsp-bridge find no reference try citre line: %d col: %d" (1+ line) col)
           (goto-char 1)
           (forward-line line)
           (goto-char (+ (line-beginning-position) col))
