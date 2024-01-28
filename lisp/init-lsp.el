@@ -76,6 +76,7 @@
   (lsp-bridge-find-ref-fallback-function #'my-after-lsp-find-ref-failure)
   (lsp-bridge-user-langserver-dir "~/.emacs.d/lsp.server.conf")
   (lsp-bridge-remote-start-automatically t)
+  (lsp-bridge-remote-heartbeat-interval 600)
   :config
   (eval-when-compile (require 'lsp-bridge))
   (if (eq system-type 'windows-nt) (setq lsp-bridge-python-command "python.exe"))
