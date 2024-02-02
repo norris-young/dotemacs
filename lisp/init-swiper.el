@@ -10,21 +10,7 @@
          ("b" . ivy-switch-buffer)
          :map
          my-search-map
-         ("r" . ivy-resume)
-         :map
-         ivy-switch-buffer-map
-         ("C-j" . ivy-next-line)
-         ("C-k" . ivy-previous-line)
-         :map
-         ivy-reverse-i-search-map
-         ("C-j" . ivy-next-line)
-         ("C-k" . ivy-previous-line)
-         :map
-         ivy-minibuffer-map
-         ("C-j" . ivy-next-line)
-         ("C-k" . ivy-previous-line)
-         ("M-RET" . ivy-alt-done)
-         ("C-<return>" . ivy-immediate-done))
+         ("r" . ivy-resume))
   :custom
   (ivy-use-virtual-buffers t)
   (ivy-initial-inputs-alist nil)
