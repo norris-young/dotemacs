@@ -32,7 +32,7 @@
     ignore = untracked
 [submodule "meow"]
 	path = packages/meow
-	url = https://github.com/norris-young/meow.git
+	url = https://github.com/meow-edit/meow.git
 [submodule "org-superstar-mode"]
 	path = packages/org-superstar
 	url = https://github.com/integral-dw/org-superstar-mode.git
