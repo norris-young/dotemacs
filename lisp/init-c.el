@@ -79,15 +79,10 @@
          ("u" . citre-global-update-database)
          ("C" . citre-global-create-database))
   :hook
-  (find-file . citre-auto-enable-citre-mode)
   (after-save . (lambda () (if (and citre--global-dbpath
                                     (not (equal citre--global-dbpath 'none)))
                                (citre-global-update-file))))
   :custom
-  (citre-enable-imenu-integration nil)
-  ;; (citre-tags-in-buffer-backends '(global))
-  ;; (citre-tags-imenu-create-tags-file-threshold nil)
-  (citre-auto-enable-citre-mode-modes '(prog-mode))
   (citre-use-project-root-when-creating-tags t)
   (citre-gtags-args '("--compact"))
   :config
