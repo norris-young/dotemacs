@@ -1,6 +1,9 @@
 (use-package org-superstar
   :hook (org-mode . org-superstar-mode))
 
+(use-package org-timeline
+  :hook (org-agenda-finalize . org-timeline-insert-timeline))
+
 (use-package org
   :bind (:map
          my-org-map

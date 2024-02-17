@@ -139,3 +139,9 @@
 	path = packages/emacs-popon
 	url = https://codeberg.org/akib/emacs-popon.git
 	ignore = untracked
+[submodule "packages/org-timeblock"]
+	path = packages/org-timeblock
+	url = https://github.com/ichernyshovvv/org-timeblock.git
+[submodule "packages/org-timeline"]
+	path = packages/org-timeline
+	url = https://github.com/Fuco1/org-timeline.git
