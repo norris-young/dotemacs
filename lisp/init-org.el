@@ -4,6 +4,9 @@
 (use-package org-timeline
   :hook (org-agenda-finalize . org-timeline-insert-timeline))
 
+(use-package org-tidy
+  :hook (org-mode . org-tidy-mode))
+
 (use-package org
   :bind (:map
          my-org-map
