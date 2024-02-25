@@ -25,11 +25,11 @@
 [submodule "magit"]
 	path = packages/magit
 	url = https://github.com/magit/magit.git
-    ignore = untracked
+	ignore = untracked
 [submodule "highlight-indent-guides"]
 	path = packages/highlight-indent-guides
 	url = https://github.com/DarthFennec/highlight-indent-guides.git
-    ignore = untracked
+	ignore = untracked
 [submodule "meow"]
 	path = packages/meow
 	url = https://github.com/meow-edit/meow.git
@@ -48,7 +48,7 @@
 [submodule "shackle"]
 	path = packages/shackle
 	url = https://depp.brause.cc/shackle.git
-    ignore = untracked
+	ignore = untracked
 [submodule "smartparens"]
 	path = packages/smartparens
 	url = https://github.com/Fuco1/smartparens.git
@@ -74,11 +74,11 @@
 [submodule "edebug-x"]
 	path = packages/edebug-x
 	url = https://github.com/norris-young/edebug-x.git
-    ignore = untracked
+	ignore = untracked
 [submodule "cnfonts"]
 	path = packages/cnfonts
 	url = https://github.com/tumashu/cnfonts.git
-    ignore = untracked
+	ignore = untracked
 [submodule "treesit-auto"]
 	path = packages/treesit-auto
 	url = https://github.com/renzmann/treesit-auto.git
@@ -94,18 +94,18 @@
 [submodule "imenu-list"]
 	path = packages/imenu-list
 	url = https://github.com/bmag/imenu-list.git
-    ignore = untracked
+	ignore = untracked
 [submodule "dts-mode"]
 	path = packages/dts-mode
 	url = https://github.com/bgamari/dts-mode.git
-    ignore = untracked
+	ignore = untracked
 [submodule "lua-mode"]
 	path = packages/lua-mode
 	url = https://github.com/immerrr/lua-mode.git
 [submodule "yasnippet-snippets"]
 	path = packages/yasnippet-snippets
 	url = https://github.com/AndreaCrotti/yasnippet-snippets.git
-    ignore = untracked
+	ignore = untracked
 [submodule "which-key"]
 	path = packages/which-key
 	url = https://github.com/justbur/emacs-which-key.git
@@ -124,7 +124,7 @@
 [submodule "avy"]
 	path = packages/avy
 	url = https://github.com/abo-abo/avy.git
-    ignore = untracked
+	ignore = untracked
 [submodule "better-jumper"]
 	path = packages/better-jumper
 	url = https://github.com/gilbertw1/better-jumper.git
@@ -145,3 +145,4 @@
 [submodule "packages/org-timeline"]
 	path = packages/org-timeline
 	url = https://github.com/Fuco1/org-timeline.git
+	ignore = untracked
