@@ -30,7 +30,6 @@
   )
 
 (use-package autorevert
-  :custom (auto-revert-remote-files t)
   :hook (after-init . global-auto-revert-mode))
 
 (use-package dts-mode
