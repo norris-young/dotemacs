@@ -70,6 +70,7 @@
   )
 
 (use-package citre
+  :autoload citre-global-dbpath
   :bind (:map
          my-function-map
          ("p" . citre-peek)
@@ -79,9 +80,8 @@
          ("u" . citre-global-update-database)
          ("C" . citre-global-create-database))
   :hook
-  (after-save . (lambda () (if (and citre--global-dbpath
-                                    (not (equal citre--global-dbpath 'none)))
-                               (citre-global-update-file))))
+  (after-save . (lambda () (when (citre-global-dbpath)
+                             (citre-global-update-file))))
   :custom
   (citre-use-project-root-when-creating-tags t)
   (citre-gtags-args '("--compact"))
