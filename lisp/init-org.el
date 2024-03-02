@@ -207,4 +207,8 @@ none are ticked, and to STARTED otherwise"
        (call-interactively #'org-attach))))
   )
 
+(use-package org-roam
+  :custom org-roam-directory (expand-file-name "~/org/roam/")
+  :hook (after-init . org-roam-db-autosync-mode))
+
 (provide 'init-org)

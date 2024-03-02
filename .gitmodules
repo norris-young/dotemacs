@@ -149,3 +149,9 @@
 [submodule "packages/org-tidy"]
 	path = packages/org-tidy
 	url = https://github.com/jxq0/org-tidy.git
+[submodule "packages/org-roam"]
+	path = packages/org-roam
+	url = https://github.com/org-roam/org-roam.git
+[submodule "packages/emacsql"]
+	path = packages/emacsql
+	url = https://github.com/magit/emacsql.git
