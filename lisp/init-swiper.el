@@ -97,10 +97,6 @@
   )
 
 (use-package avy
-  :bind (:map
-         my-visit-map
-         ("v" . avy-goto-word-1)
-         ("l" . avy-goto-line))
   :custom (avy-all-windows t)
   :config
   (avy-setup-default))
