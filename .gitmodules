@@ -155,3 +155,4 @@
 [submodule "packages/emacsql"]
 	path = packages/emacsql
 	url = https://github.com/magit/emacsql.git
+	ignore = untracked
