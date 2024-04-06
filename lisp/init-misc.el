@@ -37,7 +37,14 @@
 
 (use-package files
   :custom
-  (require-final-newline nil))
+  (require-final-newline nil)
+  :config
+  (defun my-find-file-in-same-window (ff filename &optional wildcards)
+    (let ((buf (get-file-buffer filename)))
+      (if buf
+          (switch-to-buffer buf)
+        (apply ff filename wildcards))))
+  (advice-add #'find-file :around #'my-find-file-in-same-window))
 
 (use-package auto-sudoedit
   :hook (after-init . auto-sudoedit-mode))
