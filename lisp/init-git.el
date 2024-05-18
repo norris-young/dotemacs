@@ -5,6 +5,7 @@
          ("s" . magit-status)
          ("b" . magit-blame-addition)
          ("q" . magit-blame-quit))
+  :custom (magit-diff-refine-hunk 'all)
   :config
   (eval-when-compile (require 'magit))
   (transient-replace-suffix 'magit-log 'magit-log:--since
