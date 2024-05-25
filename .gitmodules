@@ -63,7 +63,7 @@
 	url = https://github.com/joaotavora/yasnippet.git
 [submodule "lsp-bridge"]
 	path = packages/lsp-bridge
-	url = https://github.com/manateelazycat/lsp-bridge.git
+	url = https://github.com/norris-young/lsp-bridge.git
 [submodule "citre"]
 	path = packages/citre
 	url = https://github.com/norris-young/citre.git
