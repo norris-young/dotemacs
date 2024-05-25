@@ -36,8 +36,6 @@
   :hook (dts-mode . indent-tabs-mode))
 
 (use-package files
-  :custom
-  (require-final-newline nil)
   :config
   (defun my-find-file-in-same-window (ff filename &optional wildcards)
     (let ((buf (get-file-buffer filename)))
