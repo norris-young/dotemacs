@@ -89,19 +89,19 @@
   (add-hook 'c-ts-mode-hook #'c-ts-mode-setup)
   )
 
-(use-package ts-fold
+(use-package treesit-fold
   :bind (:map
          my-codefold-map
-         ("t" . ts-fold-toggle)
-         ("m" . ts-fold-close-all)
-         ("M" . ts-fold-open-all)
-         ("c" . ts-fold-close)
-         ("o" . ts-fold-open)
-         ("O" . ts-fold-open-recursively))
-  :hook (after-init . global-ts-fold-mode)
+         ("t" . treesit-fold-toggle)
+         ("m" . treesit-fold-close-all)
+         ("M" . treesit-fold-open-all)
+         ("c" . treesit-fold-close)
+         ("o" . treesit-fold-open)
+         ("O" . treesit-fold-open-recursively))
+  :hook (after-init . global-treesit-fold-mode)
   :config
-  (global-ts-fold-indicators-mode)
-  ;; (add-hook 'ts-fold-mode-hook #'ts-fold-line-comment-mode)
+  (global-treesit-fold-indicators-mode)
+  (add-hook 'treesit-fold-mode-hook #'treesit-fold-line-comment-mode)
   )
 
 (provide 'init-tree-sitter)
