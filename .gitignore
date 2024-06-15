@@ -12,3 +12,5 @@ projects
 /tree-sitter/
 /.org-id-locations
 /tramp
+/.emacs.desktop
+/.emacs.desktop.lock
