@@ -171,6 +171,7 @@
    `("s" . ,my-search-map)
    `("b" . ,my-buffer-map)
    `("p" . ,project-prefix-map)
+   `("t" . ,tab-prefix-map)
    '("?" . meow-cheatsheet))
 
   (with-eval-after-load 'smartparens

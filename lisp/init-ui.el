@@ -62,4 +62,12 @@
   (cnfonts-profiles '("default-fonts"))
   :hook (after-init . cnfonts-mode))
 
+(use-package tab-bar
+  :bind (:map
+         tab-prefix-map
+         ("C-r" . tab-rename)
+         ("r" . find-file-read-only-other-tab))
+  :custom
+  (tab-bar-show t))
+
 (provide 'init-ui)
