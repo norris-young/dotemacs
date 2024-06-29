@@ -74,6 +74,7 @@
   (tabspaces-initialize-project-with-todo nil)
   ;; sessions
   (tabspaces-session t)
-  (tabspaces-session-auto-restore t))
+  ;; (tabspaces-session-auto-restore t)
+  )
 
 (provide 'init-ui)
