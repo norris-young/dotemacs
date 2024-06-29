@@ -152,7 +152,7 @@
 	ignore = untracked
 [submodule "treesit-fold"]
 	path = packages/treesit-fold
-	url = https://github.com/norris-young/treesit-fold.git
+	url = https://github.com/emacs-tree-sitter/treesit-fold.git
 [submodule "tabspaces"]
 	path = packages/tabspaces
 	url = https://github.com/mclear-tools/tabspaces.git
