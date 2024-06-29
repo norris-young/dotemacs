@@ -57,7 +57,6 @@
   (add-hook 'markdown-mode-hook #'conditionally-turn-on-pandoc))
 
 (use-package tramp
-  :load-path "packages/tramp/lisp"
   :custom
   (tramp-inline-compress-start-size 1048576)
   :config
