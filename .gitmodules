@@ -156,3 +156,4 @@
 [submodule "tabspaces"]
 	path = packages/tabspaces
 	url = https://github.com/mclear-tools/tabspaces.git
+	ignore = untracked
