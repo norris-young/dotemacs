@@ -85,7 +85,8 @@
                      (setq-local citre-new-file t)
                    (setq-local citre-new-file nil))))
   (after-save . (lambda ()
-                  (when (and (not citre-new-file)
+                  (when (and (eq major-mode 'c-ts-mode)
+                             (not citre-new-file)
                              (citre-global-dbpath))
                     (citre-global-update-file))))
   :custom
