@@ -98,10 +98,12 @@
          ("c" . treesit-fold-close)
          ("o" . treesit-fold-open)
          ("O" . treesit-fold-open-recursively))
-  :hook (after-init . global-treesit-fold-mode)
+  :hook
+  (after-init . global-treesit-fold-mode)
+  (after-init . global-treesit-fold-indicators-mode)
   :config
-  (global-treesit-fold-indicators-mode)
   (add-hook 'treesit-fold-mode-hook #'treesit-fold-line-comment-mode)
   )
+
 
 (provide 'init-tree-sitter)
