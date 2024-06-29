@@ -80,8 +80,14 @@
          ("u" . citre-global-update-database)
          ("C" . citre-global-create-database))
   :hook
-  (after-save . (lambda () (when (citre-global-dbpath)
-                             (citre-global-update-file))))
+  (find-file . (lambda ()
+                 (if (not (file-exists-p (buffer-file-name)))
+                     (setq-local citre-new-file t)
+                   (setq-local citre-new-file nil))))
+  (after-save . (lambda ()
+                  (when (and (not citre-new-file)
+                             (citre-global-dbpath))
+                    (citre-global-update-file))))
   :custom
   (citre-use-project-root-when-creating-tags t)
   (citre-gtags-args '("--compact"))
