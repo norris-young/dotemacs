@@ -62,12 +62,18 @@
   (cnfonts-profiles '("default-fonts"))
   :hook (after-init . cnfonts-mode))
 
-(use-package tab-bar
-  :bind (:map
-         tab-prefix-map
-         ("C-r" . tab-rename)
-         ("r" . find-file-read-only-other-tab))
+(use-package tabspaces
+  :hook (after-init . tabspaces-mode) ;; use this only if you want the minor-mode loaded at startup.
+  :commands (tabspaces-switch-or-create-workspace
+             tabspaces-open-or-create-project-and-workspace)
   :custom
-  (tab-bar-show t))
+  (tabspaces-use-filtered-buffers-as-default nil)
+  (tabspaces-default-tab "Home")
+  (tabspaces-remove-to-default t)
+  (tabspaces-include-buffers '("*scratch*"))
+  (tabspaces-initialize-project-with-todo nil)
+  ;; sessions
+  (tabspaces-session t)
+  (tabspaces-session-auto-restore t))
 
 (provide 'init-ui)

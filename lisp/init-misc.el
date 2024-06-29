@@ -89,9 +89,6 @@
     (advice-add 'project--buffers-to-kill :filter-return
                 (lambda (bufs) (cl-remove-if #'is-lsp-bridge-process-buffer bufs)))))
 
-(use-package desktop
-  :init (desktop-save-mode))
-
 (setq-default bidi-display-reordering nil)
 (setq bidi-inhibit-bpa t
       long-line-threshold 2000
