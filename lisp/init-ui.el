@@ -63,11 +63,13 @@
   :hook (after-init . cnfonts-mode))
 
 (use-package tabspaces
-  :hook (after-init . tabspaces-mode) ;; use this only if you want the minor-mode loaded at startup.
+  :hook
+  (after-init . tabspaces-mode) ;; use this only if you want the minor-mode loaded at startup.
+  (tabspaces-mode . (lambda () (tab-rename "Home")))
   :commands (tabspaces-switch-or-create-workspace
              tabspaces-open-or-create-project-and-workspace)
   :custom
-  (tabspaces-use-filtered-buffers-as-default nil)
+  (tabspaces-use-filtered-buffers-as-default t)
   (tabspaces-default-tab "Home")
   (tabspaces-remove-to-default t)
   (tabspaces-include-buffers '("*scratch*"))
