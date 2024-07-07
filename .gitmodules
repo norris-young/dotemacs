@@ -157,3 +157,6 @@
 	path = packages/tabspaces
 	url = https://github.com/mclear-tools/tabspaces.git
 	ignore = untracked
+[submodule "keyfreq"]
+	path = packages/keyfreq
+	url = https://github.com/dacap/keyfreq.git

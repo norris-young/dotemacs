@@ -88,6 +88,24 @@
     (advice-add 'project--buffers-to-kill :filter-return
                 (lambda (bufs) (cl-remove-if #'is-lsp-bridge-process-buffer bufs)))))
 
+(use-package keyfreq
+  :hook
+  (after-init . keyfreq-mode)
+  (after-init . keyfreq-autosave-mode)
+  :config
+  (setq keyfreq-excluded-commands '(self-insert-command
+                                    acm-complete
+                                    meow-keypad-self-insert
+                                    meow-keypad
+                                    meow-prev
+                                    meow-next
+                                    meow-left
+                                    meow-right
+                                    forward-char
+                                    backward-char
+                                    previous-line
+                                    next-line)))
+
 (setq-default bidi-display-reordering nil)
 (setq bidi-inhibit-bpa t
       long-line-threshold 2000
