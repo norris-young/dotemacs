@@ -77,6 +77,12 @@
   ;; sessions
   (tabspaces-session t)
   ;; (tabspaces-session-auto-restore t)
+  :config
+  (advice-add #'tab-bar-new-tab :after
+              (lambda (&rest r)
+                (let ((buf (current-buffer))
+                      (tabspaces-remove-to-default nil))
+                  (tabspaces-remove-buffer buf))))
   )
 
 (provide 'init-ui)
