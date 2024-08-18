@@ -89,9 +89,6 @@
                              (not citre-new-file)
                              (citre-global-dbpath))
                     (citre-global-update-file))))
-  :custom
-  (citre-use-project-root-when-creating-tags t)
-  (citre-gtags-args '("--compact"))
   :config
   (with-eval-after-load 'cc-mode (require 'citre-lang-c))
   (with-eval-after-load 'dired (require 'citre-lang-fileref))
