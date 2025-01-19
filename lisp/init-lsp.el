@@ -85,6 +85,13 @@
   (if (eq system-type 'windows-nt) (setq lsp-bridge-python-command "python.exe"))
 
   (add-to-list 'lsp-bridge-default-mode-hooks 'rust-ts-mode-hook)
+  (advice-add #'lsp-bridge-mode :before
+              (lambda (&rest _)
+                (when-let* ((project (project-current))
+                            (project-root (nth 2 project)))
+                  (when (file-exists-p (expand-file-name ".project.lsp.config" project-root))
+                    (setq-local lsp-bridge-user-langserver-dir (file-local-name project-root))
+                    (setq-local lsp-bridge-user-multiserver-dir (file-local-name project-root))))))
 
   (with-eval-after-load 'better-jumper
     (defun my-find-def ()
