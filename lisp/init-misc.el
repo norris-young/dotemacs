@@ -32,6 +32,7 @@
   )
 
 (use-package autorevert
+  :bind ("C-r" . revert-buffer)
   :hook (after-init . global-auto-revert-mode))
 
 (use-package dts-mode
@@ -84,8 +85,24 @@
   )
 
 (use-package project
+  :bind (("M-r" . revert-project-buffer)
+         :map
+         project-prefix-map
+         ("k" . project-kill-other-buffers)
+         ("K" . project-kill-buffers)
+         )
   :config
   (eval-when-compile (require 'lsp-bridge))
+  (defun revert-project-buffer ()
+    (interactive)
+    (dolist (buf (project-buffers (project-current)))
+      (with-current-buffer buf
+        (when (buffer-file-name buf)
+          (revert-buffer nil t)))))
+  (defun project-kill-other-buffers ()
+    (interactive)
+    (let ((bufs (delq (current-buffer) (project--buffers-to-kill (project-current)))))
+      (mapc #'kill-buffer bufs)))
   (with-eval-after-load 'lsp-bridge
     (add-to-list 'project-ignore-buffer-conditions #'is-lsp-bridge-process-buffer)
     (advice-add 'project--buffers-to-kill :filter-return
