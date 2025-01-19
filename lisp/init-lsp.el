@@ -85,6 +85,7 @@
   (if (eq system-type 'windows-nt) (setq lsp-bridge-python-command "python.exe"))
 
   (add-to-list 'lsp-bridge-default-mode-hooks 'rust-ts-mode-hook)
+  (cl-delete 'org-mode-hook lsp-bridge-default-mode-hooks)
   (advice-add #'lsp-bridge-mode :before
               (lambda (&rest _)
                 (when-let* ((project (project-current))
