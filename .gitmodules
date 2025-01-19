@@ -140,9 +140,6 @@
 	path = packages/org-timeline
 	url = https://github.com/Fuco1/org-timeline.git
 	ignore = untracked
-[submodule "packages/org-tidy"]
-	path = packages/org-tidy
-	url = https://github.com/jxq0/org-tidy.git
 [submodule "packages/org-roam"]
 	path = packages/org-roam
 	url = https://github.com/org-roam/org-roam.git
