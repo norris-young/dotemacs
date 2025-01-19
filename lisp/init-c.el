@@ -35,6 +35,7 @@
 
 (eval-when-compile (require 'c-ts-mode))
 (use-package c-ts-mode
+  :mode ("\\.cu\\'" . c++-ts-mode)
   :hook (c-ts-mode . my-choose-c-ts-style)
   :config
   (setq-default c-ts-mode-indent-style 'linux)
