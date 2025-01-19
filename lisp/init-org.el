@@ -1,11 +1,13 @@
+;;; ...  -*- lexical-binding: t -*-
+
 (use-package org-superstar
   :hook (org-mode . org-superstar-mode))
 
 (use-package org-timeline
   :hook (org-agenda-finalize . org-timeline-insert-timeline))
 
-(use-package org-tidy
-  :hook (org-mode . org-tidy-mode))
+;; (use-package org-tidy
+;;   :hook (org-mode . org-tidy-mode))
 
 (use-package org
   :bind (:map
@@ -153,7 +155,7 @@
   (defun org-summary-todo-cookie (n-done n-not-done)
     "Switch header state to DONE when all subentries are DONE, to TODO when none
 are DONE, and to STARTED otherwise"
-    (let (org-log-done org-log-states)   ; turn off logging
+    (let (org-log-done)   ; turn off logging
       (org-todo-if-needed (cond ((= n-done 0)
                                  "TODO")
                                 ((= n-not-done 0)
@@ -207,8 +209,8 @@ none are ticked, and to STARTED otherwise"
        (call-interactively #'org-attach))))
   )
 
-(use-package org-roam
-  :custom org-roam-directory (expand-file-name "~/org/roam/")
-  :hook (after-init . org-roam-db-autosync-mode))
+;; (use-package org-roam
+;;   :custom org-roam-directory (expand-file-name "~/org/roam/")
+;;   :hook (after-init . org-roam-db-autosync-mode))
 
 (provide 'init-org)

@@ -1,3 +1,5 @@
+;;; ...  -*- lexical-binding: t -*-
+
 (use-package transient :load-path "packages/transient/lisp")
 (use-package magit
   :bind (:map
@@ -21,7 +23,7 @@
         (meow-mode 1)))
     (add-hook 'magit-blame-read-only-mode-hook #'magit-motion))
 
-  (advice-add  'git-commit-turn-on-auto-fill
+  (advice-add 'git-commit-turn-on-auto-fill
                :before
                (lambda ()
                  (setq fill-column 72)))

@@ -1,3 +1,5 @@
+;;; ...  -*- lexical-binding: t -*-
+
 (use-package pixel-scroll
   :custom (pixel-scroll-precision-large-scroll-height 40.0)
   :hook (after-init . pixel-scroll-precision-mode))
@@ -15,13 +17,22 @@
 ;;                                    :weight 'semi-bold)))
 ;;   )
 
+(use-package custom
+  :custom (custom-safe-themes
+           '("76ddb2e196c6ba8f380c23d169cf2c8f561fd2013ad54b987c516d3cabc00216"
+             "b11edd2e0f97a0a7d5e66a9b82091b44431401ac394478beb44389cf54e6db28"
+             "6bdc4e5f585bb4a500ea38f563ecf126570b9ab3be0598bdf607034bb07a8875"
+             "04aa1c3ccaee1cc2b93b246c6fbcd597f7e6832a97aaeac7e5891e6863236f9f"
+             "6fc9e40b4375d9d8d0d9521505849ab4d04220ed470db0b78b700230da0a86c1"
+             default)))
+
+(eval-when-compile (require 'color-theme-sanityinc-tomorrow))
 (use-package color-theme-sanityinc-tomorrow
   :hook (after-init . color-theme-sanityinc-tomorrow-eighties)
   :config
-  (advice-add #'color-theme-sanityinc-tomorrow-eighties :after
-              (lambda ()
-                (color-theme-sanityinc-tomorrow--with-colors
-                 'eighties
+  (advice-add #'color-theme-sanityinc-tomorrow :after
+              (lambda (mode)
+                (color-theme-sanityinc-tomorrow--with-colors mode
                  (set-face-attribute 'font-lock-bracket-face nil
                                      :foreground `,foreground)
                  (set-face-attribute 'font-lock-operator-face nil

@@ -1,4 +1,11 @@
+;;; ...  -*- lexical-binding: t -*-
+
 ;; flx package is used for ivy fuzzy match engine
+(eval-when-compile
+  (require 'ivy)
+  (require 'swiper)
+  (require 'counsel)
+  )
 (use-package ivy
   :defer 0.5
   :bind (("C-x b". ivy-switch-buffer)

@@ -1,3 +1,5 @@
+;;; ...  -*- lexical-binding: t -*-
+
 ;; Save file place by default
 (use-package saveplace
   :hook (after-init . save-place-mode))
@@ -45,7 +47,8 @@
   (advice-add #'find-file :around #'my-find-file-in-same-window))
 
 (use-package auto-sudoedit
-  :hook (after-init . auto-sudoedit-mode))
+  :hook (after-init . (lambda() (if (not (eq system-type 'windows-nt))
+                                    (auto-sudoedit-mode)))))
 
 (use-package markdown-mode
   :mode ("README\\.md\\'" . gfm-mode)

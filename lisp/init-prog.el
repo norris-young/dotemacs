@@ -1,3 +1,5 @@
+;;; ...  -*- lexical-binding: t -*-
+
 (use-package imenu-list
   :bind (:map
          my-buffer-map

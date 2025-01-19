@@ -1,3 +1,5 @@
+;;; ...  -*- lexical-binding: t -*-
+
 (use-package winum
   :custom-face (winum-face ((nil (:foregound "DeepPink") (:underline "DeepPink") (:weight 'bold))))
   :hook (after-init . winum-mode))

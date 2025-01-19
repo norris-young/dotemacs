@@ -1,3 +1,5 @@
+;;; ...  -*- lexical-binding: t -*-
+
 (setq-default tab-width 4)
 (use-package cc-mode
   :bind ("M-;" . my-comment-dwim)
@@ -31,10 +33,10 @@
         (comment-line nil))))
   )
 
+(eval-when-compile (require 'c-ts-mode))
 (use-package c-ts-mode
   :hook (c-ts-mode . my-choose-c-ts-style)
   :config
-  (eval-when-compile (require 'c-ts-mode))
   (setq-default c-ts-mode-indent-style 'linux)
   (defun my-choose-c-ts-style ()
     (if (string-match "linux" (buffer-file-name))
@@ -45,20 +47,20 @@
             tab-width 4
             indent-tabs-mode nil)))
 
-  (defun tweak-linux-style (style)
-    (let ((name (car style))
-          (rules (cdr style)))
-      (if (eq name 'linux)
-          (setcdr style `(;; Opening bracket.
-                          ((node-is "compound_statement") standalone-parent 0)
-                          ((node-is "}") standalone-parent 0)
-                          ,@rules)))))
+  ;; (defun tweak-linux-style (style)
+  ;;   (let ((name (car style))
+  ;;         (rules (cdr style)))
+  ;;     (if (eq name 'linux)
+  ;;         (setcdr style `(;; Opening bracket.
+  ;;                         ((node-is "compound_statement") standalone-parent 0)
+  ;;                         ((node-is "}") standalone-parent 0)
+  ;;                         ,@rules)))))
 
-  (advice-add #'c-ts-mode--indent-styles :around
-              (lambda (fn mode)
-                (let ((styles (funcall fn mode)))
-                  (mapc #'tweak-linux-style styles)
-                  styles)))
+  ;; (advice-add #'c-ts-mode--indent-styles :around
+  ;;             (lambda (fn mode)
+  ;;               (let ((styles (funcall fn mode)))
+  ;;                 (mapc #'tweak-linux-style styles)
+  ;;                 styles)))
   )
 
 (use-package gdb-mi
@@ -71,6 +73,8 @@
 
 (use-package citre
   :autoload citre-global-dbpath
+  :init
+  (defvar citre-new-file nil)
   :bind (:map
          my-function-map
          ("p" . citre-peek)
@@ -82,8 +86,7 @@
   :hook
   (find-file . (lambda ()
                  (if (not (file-exists-p (buffer-file-name)))
-                     (setq-local citre-new-file t)
-                   (setq-local citre-new-file nil))))
+                     (setq-local citre-new-file t))))
   (after-save . (lambda ()
                   (when (and (eq major-mode 'c-ts-mode)
                              (not citre-new-file)

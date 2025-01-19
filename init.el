@@ -1,4 +1,4 @@
-;;; Code:
+;;; ...  -*- lexical-binding: t -*-
 
 (require 'cl-lib)
 
@@ -44,7 +44,7 @@
         ;; 继续递归搜索子目录
         (package-subdirs-recurse func subdir-path cp)))))
 
-(defun add-loadpath (path &rest pkg)
+(defun add-loadpath (path &rest _)
   ;; 注意：`add-to-list' 函数的第三个参数必须为 t ，表示加到列表末尾
   ;; 这样Emacs会从父目录到子目录的顺序搜索Elisp插件，顺序反过来会导致Emacs无法正常启动
   (add-to-list 'load-path path t))
@@ -69,17 +69,42 @@
 (setq custom-file (expand-file-name (concat my-emacs-d "custom.el")))
 (if (file-exists-p custom-file) (load custom-file t t))
 
-(if (not (file-exists-p (expand-file-name "init-autoloads.elc" my-lisp-dir)))
-    (progn
-      (byte-recompile-directory my-lisp-dir 0 t)
-      (byte-recompile-directory my-sitelisp-dir 0 t)))
-
 ;; Should set before loading `use-package'
 (eval-and-compile
-  ;; (setq use-package-always-defer t)
-  ;; (setq use-package-always-demand nil)
-  ;; (setq use-package-expand-minimally nil)
+  (setq use-package-always-defer t)
+  (setq use-package-always-demand nil)
+  (setq use-package-expand-minimally nil)
   ;; (setq use-package-enable-imenu-support nil)
+  )
+
+(require 'package)
+(defun my-collect-package-generated-autoloads (pkg-dir name)
+  (let* ((filename (format "%s-autoloads.el" name))
+         (file (expand-file-name filename pkg-dir))
+         (target (expand-file-name
+                  filename
+                  (file-name-as-directory my-autoloads-dir))))
+    (delete-file file)
+    (message "generating autoloads for package [%s] in [%s]..." name pkg-dir)
+    (package-generate-autoloads name pkg-dir)
+    (delete-file target)
+    (rename-file file target)
+    (message "byte compiling for package [%s] in [%s]..." name pkg-dir)
+    (byte-recompile-directory pkg-dir 0)
+    ;; (message "native compilation for package [%s] in [%s] started" name pkg-dir)
+    ;; (native-compile-async pkg-dir t)
+    )
+  )
+
+(defun my-generate-autoloads (path)
+  (interactive (list (ivy-read "Generate path:" 'read-file-name-internal
+                               :initial-input my-packages-dir)))
+  (let ((pkg (file-name-base (directory-file-name path))))
+    (if (equal pkg "packages")
+        (package-subdirs-recurse #'my-collect-package-generated-autoloads path)
+      (progn
+        (my-collect-package-generated-autoloads path pkg)
+        (package-subdirs-recurse #'my-collect-package-generated-autoloads path pkg))))
   )
 
 (eval-when-compile
@@ -93,10 +118,11 @@
 ;; Which means on every .el and .elc file loaded during start up, it has to runs those regexps against the filename.
 (let* ((file-name-handler-alist nil))
   (require-init 'init-autoloads)
+  (require-init 'init-lisp)
   (require-init 'init-meow)
+  (require-init 'init-tree-sitter)
   (require-init 'init-git)
   (require-init 'init-input)
-  (require-init 'init-lisp)
   (require-init 'init-misc)
   (require-init 'init-org)
   (require-init 'init-swiper)
@@ -104,9 +130,15 @@
   (require-init 'init-window)
   (require-init 'init-c)
   (require-init 'init-lsp)
-  (require-init 'init-tree-sitter)
   (require-init 'init-prog)
   )
+
+(if (not (file-exists-p (expand-file-name "init.elc" user-emacs-directory)))
+    (progn
+      (let ((byte-compile-log-warning-function (lambda (&rest _))))
+        (byte-compile-file (expand-file-name "init.el" user-emacs-directory))
+        (byte-recompile-directory my-lisp-dir 0 t)
+        (byte-recompile-directory my-sitelisp-dir 0 t))))
 
 ;; (setq garbage-collection-messages t) ; for debug
 (defun post-init-gc ()

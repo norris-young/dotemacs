@@ -1,3 +1,5 @@
+;;; ...  -*- lexical-binding: t -*-
+
 (use-package yasnippet
   :custom (yas-prompt-functions '(yas-no-prompt))
   :hook (after-init . yas-global-mode)
@@ -11,6 +13,7 @@
   xref-backend-identifier-at-point
   xref--find-xrefs)
 
+(eval-when-compile (require 'better-jumper))
 (use-package better-jumper
   :bind (:map
          my-function-map

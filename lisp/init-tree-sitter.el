@@ -1,16 +1,26 @@
+;;; ...  -*- lexical-binding: t -*-
+
+(eval-when-compile (require 'treesit-auto))
 (use-package treesit-auto
   :mode ("\\.rs\\'" . rust-ts-mode)
   :hook ((after-init . global-treesit-auto-mode))
   :custom
-  (treesit-auto-install 'promot)
+  (treesit-auto-install 't)
   :config
+  (treesit-auto-add-to-auto-mode-alist 'all)
+  (delete 'latex treesit-auto-langs)
+  (if (not (file-directory-p (expand-file-name "tree-sitter" user-emacs-directory)))
+      (let* ((treesit-language-source-alist (treesit-auto--build-treesit-source-alist))
+             (to-install (seq-filter (lambda (lang) (not (treesit-ready-p lang t)))
+                                     treesit-auto-langs)))
+        (mapc 'treesit-install-language-grammar to-install)))
 
-  (add-to-list 'treesit-auto-recipe-list
-               (make-treesit-auto-recipe
-                :lang 'c
-                :ts-mode 'c-or-c++-ts-mode
-                :remap 'c-or-c++-mode
-                :url "https://github.com/tree-sitter/tree-sitter-c"))
+  ;; (add-to-list 'treesit-auto-recipe-list
+  ;;              (make-treesit-auto-recipe
+  ;;               :lang 'c
+  ;;               :ts-mode 'c-or-c++-ts-mode
+  ;;               :remap 'c-or-c++-mode
+  ;;               :url "https://github.com/tree-sitter/tree-sitter-c"))
 
   (defun my-subscript-identifier (node)
     (pcase (treesit-node-type node)
