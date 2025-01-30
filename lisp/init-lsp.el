@@ -82,7 +82,9 @@
   (lsp-bridge-remote-heartbeat-interval 600)
   :config
   (eval-when-compile (require 'lsp-bridge))
-  (if (eq system-type 'windows-nt) (setq lsp-bridge-python-command "python.exe"))
+  (if (eq system-type 'windows-nt)
+      (setq lsp-bridge-python-command "python.exe")
+    (setq lsp-bridge-python-command "~/.emacs.d/lsp.bridge.pyenv/bin/python"))
 
   (add-to-list 'lsp-bridge-default-mode-hooks 'rust-ts-mode-hook)
   (cl-delete 'org-mode-hook lsp-bridge-default-mode-hooks)
