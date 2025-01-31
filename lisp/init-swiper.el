@@ -1,11 +1,6 @@
 ;;; ...  -*- lexical-binding: t -*-
 
 ;; flx package is used for ivy fuzzy match engine
-(eval-when-compile
-  (require 'ivy)
-  (require 'swiper)
-  (require 'counsel)
-  )
 (use-package ivy
   :defer 0.5
   :bind (("C-x b". ivy-switch-buffer)
@@ -24,21 +19,6 @@
   (ivy-count-format "(%d/%d) ")
   :load (flx)
   :config
-
-  (defun my-rename-file (newname)
-    (interactive (list (ivy-read "new file name: " 'read-file-name-internal
-                                 :initial-input (buffer-file-name))))
-    (let ((oname (buffer-file-name)))
-      (if (not (equal oname newname))
-          (progn
-            (set-visited-file-name newname t t)
-            (rename-file oname newname)))))
-
-  (defun ivy-yank-action (x)
-    (kill-new x))
-
-  (defun ivy-copy-to-buffer-action (x)
-    (with-ivy-window (insert x)))
 
   (ivy-set-actions t '(("i" ivy-copy-to-buffer-action "insert")
                        ("y" ivy-yank-action "yank")))
@@ -76,31 +56,6 @@
   (counsel-find-file-ignore-regexp "\\.o\\'\\|\\.o\\.d\\'\\|\\`#\\|.*\\..*~\\'\\|\\`\\..*\\.cmd\\'")
   :config
   (setq counsel-find-file-speedup-remote nil)
-  (defun counsel-jump-in-buffer ()
-    "Jump in buffer with `counsel-imenu' or `counsel-org-goto' if in org-mode"
-    (interactive)
-    (call-interactively
-     (cond
-      ((eq major-mode 'org-mode) 'counsel-org-goto)
-      (t 'counsel-imenu))))
-
-  (defun counsel-rg-thing-at-point ()
-    (interactive)
-    (let ((thing (ivy-thing-at-point)))
-      (when (use-region-p)
-        (deactivate-mark))
-      (counsel-rg (regexp-quote thing))))
-
-  (defun counsel-rg-thing-in-directory (path)
-    (interactive "DDirectory for ripgrep:")
-    (counsel-rg nil path))
-
-  (defun counsel-rg-thing-at-point-in-directory (path)
-    (interactive "DDirectory for ripgrep:")
-    (let ((thing (ivy-thing-at-point)))
-      (when (use-region-p)
-        (deactivate-mark))
-      (counsel-rg (regexp-quote thing) path)))
   )
 
 (use-package avy

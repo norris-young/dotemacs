@@ -70,14 +70,13 @@
 (if (file-exists-p custom-file) (load custom-file t t))
 
 ;; Should set before loading `use-package'
-(eval-and-compile
-  (setq use-package-always-defer t)
-  (setq use-package-always-demand nil)
-  (setq use-package-expand-minimally nil)
-  ;; (setq use-package-enable-imenu-support nil)
-  )
+(setq use-package-always-defer t)
+(setq use-package-always-demand nil)
+(setq use-package-expand-minimally nil)
+;; (setq use-package-enable-imenu-support nil)
 
 (require 'package)
+(setq native-comp-async-report-warnings-errors 'silent)
 (defun my-collect-package-generated-autoloads (pkg-dir name)
   (let* ((filename (format "%s-autoloads.el" name))
          (file (expand-file-name filename pkg-dir))
@@ -90,9 +89,9 @@
     (delete-file target)
     (rename-file file target)
     (message "byte compiling for package [%s] in [%s]..." name pkg-dir)
-    (byte-recompile-directory pkg-dir 0)
+    ;(native-compile-directory pkg-dir)
     ;; (message "native compilation for package [%s] in [%s] started" name pkg-dir)
-    ;; (native-compile-async pkg-dir t)
+    (native-compile-async pkg-dir t)
     )
   )
 
@@ -106,9 +105,6 @@
         (my-collect-package-generated-autoloads path pkg)
         (package-subdirs-recurse #'my-collect-package-generated-autoloads path pkg))))
   )
-
-(eval-when-compile
-  (require 'use-package))
 
 ;; @see https://www.reddit.com/r/emacs/comments/3kqt6e/2_easy_little_known_steps_to_speed_up_emacs_start/
 ;; Normally file-name-handler-alist is set to
@@ -133,12 +129,13 @@
   (require-init 'init-prog)
   )
 
-(if (not (file-exists-p (expand-file-name "init.elc" user-emacs-directory)))
-    (progn
-      (let ((byte-compile-log-warning-function (lambda (&rest _))))
-        (byte-compile-file (expand-file-name "init.el" user-emacs-directory))
-        (byte-recompile-directory my-lisp-dir 0 t)
-        (byte-recompile-directory my-sitelisp-dir 0 t))))
+;; (if (not (file-exists-p (expand-file-name "init.elc" user-emacs-directory)))
+;;     (progn
+;;       (let ((byte-compile-log-warning-function (lambda (&rest _))))
+;;         (byte-compile-file (expand-file-name "init.el" user-emacs-directory))
+;;         (byte-recompile-directory my-lisp-dir 0 t)
+;;         (byte-recompile-directory my-sitelisp-dir 0 t))))
+(native-compile-async my-lisp-dir nil nil "myfun.*")
 
 ;; (setq garbage-collection-messages t) ; for debug
 (defun post-init-gc ()

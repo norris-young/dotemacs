@@ -57,48 +57,12 @@
   :custom-face
   (meow-cheatsheet-command ((t (:inherit fixed-pitch :height 130))))
   :config
-  (eval-when-compile
-    (require 'meow)
-    (require 'smartparens))
-  ;; Add a state for resizing current window
-  (meow-define-state window-resize
-    "meow state for resizing current window"
-    :lighter " [WR]"
-    :keymap meow-window-resize-map)
-  (setq meow-cursor-type-window-resize 'hollow)
+
   ;; Set state for some special modes
   (setf (alist-get 'help-mode meow-mode-state-list) 'motion)
   (add-to-list 'meow-mode-state-list '(lsp-bridge-ref-mode . motion))
 
-  (defvar my-escape-key-sequence (kbd "jj"))
-  (defvar my-escape-delay 0.2)
-  (defun my-escape-pre-command-hook ()
-    "my escape pre-command hook for quickly escape insert state."
-    (if meow-insert-mode
-        ;; (with-demoted-errors "my escape: Error %S"
-        (when (and (equal (string-to-char (let ((key (this-command-keys)))
-                                            (if (stringp key) key "n")))
-                          ;; check first key
-                          (elt my-escape-key-sequence 0)))
-          (let* ((modified (buffer-modified-p))
-                 (inserted (condition-case nil
-                               (progn (self-insert-command 1) t)
-                             (error nil)))
-                 (skey (elt my-escape-key-sequence 1))
-                 (evt (read-event nil nil my-escape-delay)))
-            (when inserted (delete-char -1))
-            (set-buffer-modified-p modified)
-            (cond
-             ;; check second key
-             ((and (characterp evt)
-                   (char-equal evt skey))
-              (setq this-command #'meow-insert-exit)
-              (setq this-original-command #'meow-insert-exit))
-             ((null evt))
-             (t (setq unread-command-events
-                      (cons evt unread-command-events))))))
-      ;; )
-      ))
+
 
   (add-hook 'pre-command-hook #'my-escape-pre-command-hook)
 
@@ -106,31 +70,7 @@
                                           (acm-hide)
                                           (acm-doc-hide)))
 
-  (defun my-show-file-name ()
-    (interactive)
-    (let ((name (buffer-file-name)))
-      (message name)
-      (kill-new name)))
   (define-key my-file-map (kbd "n") #'my-show-file-name)
-
-  (defun my-copy-to-register (begin end)
-    (interactive "r")
-    (copy-to-register ?r begin end))
-
-  (defun my-insert-register ()
-    (interactive)
-    (if (get-register ?r)
-        (insert-register ?r)))
-
-  (defun my-insert-after ()
-    (interactive)
-    (call-interactively #'meow-line)
-    (call-interactively #'meow-append))
-
-  (defun my-insert-ahead ()
-    (interactive)
-    (call-interactively #'meow-join)
-    (call-interactively #'meow-append))
 
   (meow-motion-overwrite-define-key
    '("j" . meow-next)
@@ -176,7 +116,6 @@
    `("p" . ,project-prefix-map)
    '("?" . meow-cheatsheet))
 
-  (eval-when-compile (require 'tabspaces))
   (with-eval-after-load 'tabspaces
     (meow-leader-define-key
      `("t" . ,tabspaces-command-map)))
@@ -258,5 +197,11 @@
   (meow-global-mode 1)
   )
 
+;; Add a state for resizing current window
+(meow-define-state window-resize
+  "meow state for resizing current window"
+  :lighter " [WR]"
+  :keymap meow-window-resize-map)
+(setq meow-cursor-type-window-resize 'hollow)
 
 (provide 'init-meow)

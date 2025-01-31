@@ -26,7 +26,6 @@
              "6fc9e40b4375d9d8d0d9521505849ab4d04220ed470db0b78b700230da0a86c1"
              default)))
 
-(eval-when-compile (require 'color-theme-sanityinc-tomorrow))
 (use-package color-theme-sanityinc-tomorrow
   :hook (after-init . color-theme-sanityinc-tomorrow-eighties)
   :config
