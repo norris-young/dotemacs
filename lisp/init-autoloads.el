@@ -14,9 +14,12 @@
       (let ((byte-compile-log-warning-function (lambda (&rest _))))
         (package-subdirs-recurse #'my-collect-package-generated-autoloads
                                  my-packages-dir))))
-
+(load (expand-file-name "my-autoloads.el" my-autoloads-dir))
 (native-compile-async my-lisp-dir nil nil "myfun.*")
 
+(package-subdirs-recurse #'add-loadpath my-packages-dir)
+(add-loadpath my-sitelisp-dir)
+(package-subdirs-recurse #'add-loadpath my-sitelisp-dir)
 
 (cl-dolist (alf (directory-files my-autoloads-dir nil "^[^.].*"))
   (load (file-name-base alf) nil t))
