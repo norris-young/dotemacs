@@ -4,6 +4,8 @@
 
 (setq user-init-file (or load-file-name (buffer-file-name)))
 (setq user-emacs-directory (file-name-directory user-init-file))
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+(if (file-exists-p custom-file) (load custom-file t t))
 (defconst my-emacs-d (file-name-as-directory user-emacs-directory)
   "Directory of emacs.d.")
 
@@ -20,16 +22,6 @@
   "Load PKG if DISABLED is nil."
   (when (not disabled)
     (load (file-truename (format "%s/%s" my-lisp-dir pkg)) t t)))
-
-(setq custom-file (expand-file-name (concat my-emacs-d "custom.el")))
-(if (file-exists-p custom-file) (load custom-file t t))
-
-;; Should set before loading `use-package'
-(setq use-package-always-defer t)
-(setq use-package-always-demand nil)
-(setq use-package-expand-minimally nil)
-;; (setq use-package-enable-imenu-support nil)
-
 
 ;; @see https://www.reddit.com/r/emacs/comments/3kqt6e/2_easy_little_known_steps_to_speed_up_emacs_start/
 ;; Normally file-name-handler-alist is set to

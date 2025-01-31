@@ -24,6 +24,12 @@
 (cl-dolist (alf (directory-files my-autoloads-dir nil "^[^.].*"))
   (load (file-name-base alf) nil t))
 
+;; Should set before loading `use-package'
+(setq use-package-always-defer t)
+(setq use-package-always-demand nil)
+(setq use-package-expand-minimally nil)
+(setq use-package-enable-imenu-support nil)
+
 (use-package auto-compile
   :init
   (setq load-prefer-newer t)
