@@ -11,6 +11,7 @@
         (package-subdirs-recurse #'my-collect-package-generated-autoloads
                                  my-packages-dir))))
 
+(native-compile-async my-lisp-dir nil nil "myfun.*")
 (add-to-list 'load-path my-autoloads-dir)
 
 (cl-dolist (alf (directory-files my-autoloads-dir nil "^[^.].*"))

@@ -129,14 +129,6 @@
   (require-init 'init-prog)
   )
 
-;; (if (not (file-exists-p (expand-file-name "init.elc" user-emacs-directory)))
-;;     (progn
-;;       (let ((byte-compile-log-warning-function (lambda (&rest _))))
-;;         (byte-compile-file (expand-file-name "init.el" user-emacs-directory))
-;;         (byte-recompile-directory my-lisp-dir 0 t)
-;;         (byte-recompile-directory my-sitelisp-dir 0 t))))
-(native-compile-async my-lisp-dir nil nil "myfun.*")
-
 ;; (setq garbage-collection-messages t) ; for debug
 (defun post-init-gc ()
   "Do the gc we deferred in early-init.el"
