@@ -3,6 +3,8 @@
 (defvar my-autoloads-dir
   (concat (file-name-as-directory my-lisp-dir) "autoloads"))
 
+(add-to-list 'load-path my-autoloads-dir)
+
 (setq native-comp-async-report-warnings-errors 'silent)
 (if (not (file-directory-p my-autoloads-dir))
     (progn
@@ -14,7 +16,7 @@
                                  my-packages-dir))))
 
 (native-compile-async my-lisp-dir nil nil "myfun.*")
-(add-to-list 'load-path my-autoloads-dir)
+
 
 (cl-dolist (alf (directory-files my-autoloads-dir nil "^[^.].*"))
   (load (file-name-base alf) nil t))
