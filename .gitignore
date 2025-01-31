@@ -15,3 +15,4 @@ projects
 /.emacs.desktop
 /.emacs.desktop.lock
 /tabsession.el
+/lisp/my-autoloads.el
