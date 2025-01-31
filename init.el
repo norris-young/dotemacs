@@ -21,14 +21,6 @@
   (when (not disabled)
     (load (file-truename (format "%s/%s" my-lisp-dir pkg)) t t)))
 
-(use-package auto-compile
-  :init
-  (setq load-prefer-newer t)
-  :demand
-  :config
-  (auto-compile-on-load-mode)
-  (auto-compile-on-save-mode))
-
 (setq custom-file (expand-file-name (concat my-emacs-d "custom.el")))
 (if (file-exists-p custom-file) (load custom-file t t))
 

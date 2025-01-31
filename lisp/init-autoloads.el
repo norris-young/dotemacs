@@ -24,4 +24,12 @@
 (cl-dolist (alf (directory-files my-autoloads-dir nil "^[^.].*"))
   (load (file-name-base alf) nil t))
 
+(use-package auto-compile
+  :init
+  (setq load-prefer-newer t)
+  :demand
+  :config
+  (auto-compile-on-load-mode)
+  (auto-compile-on-save-mode))
+
 (provide 'init-autoloads)
