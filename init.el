@@ -76,7 +76,6 @@
 ;; (setq use-package-enable-imenu-support nil)
 
 (require 'package)
-(setq native-comp-async-report-warnings-errors 'silent)
 (defun my-collect-package-generated-autoloads (pkg-dir name)
   (let* ((filename (format "%s-autoloads.el" name))
          (file (expand-file-name filename pkg-dir))

@@ -3,10 +3,12 @@
 (defvar my-autoloads-dir
   (concat (file-name-as-directory my-lisp-dir) "autoloads"))
 
+(setq native-comp-async-report-warnings-errors 'silent)
 (if (not (file-directory-p my-autoloads-dir))
     (progn
       (make-directory my-autoloads-dir)
       (loaddefs-generate my-lisp-dir (expand-file-name "my-autoloads.el" my-autoloads-dir))
+      (load (expand-file-name "my-autoloads.el" my-autoloads-dir))
       (let ((byte-compile-log-warning-function (lambda (&rest _))))
         (package-subdirs-recurse #'my-collect-package-generated-autoloads
                                  my-packages-dir))))
