@@ -157,3 +157,6 @@
 [submodule "keyfreq"]
 	path = packages/keyfreq
 	url = https://github.com/dacap/keyfreq.git
+[submodule "llama"]
+	path = packages/llama
+	url = https://github.com/tarsius/llama.git
