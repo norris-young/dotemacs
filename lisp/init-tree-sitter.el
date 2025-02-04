@@ -2,7 +2,8 @@
 
 (use-package treesit-auto
   :mode ("\\.rs\\'" . rust-ts-mode)
-  :hook ((after-init . global-treesit-auto-mode))
+  :hook ((after-init . global-treesit-auto-mode)
+         (c-ts-mode-hook . c-ts-mode-setup))
   :custom
   (treesit-auto-install 't)
   :config
@@ -13,14 +14,6 @@
              (to-install (seq-filter (lambda (lang) (not (treesit-ready-p lang t)))
                                      treesit-auto-langs)))
         (mapc 'treesit-install-language-grammar to-install)))
-
-  ;; (add-to-list 'treesit-auto-recipe-list
-  ;;              (make-treesit-auto-recipe
-  ;;               :lang 'c
-  ;;               :ts-mode 'c-or-c++-ts-mode
-  ;;               :remap 'c-or-c++-mode
-  ;;               :url "https://github.com/tree-sitter/tree-sitter-c"))
-  (add-hook 'c-ts-mode-hook #'c-ts-mode-setup)
   )
 
 (use-package treesit-fold
@@ -35,8 +28,7 @@
   :hook
   (after-init . global-treesit-fold-mode)
   (after-init . global-treesit-fold-indicators-mode)
-  :config
-  (add-hook 'treesit-fold-mode-hook #'treesit-fold-line-comment-mode)
+  (treesit-fold-mode-hook . treesit-fold-line-comment-mode)
   )
 
 
