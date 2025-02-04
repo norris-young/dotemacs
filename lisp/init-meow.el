@@ -7,9 +7,6 @@
   (which-key-idle-secondary-delay 0.05)
   :hook (after-init . which-key-mode))
 
-(use-package acm
-  :autoload acm-hide acm-doc-hide)
-
 (use-package meow
   :demand t
   :init
@@ -29,8 +26,8 @@
          ("b" . project-list-buffers)
          :map
          my-file-map
+         ("n" . my-show-file-name)
          ("s" . save-buffer))
-  :hook (after-init . (lambda () (require 'meow)))
   :custom
   (meow-use-clipboard t)
   (meow-keypad-self-insert-undefined nil)
@@ -56,21 +53,16 @@
                            (?. . sentence)))
   :custom-face
   (meow-cheatsheet-command ((t (:inherit fixed-pitch :height 130))))
+  :hook
+  (pre-command-hook . my-escape-pre-command-hook)
   :config
-
   ;; Set state for some special modes
   (setf (alist-get 'help-mode meow-mode-state-list) 'motion)
   (add-to-list 'meow-mode-state-list '(lsp-bridge-ref-mode . motion))
 
-
-
-  (add-hook 'pre-command-hook #'my-escape-pre-command-hook)
-
   (advice-add #'meow-insert-exit :after (lambda (&rest _)
                                           (acm-hide)
                                           (acm-doc-hide)))
-
-  (define-key my-file-map (kbd "n") #'my-show-file-name)
 
   (meow-motion-overwrite-define-key
    '("j" . meow-next)
@@ -190,6 +182,7 @@
    `("z" . ,my-codefold-map)
    '("'" . repeat)
    '("<escape>" . ignore))
+
   (with-eval-after-load 'smartparens
     (meow-normal-define-key
      '("S" . my-wrap-with-pair)))
