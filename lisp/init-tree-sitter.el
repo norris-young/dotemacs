@@ -2,8 +2,7 @@
 
 (use-package treesit-auto
   :mode ("\\.rs\\'" . rust-ts-mode)
-  :hook ((after-init . global-treesit-auto-mode)
-         (c-ts-mode-hook . c-ts-mode-setup))
+  :hook ((after-init . global-treesit-auto-mode))
   :custom
   (treesit-auto-install 't)
   :config
@@ -28,7 +27,7 @@
   :hook
   (after-init . global-treesit-fold-mode)
   (after-init . global-treesit-fold-indicators-mode)
-  (treesit-fold-mode-hook . treesit-fold-line-comment-mode)
+  (treesit-fold-mode . treesit-fold-line-comment-mode)
   )
 
 

@@ -54,7 +54,7 @@
   :custom-face
   (meow-cheatsheet-command ((t (:inherit fixed-pitch :height 130))))
   :hook
-  (pre-command-hook . my-escape-pre-command-hook)
+  (pre-command . my-escape-pre-command-hook)
   :config
   ;; Set state for some special modes
   (setf (alist-get 'help-mode meow-mode-state-list) 'motion)

@@ -8,7 +8,7 @@
          ("b" . magit-blame-addition)
          ("q" . magit-blame-quit))
   :custom (magit-diff-refine-hunk 'all)
-  :hook (magit-blame-read-only-mode-hook . magit-motion)
+  :hook (magit-blame-read-only-mode . magit-motion)
   :config
   (transient-replace-suffix 'magit-log 'magit-log:--since
     '(magit-log:--since :init-value (lambda (obj) (oset obj value "1.year"))))

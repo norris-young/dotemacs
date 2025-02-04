@@ -17,7 +17,8 @@
 
 (use-package c-ts-mode
   :mode ("\\.cu\\'" . c++-ts-mode)
-  :hook (c-ts-mode . my-choose-c-ts-style)
+  :hook ((c-ts-mode . my-choose-c-ts-style)
+         (c-ts-mode . c-ts-mode-setup))
   :config
   (setq-default c-ts-mode-indent-style 'linux)
 
@@ -29,7 +30,7 @@
   )
 
 (use-package gdb-mi
-  :hook (gdb-many-windows-hook . tool-bar-mode)
+  :hook (gdb-many-windows . tool-bar-mode)
   :custom
   (gdb-debuginfod-enable-setting nil)
   :config
