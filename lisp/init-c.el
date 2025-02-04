@@ -38,8 +38,8 @@
 
 (use-package citre
   :autoload citre-global-dbpath
-  :init
-  (defvar citre-new-file nil)
+  ;; :init
+  ;; (defvar citre-new-file nil)
   :bind (:map
          my-function-map
          ("p" . citre-peek)
@@ -48,15 +48,15 @@
          ("R" . citre-jump-to-reference)
          ("u" . citre-global-update-database)
          ("C" . citre-global-create-database))
-  :hook
-  (find-file . (lambda ()
-                 (if (not (file-exists-p (buffer-file-name)))
-                     (setq-local citre-new-file t))))
-  (after-save . (lambda ()
-                  (when (and (eq major-mode 'c-ts-mode)
-                             (not citre-new-file)
-                             (citre-global-dbpath))
-                    (citre-global-update-file))))
+  ;; :hook
+  ;; (find-file . (lambda ()
+  ;;                (if (not (file-exists-p (buffer-file-name)))
+  ;;                    (setq-local citre-new-file t))))
+  ;; (after-save . (lambda ()
+  ;;                 (when (and (eq major-mode 'c-ts-mode)
+  ;;                            (not citre-new-file)
+  ;;                            (citre-global-dbpath))
+  ;;                   (citre-global-update-file))))
   :config
   (with-eval-after-load 'cc-mode (require 'citre-lang-c))
   (with-eval-after-load 'dired (require 'citre-lang-fileref))
