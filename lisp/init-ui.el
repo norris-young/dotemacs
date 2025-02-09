@@ -72,6 +72,11 @@
   (cnfonts-profiles '("default-fonts"))
   :hook (after-init . cnfonts-mode))
 
+(use-package tab-bar
+  :bind (:map
+         tab-bar-mode-map
+         ("C-<tab>" . nil)))
+
 (use-package tabspaces
   :hook
   (after-init . tabspaces-mode) ;; use this only if you want the minor-mode loaded at startup.
