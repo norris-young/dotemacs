@@ -35,5 +35,5 @@ if [[ -d ${lsp_bridge_pyenv_path} ]]; then
 fi
 python -m venv ${lsp_bridge_pyenv_path}
 source ${lsp_bridge_pyenv_path}/bin/activate
-pip install --upgrade pip
+python -m pip install --upgrade pip
 pip install epc orjson sexpdata six setuptools paramiko rapidfuzz watchdog packaging

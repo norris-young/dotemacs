@@ -16,3 +16,4 @@ projects
 /.emacs.desktop.lock
 /tabsession.el
 /lisp/my-autoloads.el
+/lsp.bridge.pyenv/
