@@ -64,7 +64,7 @@
                                           (acm-hide)
                                           (acm-doc-hide)))
 
-  (meow-motion-overwrite-define-key
+  (meow-motion-define-key
    '("j" . meow-next)
    '("k" . meow-prev)
    '("h" . meow-left)
@@ -78,15 +78,7 @@
   (meow-leader-define-key
    ;; SPC SPC for M-x quickly
    '("SPC" . counsel-M-x)
-   ;; SPC j/k/h/l will run the original command in MOTION state.
-   '("j" . "H-j")
-   '("k" . "H-k")
-   '("h" . "H-h")
-   '("l" . "H-l")
-   '("J" . "H-J")
-   '("K" . "H-K")
-   '("H" . "H-H")
-   '("L" . "H-L")
+
    ;; Use SPC (0-9) for digit arguments.
    '("1" . winum-select-window-1)
    '("2" . winum-select-window-2)
