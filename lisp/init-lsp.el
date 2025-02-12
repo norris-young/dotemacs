@@ -64,6 +64,9 @@
   (lsp-bridge-remote-start-automatically t)
   (lsp-bridge-remote-heartbeat-interval 600)
   :config
+  (if (eq system-type 'windows-nt)
+      (setq lsp-bridge-python-lsp-server 'pyright)
+    (setq lsp-bridge-python-lsp-server 'basedpyright))
   (add-to-list 'lsp-bridge-default-mode-hooks 'rust-ts-mode-hook)
   (cl-delete 'org-mode-hook lsp-bridge-default-mode-hooks)
   (advice-add #'lsp-bridge-mode :before

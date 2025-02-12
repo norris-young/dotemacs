@@ -7,7 +7,7 @@ arch_setup() {
          ctags global \
          python python-pygments \
          ttf-ubuntu-mono-nerd wqy-microhei ttf-hanazono \
-         clang pyright ruff
+         clang
 
     # setup python venv for lsp bridge
     lsp_bridge_pyenv_path=~/.emacs.d/lsp.bridge.pyenv
@@ -17,7 +17,8 @@ arch_setup() {
     python -m venv ${lsp_bridge_pyenv_path}
     source ${lsp_bridge_pyenv_path}/bin/activate
     python -m pip install --upgrade pip
-    pip install epc orjson sexpdata six setuptools paramiko rapidfuzz watchdog packaging
+    pip install epc orjson sexpdata six setuptools paramiko rapidfuzz watchdog \
+        packaging basedpyright
 }
 
 msys_setup() {
@@ -28,7 +29,6 @@ msys_setup() {
            ucrt64/mingw-w64-ucrt-x86_64-clang \
            ucrt64/mingw-w64-ucrt-x86_64-python \
            ucrt64/mingw-w64-ucrt-x86_64-python-pygments \
-           ucrt64/mingw-w64-ucrt-x86_64-python-ruff-lsp \
            ucrt64/mingw-w64-ucrt-x86_64-python-six \
            ucrt64/mingw-w64-ucrt-x86_64-python-setuptools \
            ucrt64/mingw-w64-ucrt-x86_64-python-paramiko \
@@ -44,7 +44,7 @@ msys_setup() {
     python -m venv --system-site-packages ${lsp_bridge_pyenv_path}
     source ${lsp_bridge_pyenv_path}/bin/activate
     python -m pip install --upgrade pip
-    pip install epc orjson sexpdata
+    pip install epc orjson sexpdata pyright
 }
 
 echo "Install dependencys(we may need sudo rights)..."
