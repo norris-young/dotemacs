@@ -21,7 +21,7 @@
   (let ((buf (get-file-buffer filename)))
     (if buf
         (switch-to-buffer buf)
-      (apply ff filename wildcards))))
+      (apply ff `(,filename ,wildcards)))))
 
 ;;;###autoload
 (defun move-to-gud-after-first-memory-udpate ()
