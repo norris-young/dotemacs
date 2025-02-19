@@ -160,3 +160,18 @@
 [submodule "llama"]
 	path = packages/llama
 	url = https://github.com/tarsius/llama.git
+[submodule "vertico"]
+	path = packages/vertico
+	url = https://github.com/minad/vertico.git
+[submodule "orderless"]
+	path = packages/orderless
+	url = https://github.com/oantolin/orderless.git
+[submodule "marginalia"]
+	path = packages/marginalia
+	url = https://github.com/minad/marginalia.git
+[submodule "embark"]
+	path = packages/embark
+	url = https://github.com/oantolin/embark.git
+[submodule "consult"]
+	path = packages/consult
+	url = https://github.com/minad/consult.git

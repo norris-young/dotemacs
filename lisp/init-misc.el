@@ -1,5 +1,10 @@
 ;;; ...  -*- lexical-binding: t -*-
 
+(use-package avy
+  :custom (avy-all-windows t)
+  :config
+  (avy-setup-default))
+
 ;; Save file place by default
 (use-package saveplace
   :hook (after-init . save-place-mode))

@@ -1,7 +1,6 @@
 ;;; ...  -*- lexical-binding: t -*-
 
 (require 'package)
-;;(require 'ivy)
 
 ;;;###autoload
 (defun package-subdirs-recurse (func search-dir &optional pp)
@@ -59,8 +58,8 @@
 
 ;;;###autoload
 (defun my-generate-autoloads (path)
-  (interactive (list (ivy-read "Generate path:" 'read-file-name-internal
-                               :initial-input my-packages-dir)))
+  (interactive (list (completing-read "Generate path:" 'read-file-name-internal
+                                      nil nil my-packages-dir)))
   (let ((pkg (file-name-base (directory-file-name path))))
     (if (equal pkg "packages")
         (package-subdirs-recurse #'my-collect-package-generated-autoloads path)

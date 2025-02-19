@@ -62,3 +62,13 @@
   (interactive)
   (call-interactively #'meow-join)
   (call-interactively #'meow-append))
+
+;;;###autoload
+(defun my-rename-file (newname)
+  (interactive (list (completing-read "new file name: " 'read-file-name-internal
+                                      nil nil (buffer-file-name))))
+  (let ((oname (buffer-file-name)))
+    (if (not (equal oname newname))
+        (progn
+          (set-visited-file-name newname t t)
+          (rename-file oname newname)))))

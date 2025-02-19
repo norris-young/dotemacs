@@ -39,7 +39,7 @@
   (require-init 'init-input)
   (require-init 'init-misc)
   (require-init 'init-org)
-  (require-init 'init-swiper)
+  (require-init 'init-completion)
   (require-init 'init-ui)
   (require-init 'init-window)
   (require-init 'init-c)

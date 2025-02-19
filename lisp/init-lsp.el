@@ -27,10 +27,9 @@
   (with-eval-after-load 'meow
     (advice-add #'meow-beginning-of-thing :before #'my-set-jump)
     (advice-add #'meow-end-of-thing :before #'my-set-jump))
-  (with-eval-after-load 'counsel
-    (advice-add #'counsel-jump-in-buffer :before #'my-set-jump))
-  (with-eval-after-load 'swiper
-    (advice-add #'swiper-isearch :before #'my-set-jump))
+  (with-eval-after-load 'consult
+    (advice-add #'consult-jump-in-buffer :before #'my-set-jump)
+    (advice-add #'consult-isearch :before #'my-set-jump))
   (with-eval-after-load 'lsp-bridge
     (advice-add #'my-find-def :before #'my-set-jump)
     (advice-add #'my-find-ref :before #'my-set-jump))

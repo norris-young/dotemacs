@@ -26,6 +26,8 @@
          ("b" . project-list-buffers)
          :map
          my-file-map
+         ("f" . find-file)
+         ("R" . my-rename-file)
          ("n" . my-show-file-name)
          ("s" . save-buffer))
   :custom
@@ -77,7 +79,7 @@
 
   (meow-leader-define-key
    ;; SPC SPC for M-x quickly
-   '("SPC" . counsel-M-x)
+   '("SPC" . meow-M-x)
 
    ;; Use SPC (0-9) for digit arguments.
    '("1" . winum-select-window-1)
