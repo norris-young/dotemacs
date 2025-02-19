@@ -8,7 +8,8 @@
 (use-package edebug
   :bind (:map
          edebug-mode-map
-         ("A" . #'my-elisp-add-to-watch)))
+         ("A" . #'my-elisp-add-to-watch)
+         ("s" . #'edebug-step-mode)))
 
 (use-package edebug-x
   :hook (edebug-mode . edebug-x-mode))
