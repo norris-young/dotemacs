@@ -49,10 +49,10 @@
     (package-generate-autoloads name pkg-dir)
     (delete-file target)
     (rename-file file target)
-    (message "byte compiling for package [%s] in [%s]..." name pkg-dir)
+    ;; (message "byte compiling for package [%s] in [%s]..." name pkg-dir)
     ;(native-compile-directory pkg-dir)
     ;; (message "native compilation for package [%s] in [%s] started" name pkg-dir)
-    (native-compile-async pkg-dir t)
+    ;; (native-compile-async pkg-dir t)
     )
   )
 

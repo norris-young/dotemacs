@@ -22,11 +22,12 @@
     (progn
       (require 'bytecomp)
       (make-directory my-autoloads-dir)
-      (setq native-comp-async-report-warnings-errors 'silent)
+      ;; (setq native-comp-async-report-warnings-errors 'silent)
       (let ((byte-compile-log-warning-function (lambda (&rest _))))
         (package-subdirs-recurse #'my-collect-package-generated-autoloads
                                  my-packages-dir))
-      (native-compile-async my-lisp-dir nil nil "myfun.*")))
+      ;; (native-compile-async my-lisp-dir nil nil "myfun.*")
+      ))
 
 ;; load autoload for third-party packages
 (cl-dolist (alf (directory-files my-autoloads-dir nil "^[^.].*"))
