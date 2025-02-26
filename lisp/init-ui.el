@@ -73,8 +73,7 @@
   :hook (after-init . cnfonts-mode))
 
 (use-package tab-bar
-  :bind (:map
-         tab-bar-mode-map
+  :bind (:map tab-bar-mode-map
          ("C-<tab>" . nil)))
 
 (use-package tabspaces

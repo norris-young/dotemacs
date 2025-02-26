@@ -14,8 +14,7 @@
   xref--find-xrefs)
 
 (use-package better-jumper
-  :bind (:map
-         my-function-map
+  :bind (:map my-function-map
          ("f" . better-jumper-jump-forward)
          ("b" . better-jumper-jump-backward))
   :custom
@@ -42,12 +41,10 @@
   )
 
 (use-package lsp-bridge
-  :bind (:map
-         my-function-map
+  :bind (:map my-function-map
          ("d" . my-find-def)
          ("r" . my-find-ref)
-         :map
-         lsp-bridge-ref-mode-map
+         :map lsp-bridge-ref-mode-map
          ("d" . lsp-bridge-ref-open-file))
   :hook (after-init . global-lsp-bridge-mode)
   :custom

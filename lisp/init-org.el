@@ -7,8 +7,7 @@
   :hook (org-agenda-finalize . org-timeline-insert-timeline))
 
 (use-package org
-  :bind (:map
-         my-org-map
+  :bind (:map my-org-map
          ("f" . org-cycle-agenda-files)
          ("c" . org-capture)
          ("r" . org-refile)

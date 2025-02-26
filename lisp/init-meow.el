@@ -20,12 +20,10 @@
   (defvar my-codefold-map (make-sparse-keymap))
   (defvar meow-window-resize-map (make-sparse-keymap))
   :bind (("C-x C-S-r" . restart-emacs)
-         :map
-         project-prefix-map
+         :map project-prefix-map
          ("C-b" . project-switch-to-buffer)
          ("b" . project-list-buffers)
-         :map
-         my-file-map
+         :map my-file-map
          ("f" . find-file)
          ("R" . my-rename-file)
          ("n" . my-show-file-name)

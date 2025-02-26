@@ -6,8 +6,7 @@
 
 (use-package winner
   :hook (after-init . winner-mode)
-  :bind (:map
-         my-window-map
+  :bind (:map my-window-map
          ("r" . winner-undo)
          ("R" . winner-redo)))
 
@@ -15,16 +14,14 @@
 (use-package window
   :bind (("M-j" . scroll-up-line)
          ("M-k" . scroll-down-line)
-         :map
-         my-buffer-map
+         :map my-buffer-map
          ("d" . kill-current-buffer)
          ("M" . switch-to-minibuffer)
          ("n" . next-buffer)
          ("p" . previous-buffer)
          ("m" . my-switch-to-message-buffer)
          ("s" . my-switch-to-scratch-buffer)
-         :map
-         my-window-map
+         :map my-window-map
          ("h" . windmove-left)
          ("j" . windmove-down)
          ("k" . windmove-up)

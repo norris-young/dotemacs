@@ -16,8 +16,7 @@
   )
 
 (use-package treesit-fold
-  :bind (:map
-         my-codefold-map
+  :bind (:map my-codefold-map
          ("t" . treesit-fold-toggle)
          ("m" . treesit-fold-close-all)
          ("M" . treesit-fold-open-all)

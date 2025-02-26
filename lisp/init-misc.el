@@ -46,8 +46,7 @@
 (use-package markdown-mode
   :mode ("README\\.md\\'" . gfm-mode)
   :init (setq markdown-command "multimarkdown")
-  :bind (:map
-         markdown-mode-map
+  :bind (:map markdown-mode-map
          ("C-c C-e" . markdown-do))
   :config
   (add-hook 'markdown-mode-hook #'conditionally-turn-on-pandoc))
@@ -75,8 +74,7 @@
 
 (use-package project
   :bind (("M-r" . revert-project-buffer)
-         :map
-         project-prefix-map
+         :map project-prefix-map
          ("k" . project-kill-other-buffers)
          ("K" . project-kill-buffers)
          )

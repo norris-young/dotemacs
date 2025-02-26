@@ -41,8 +41,7 @@
   :autoload citre-global-dbpath
   ;; :init
   ;; (defvar citre-new-file nil)
-  :bind (:map
-         my-function-map
+  :bind (:map my-function-map
          ("p" . citre-peek)
          ("P" . citre-peek-reference)
          ("D" . citre-jump)

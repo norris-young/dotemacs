@@ -2,8 +2,7 @@
 
 (use-package transient :load-path "packages/transient/lisp")
 (use-package magit
-  :bind (:map
-         my-git-map
+  :bind (:map my-git-map
          ("s" . magit-status)
          ("b" . magit-blame-addition)
          ("q" . magit-blame-quit))
