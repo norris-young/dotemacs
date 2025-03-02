@@ -80,3 +80,12 @@
          (epc-process (if epc-con (cl-struct-slot-value 'lsp-bridge-epc-connection 'process epc-con))))
     (or (eq buffer (process-buffer lsp-bridge-internal-process))
         (eq buffer (process-buffer epc-process)))))
+
+
+;;;###autoload
+(defun lsp-dir (&rest _)
+  (when-let* ((project (project-current))
+              (project-root (nth 2 project)))
+    (when (file-exists-p (expand-file-name ".project.lsp.config" project-root))
+      (setq-local lsp-bridge-user-langserver-dir (file-local-name project-root))
+      (setq-local lsp-bridge-user-multiserver-dir (file-local-name project-root)))))
