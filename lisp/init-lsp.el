@@ -72,7 +72,10 @@
                   (when (file-exists-p (expand-file-name ".project.lsp.config" project-root))
                     (setq-local lsp-bridge-user-langserver-dir (file-local-name project-root))
                     (setq-local lsp-bridge-user-multiserver-dir (file-local-name project-root))))))
-
+  (mapc (lambda (pair)
+          (if (eq (cdr pair) 'lsp-bridge-c-lsp-server)
+              (setcar pair '(c-mode c++-mode c-or-c++-mode c-ts-mode c++-ts-mode c-or-c++-ts-mode objc-mode))))
+        lsp-bridge-single-lang-server-mode-list)
   )
 
 (provide 'init-lsp)
