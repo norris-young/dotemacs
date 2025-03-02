@@ -33,13 +33,15 @@
                 tab-width 4
                 indent-tabs-mode nil)))
 
-;; (defun tweak-linux-style (style)
-;;   (let ((name (car style))
-;;         (rules (cdr style)))
-;;     (if (eq name 'linux)
-;;         (setcdr style `(;; Opening bracket.
-;;                         ((node-is "compound_statement") standalone-parent 0)
-;;                         ((node-is "}") standalone-parent 0)
+;;;###autoload
+(defun tweak-style (styles)
+  (let* ((style (car styles))
+         (rules (cdr style)))
+    (setcdr style (append `(;; Opening bracket.
+                            ((match "compound_statement" "compound_statement") standalone-parent c-ts-mode-indent-offset)
+                            ((node-is "compound_statement") standalone-parent 0)
+                          rules)))
+  styles)
 
 ;;;###autoload
 (defun my-subscript-identifier (node)

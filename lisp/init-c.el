@@ -22,11 +22,7 @@
   :config
   (setq-default c-ts-mode-indent-style 'linux)
 
-  ;; (advice-add #'c-ts-mode--indent-styles :around
-  ;;             (lambda (fn mode)
-  ;;               (let ((styles (funcall fn mode)))
-  ;;                 (mapc #'tweak-linux-style styles)
-  ;;                 styles)))
+  (advice-add #'c-ts-mode--simple-indent-rules :filter-return #'tweak-style)
   )
 
 (use-package gdb-mi
