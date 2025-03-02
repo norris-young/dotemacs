@@ -18,7 +18,9 @@
 (use-package c-ts-mode
   :mode ("\\.cu\\'" . c++-ts-mode)
   :hook ((c-ts-mode . my-choose-c-ts-style)
-         (c-ts-mode . c-ts-mode-setup))
+         (c-ts-mode . c-ts-mode-setup)
+         (c++-ts-mode . my-choose-c-ts-style)
+         (c++-ts-mode . c-ts-mode-setup))
   :config
   (setq-default c-ts-mode-indent-style 'linux)
 

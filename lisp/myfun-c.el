@@ -39,8 +39,8 @@
          (rules (cdr style)))
     (setcdr style (append `(;; Opening bracket.
                             ((match "compound_statement" "compound_statement") standalone-parent c-ts-mode-indent-offset)
-                            ((node-is "compound_statement") standalone-parent 0)
-                          rules))))
+                            ((node-is "compound_statement") standalone-parent 0))
+                          rules)))
   styles)
 
 ;;;###autoload
