@@ -1,5 +1,7 @@
 ;;; ...  -*- lexical-binding: t -*-
 
+(require 'consult)
+
 ;;;###autoload
 (defun consult-jump-in-buffer ()
   "Jump in buffer with `consult-imenu' or `counsult-org-heading' if in org-mode"
