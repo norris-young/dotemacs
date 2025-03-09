@@ -24,7 +24,7 @@
   :config
   (setq-default c-ts-mode-indent-style 'linux)
 
-  (advice-add #'c-ts-mode--simple-indent-rules :filter-return #'tweak-style)
+  (advice-add #'c-ts-mode--get-indent-style :filter-return #'tweak-style)
   )
 
 (use-package gdb-mi
