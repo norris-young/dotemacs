@@ -175,3 +175,6 @@
 [submodule "consult"]
 	path = packages/consult
 	url = https://github.com/minad/consult.git
+[submodule "bpftrace-mode"]
+	path = packages/bpftrace-mode
+	url = https://gitlab.com/jgkamat/bpftrace-mode.git
