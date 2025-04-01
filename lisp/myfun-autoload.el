@@ -49,8 +49,8 @@
     (package-generate-autoloads name pkg-dir)
     (delete-file target)
     (rename-file file target)
-    (message "native compilation for package [%s] in [%s] started" name pkg-dir)
-    (native-compile-async pkg-dir t)
+    ;; (message "native compilation for package [%s] in [%s] started" name pkg-dir)
+    ;; (native-compile-async pkg-dir t)
     )
   )
 
