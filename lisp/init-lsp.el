@@ -46,7 +46,9 @@
          ("r" . my-find-ref)
          :map lsp-bridge-ref-mode-map
          ("d" . lsp-bridge-ref-open-file))
-  :hook (after-init . global-lsp-bridge-mode)
+  :hook
+  (after-init . global-lsp-bridge-mode)
+  (lsp-bridge . lsp-bridge-semantic-tokens-mode)
   :custom
   (acm-enable-tabnine nil)
   (acm-enable-citre nil)
