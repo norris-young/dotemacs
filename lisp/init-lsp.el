@@ -48,7 +48,7 @@
          ("d" . lsp-bridge-ref-open-file))
   :hook
   (after-init . global-lsp-bridge-mode)
-  (lsp-bridge . lsp-bridge-semantic-tokens-mode)
+  (lsp-bridge-mode . lsp-bridge-semantic-tokens-mode)
   :custom
   (acm-enable-tabnine nil)
   (acm-enable-citre nil)
@@ -61,7 +61,11 @@
   (lsp-bridge-python-command "~/.emacs.d/lsp.bridge.pyenv/bin/python")
   (lsp-bridge-remote-start-automatically t)
   (lsp-bridge-remote-heartbeat-interval 600)
+  (lsp-bridge-enable-inlay-hint t)
+  (lsp-bridge-enable-hover-diagnostic t)
   :config
+  (setq-default lsp-bridge-semantic-tokens-type-faces
+                [("comment" . lsp-bridge-semantic-tokens-comment-face)])
   (if (eq system-type 'windows-nt)
       (setq lsp-bridge-python-lsp-server 'pyright)
     (setq lsp-bridge-python-lsp-server 'basedpyright))

@@ -6,6 +6,10 @@
     "cache": {
       "directory": "~/.cache/.ccls-cache"
     },
+    "clang": {
+      "extraArgs": ["--target=armv7a-linux-gnueabi"],
+      "excludeArgs": ["--march=armv7a", "-mabi=lp64"]
+    },
     "index": {
       "comments": 0
     },

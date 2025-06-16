@@ -6,7 +6,8 @@
     "--enable-config",
     "--clang-tidy",
     "--background-index",
-    "--background-index-priority=normal"
+    "--background-index-priority=normal",
+    "--path-mappings=src/=build/"
   ],
   "settings": {}
 }

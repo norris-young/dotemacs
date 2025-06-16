@@ -6,6 +6,9 @@
     "cache": {
       "directory": "~/.cache/.ccls-cache"
     },
+    "clang": {
+      "pathMappings": ["build/>src/"]
+    },
     "index": {
       "comments": 0
     },

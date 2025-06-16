@@ -1,0 +1,21 @@
+Index:
+    Background: Build
+    StandardLibrary: true
+Diagnostics:
+    ClangTidy:
+        FastCheckFilter: Strict
+    UnusedIncludes: Strict
+Completion:
+    AllScopes: Yes
+    ArgumentLists: FullPlaceholders
+    HeaderInsertion: Never
+InlayHints:
+    Enabled: true
+    ParameterNames: true
+    DeducedTypes: true
+    BlockEnd: true
+    Designators: true
+    DefaultArguments: false
+    TypeNameLimit: 24
+Hover:
+    ShowAKA: true
