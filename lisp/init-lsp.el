@@ -63,6 +63,7 @@
   (lsp-bridge-remote-heartbeat-interval 600)
   (lsp-bridge-enable-inlay-hint t)
   (lsp-bridge-enable-hover-diagnostic t)
+  (lsp-bridge-semantic-tokens-delay 0.1)
   :config
   (setq-default lsp-bridge-semantic-tokens-type-faces
                 [("comment" . lsp-bridge-semantic-tokens-comment-face)])
