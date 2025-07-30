@@ -1,3 +1,0 @@
-CompileFlags:
-  Add: [--target=armv7a-linux-gnueabi]
-  Remove: [--target=armv7a-linux-gnueabi, -mabi=lp64]

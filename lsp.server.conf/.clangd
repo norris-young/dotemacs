@@ -19,3 +19,10 @@ InlayHints:
     TypeNameLimit: 24
 Hover:
     ShowAKA: true
+---
+# linux armv7 config
+If:
+    PathMatch: .*/linux4.19/.*
+CompileFlags:
+    Add: [--target=armv7a-linux-gnueabi]
+    Remove: [--target=armv7a-linux-gnueabi, -mabi=lp64]
