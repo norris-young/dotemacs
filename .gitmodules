@@ -1,180 +1,180 @@
 [submodule "color-theme-sanityinc-tomorrow"]
 	path = packages/color-theme-sanityinc-tomorrow
-	url = https://github.com/purcell/color-theme-sanityinc-tomorrow.git
+	url = ubuntu22:~/repos/dotemacs/packages/color-theme-sanityinc-tomorrow/.git
 [submodule "compat"]
 	path = packages/compat
-	url = https://github.com/emacs-compat/compat.git
+	url = ubuntu22:~/repos/dotemacs/packages/compat/.git
 [submodule "swiper"]
 	path = packages/swiper
-	url = https://github.com/abo-abo/swiper.git
+	url = ubuntu22:~/repos/dotemacs/packages/swiper/.git
 [submodule "dash"]
 	path = packages/dash
-	url = https://github.com/magnars/dash.el.git
+	url = ubuntu22:~/repos/dotemacs/packages/dash/.git
 [submodule "evil-matchit"]
 	path = packages/evil-matchit
-	url = https://github.com/redguardtoo/evil-matchit.git
+	url = ubuntu22:~/repos/dotemacs/packages/evil-matchit/.git
 [submodule "flx"]
 	path = packages/flx
-	url = https://github.com/lewang/flx.git
+	url = ubuntu22:~/repos/dotemacs/packages/flx/.git
 [submodule "transient"]
 	path = packages/transient
-	url = https://github.com/magit/transient.git
+	url = ubuntu22:~/repos/dotemacs/packages/transient/.git
 [submodule "with-editor"]
 	path = packages/with-editor
-	url = https://github.com/magit/with-editor.git
+	url = ubuntu22:~/repos/dotemacs/packages/with-editor/.git
 [submodule "magit"]
 	path = packages/magit
-	url = https://github.com/magit/magit.git
+	url = ubuntu22:~/repos/dotemacs/packages/magit/.git
 	ignore = untracked
 [submodule "highlight-indent-guides"]
 	path = packages/highlight-indent-guides
-	url = https://github.com/DarthFennec/highlight-indent-guides.git
+	url = ubuntu22:~/repos/dotemacs/packages/highlight-indent-guides/.git
 	ignore = untracked
 [submodule "meow"]
 	path = packages/meow
-	url = https://github.com/meow-edit/meow.git
+	url = ubuntu22:~/repos/dotemacs/packages/meow/.git
 [submodule "org-superstar-mode"]
 	path = packages/org-superstar
-	url = https://github.com/integral-dw/org-superstar-mode.git
+	url = ubuntu22:~/repos/dotemacs/packages/org-superstar/.git
 [submodule "popup"]
 	path = packages/popup
-	url = https://github.com/auto-complete/popup-el.git
+	url = ubuntu22:~/repos/dotemacs/packages/popup/.git
 [submodule "posframe"]
 	path = packages/posframe
-	url = https://github.com/tumashu/posframe.git
+	url = ubuntu22:~/repos/dotemacs/packages/posframe/.git
 [submodule "emacs-rime"]
 	path = packages/rime
-	url = https://github.com/DogLooksGood/emacs-rime.git
+	url = ubuntu22:~/repos/dotemacs/packages/rime/.git
 [submodule "shackle"]
 	path = packages/shackle
-	url = https://depp.brause.cc/shackle.git
+	url = ubuntu22:~/repos/dotemacs/packages/shackle/.git
 	ignore = untracked
 [submodule "smartparens"]
 	path = packages/smartparens
-	url = https://github.com/Fuco1/smartparens.git
+	url = ubuntu22:~/repos/dotemacs/packages/smartparens/.git
 [submodule "emacs-winum"]
 	path = packages/winum
-	url = https://github.com/norris-young/emacs-winum.git
+	url = ubuntu22:~/repos/dotemacs/packages/winum/.git
 [submodule "markdown-mode"]
 	path = packages/markdown-mode
-	url = https://github.com/jrblevin/markdown-mode.git
+	url = ubuntu22:~/repos/dotemacs/packages/markdown-mode/.git
 [submodule "yasnippet"]
 	path = packages/yasnippet
-	url = https://github.com/joaotavora/yasnippet.git
+	url = ubuntu22:~/repos/dotemacs/packages/yasnippet/.git
 [submodule "lsp-bridge"]
 	path = packages/lsp-bridge
-	url = https://github.com/manateelazycat/lsp-bridge.git
+	url = ubuntu22:~/repos/dotemacs/packages/lsp-bridge/.git
 [submodule "citre"]
 	path = packages/citre
-	url = https://github.com/universal-ctags/citre.git
+	url = ubuntu22:~/repos/dotemacs/packages/citre/.git
 [submodule "acm-terminal"]
 	path = packages/acm-terminal
-	url = https://github.com/twlz0ne/acm-terminal.git
+	url = ubuntu22:~/repos/dotemacs/packages/acm-terminal/.git
 	ignore = untracked
 [submodule "edebug-x"]
 	path = packages/edebug-x
-	url = https://github.com/norris-young/edebug-x.git
+	url = ubuntu22:~/repos/dotemacs/packages/edebug-x/.git
 	ignore = untracked
 [submodule "cnfonts"]
 	path = packages/cnfonts
-	url = https://github.com/tumashu/cnfonts.git
+	url = ubuntu22:~/repos/dotemacs/packages/cnfonts/.git
 	ignore = untracked
 [submodule "treesit-auto"]
 	path = packages/treesit-auto
-	url = https://github.com/renzmann/treesit-auto.git
+	url = ubuntu22:~/repos/dotemacs/packages/treesit-auto/.git
 [submodule "s"]
 	path = packages/s
-	url = https://github.com/magnars/s.el.git
+	url = ubuntu22:~/repos/dotemacs/packages/s/.git
 [submodule "fringe-helper"]
 	path = packages/fringe-helper
-	url = https://github.com/nschum/fringe-helper.el.git
+	url = ubuntu22:~/repos/dotemacs/packages/fringe-helper/.git
 [submodule "imenu-list"]
 	path = packages/imenu-list
-	url = https://github.com/bmag/imenu-list.git
+	url = ubuntu22:~/repos/dotemacs/packages/imenu-list/.git
 	ignore = untracked
 [submodule "dts-mode"]
 	path = packages/dts-mode
-	url = https://github.com/bgamari/dts-mode.git
+	url = ubuntu22:~/repos/dotemacs/packages/dts-mode/.git
 	ignore = untracked
 [submodule "lua-mode"]
 	path = packages/lua-mode
-	url = https://github.com/immerrr/lua-mode.git
+	url = ubuntu22:~/repos/dotemacs/packages/lua-mode/.git
 [submodule "yasnippet-snippets"]
 	path = packages/yasnippet-snippets
-	url = https://github.com/AndreaCrotti/yasnippet-snippets.git
+	url = ubuntu22:~/repos/dotemacs/packages/yasnippet-snippets/.git
 	ignore = untracked
 [submodule "which-key"]
 	path = packages/which-key
-	url = https://github.com/justbur/emacs-which-key.git
+	url = ubuntu22:~/repos/dotemacs/packages/which-key/.git
 [submodule "packages/auto-sudoedit"]
 	path = packages/auto-sudoedit
-	url = https://github.com/ncaq/auto-sudoedit.git
+	url = ubuntu22:~/repos/dotemacs/packages/auto-sudoedit/.git
 [submodule "packages/f"]
 	path = packages/f
-	url = https://github.com/rejeep/f.el.git
+	url = ubuntu22:~/repos/dotemacs/packages/f/.git
 [submodule "auto-compile"]
 	path = packages/auto-compile
-	url = https://github.com/emacscollective/auto-compile.git
+	url = ubuntu22:~/repos/dotemacs/packages/auto-compile/.git
 [submodule "avy"]
 	path = packages/avy
-	url = https://github.com/abo-abo/avy.git
+	url = ubuntu22:~/repos/dotemacs/packages/avy/.git
 	ignore = untracked
 [submodule "better-jumper"]
 	path = packages/better-jumper
-	url = https://github.com/gilbertw1/better-jumper.git
+	url = ubuntu22:~/repos/dotemacs/packages/better-jumper/.git
 [submodule "pandoc-mode"]
 	path = packages/pandoc-mode
-	url = https://github.com/joostkremers/pandoc-mode.git
+	url = ubuntu22:~/repos/dotemacs/packages/pandoc-mode/.git
 [submodule "hydra"]
 	path = packages/hydra
-	url = https://github.com/abo-abo/hydra.git
+	url = ubuntu22:~/repos/dotemacs/packages/hydra/.git
 	ignore = untracked
 [submodule "emacs-popon"]
 	path = packages/emacs-popon
-	url = https://codeberg.org/akib/emacs-popon.git
+	url = ubuntu22:~/repos/dotemacs/packages/emacs-popon/.git
 	ignore = untracked
 [submodule "packages/org-timeblock"]
 	path = packages/org-timeblock
-	url = https://github.com/ichernyshovvv/org-timeblock.git
+	url = ubuntu22:~/repos/dotemacs/packages/org-timeblock/.git
 [submodule "packages/org-timeline"]
 	path = packages/org-timeline
-	url = https://github.com/Fuco1/org-timeline.git
+	url = ubuntu22:~/repos/dotemacs/packages/org-timeline/.git
 	ignore = untracked
 [submodule "packages/org-roam"]
 	path = packages/org-roam
-	url = https://github.com/org-roam/org-roam.git
+	url = ubuntu22:~/repos/dotemacs/packages/org-roam/.git
 [submodule "packages/emacsql"]
 	path = packages/emacsql
-	url = https://github.com/magit/emacsql.git
+	url = ubuntu22:~/repos/dotemacs/packages/emacsql/.git
 	ignore = untracked
 [submodule "treesit-fold"]
 	path = packages/treesit-fold
-	url = https://github.com/emacs-tree-sitter/treesit-fold.git
+	url = ubuntu22:~/repos/dotemacs/packages/treesit-fold/.git
 [submodule "tabspaces"]
 	path = packages/tabspaces
-	url = https://github.com/mclear-tools/tabspaces.git
+	url = ubuntu22:~/repos/dotemacs/packages/tabspaces/.git
 	ignore = untracked
 [submodule "keyfreq"]
 	path = packages/keyfreq
-	url = https://github.com/dacap/keyfreq.git
+	url = ubuntu22:~/repos/dotemacs/packages/keyfreq/.git
 [submodule "llama"]
 	path = packages/llama
-	url = https://github.com/tarsius/llama.git
+	url = ubuntu22:~/repos/dotemacs/packages/llama/.git
 [submodule "vertico"]
 	path = packages/vertico
-	url = https://github.com/minad/vertico.git
+	url = ubuntu22:~/repos/dotemacs/packages/vertico/.git
 [submodule "orderless"]
 	path = packages/orderless
-	url = https://github.com/oantolin/orderless.git
+	url = ubuntu22:~/repos/dotemacs/packages/orderless/.git
 [submodule "marginalia"]
 	path = packages/marginalia
-	url = https://github.com/minad/marginalia.git
+	url = ubuntu22:~/repos/dotemacs/packages/marginalia/.git
 [submodule "embark"]
 	path = packages/embark
-	url = https://github.com/oantolin/embark.git
+	url = ubuntu22:~/repos/dotemacs/packages/embark/.git
 [submodule "consult"]
 	path = packages/consult
-	url = https://github.com/minad/consult.git
+	url = ubuntu22:~/repos/dotemacs/packages/consult/.git
 [submodule "bpftrace-mode"]
 	path = packages/bpftrace-mode
-	url = https://gitlab.com/jgkamat/bpftrace-mode.git
+	url = ubuntu22:~/repos/dotemacs/packages/bpftrace-mode/.git
