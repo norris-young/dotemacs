@@ -79,3 +79,33 @@ Useful options: `--no-clangd`, `--prebuilt-clangd`, `--no-native-comp`,
 * Not bundled: basedpyright/Python LSP, rime, pandoc, fonts (TUI only).
 * The tab fix is applied as a commit on `offline/emacs-31.1` inside the bundled
   Emacs repository; the patch and its provenance are in `repos/patches/`.
+
+* Verified end-to-end run (this build machine)
+
+The bundle was installed into an isolated =$HOME=/tmp/e2e/home= and passed all
+self checks:
+
+- GCC 13.5.0 built from source and installed with =libgccjit=
+- CMake 4.5.0 bootstrap/configure verified (the full compile was substituted by
+  the host's CMake 4.2 for time reasons; the packaged bundle still builds 4.5.0
+  from source)
+- libtree-sitter 0.27.2 built and installed
+- Emacs 31.1 built and installed; the tab-display fix was applied with =git am=
+  before =configure=
+- =ctags=, GNU =global=, lsp-bridge python3.8 venv, all 54 submodules (0
+  uninitialized, clean =git status=) and 14 tree-sitter grammars installed
+- =emacs --version= = 31.1; =.c= files open in =c-ts-mode=; the full
+  =init.el= loads without errors
+
+Notes from that run:
+
+- The E2E run used =--no-native-comp= to save time. The default bundle uses
+  =--with-native-compilation=aot=; its configure stage (libgccjit smoke test)
+  was verified, but the full AOT compile was not run to completion here.
+- =RESUME=1 ./install.sh ...= resumes an interrupted install, reusing already
+  built GCC/CMake/libtree-sitter/Emacs.
+- =--with-gnutls=ifavailable= is used, so a target without gnutls-dev still
+  builds (TLS support disabled, irrelevant for offline use).
+- The final archive is =dotemacs-offline-31.1-focal-x86_64.tar.gz= (gzip is
+  used for the outer archive because the inner component tarballs are already
+  xz-compressed; this keeps packaging fast with the same size).
