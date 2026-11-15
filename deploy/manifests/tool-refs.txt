@@ -1,0 +1,17 @@
+# Source components built by the offline bundle.
+# name<TAB>kind<TAB>url<TAB>ref
+#   kind: git     -> depth-1 clone of url at ref, packed as a git repo tarball
+#         tarball -> official source tarball (no official git repo), packed as repos/name.tar
+#         grammars-> resolved from manifests/grammars.txt at build time
+#   ref:  empty  -> resolve newest release tag, else default-branch HEAD
+emacs	git	https://github.com/emacs-mirror/emacs.git	emacs-31.1
+gcc	git	https://github.com/gcc-mirror/gcc.git	releases/gcc-13.5.0
+cmake	git	https://github.com/Kitware/CMake.git	v4.5.0
+tree-sitter	git	https://github.com/tree-sitter/tree-sitter.git	v0.27.2
+ctags	git	https://github.com/universal-ctags/ctags.git	v6.2.1
+global	tarball-src	https://ftp.gnu.org/gnu/global/global-6.7.tar.gz	global-6.7
+llvm-project	git	https://github.com/llvm/llvm-project.git	llvmorg-23.1.5
+gmp	tarball	https://gcc.gnu.org/pub/gcc/infrastructure/gmp-6.2.1.tar.bz2	gmp-6.2.1
+mpfr	tarball	https://gcc.gnu.org/pub/gcc/infrastructure/mpfr-4.1.0.tar.bz2	mpfr-4.1.0
+mpc	tarball	https://gcc.gnu.org/pub/gcc/infrastructure/mpc-1.2.1.tar.gz	mpc-1.2.1
+isl	tarball	https://gcc.gnu.org/pub/gcc/infrastructure/isl-0.24.tar.bz2	isl-0.24

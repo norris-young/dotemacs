@@ -12,8 +12,10 @@
 
 ;; Prevent unwanted runtime compilation for gccemacs (native-comp) users;
 ;; packages are compiled ahead-of-time when they are installed and site files
-;; are compiled when gccemacs is installed.
-(setq native-comp-deferred-compilation nil)
+;; are compiled when gccemacs is installed.  Emacs >= 29 renamed the variable.
+(if (boundp 'native-comp-jit-compilation)
+    (setq native-comp-jit-compilation nil)
+  (setq native-comp-deferred-compilation nil))
 
 ;; Inhibit resizing frame
 (setq frame-inhibit-implied-resize t

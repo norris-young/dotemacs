@@ -1,0 +1,17 @@
+# Python dependencies for lsp-bridge, installed into a focal python3.8 venv
+# without pip (wheels are unzipped into site-packages).
+# One pip requirement per line. cp38-compatible pins only.
+epc==0.0.5
+sexpdata==1.0.0
+six==1.16.0
+setuptools==68.2.2
+packaging==24.0
+orjson==3.9.15
+rapidfuzz==3.9.7
+watchdog==4.0.2
+paramiko==3.4.1
+bcrypt==4.0.1
+cryptography==41.0.7
+cffi==1.15.1
+pycparser==2.21
+pynacl==1.5.0

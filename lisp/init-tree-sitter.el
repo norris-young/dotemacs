@@ -4,15 +4,16 @@
   :mode ("\\.rs\\'" . rust-ts-mode)
   :hook ((after-init . global-treesit-auto-mode))
   :custom
-  (treesit-auto-install 't)
+  (treesit-auto-install (not (getenv "DOTEMACS_OFFLINE")))
   :config
   (treesit-auto-add-to-auto-mode-alist 'all)
   (delete 'latex treesit-auto-langs)
-  (if (not (file-directory-p (expand-file-name "tree-sitter" user-emacs-directory)))
-      (let* ((treesit-language-source-alist (treesit-auto--build-treesit-source-alist))
-             (to-install (seq-filter (lambda (lang) (not (treesit-ready-p lang t)))
-                                     treesit-auto-langs)))
-        (mapc 'treesit-install-language-grammar to-install)))
+  (unless (getenv "DOTEMACS_OFFLINE")
+    (if (not (file-directory-p (expand-file-name "tree-sitter" user-emacs-directory)))
+        (let* ((treesit-language-source-alist (treesit-auto--build-treesit-source-alist))
+               (to-install (seq-filter (lambda (lang) (not (treesit-ready-p lang t)))
+                                       treesit-auto-langs)))
+          (mapc 'treesit-install-language-grammar to-install))))
   )
 
 (use-package treesit-fold

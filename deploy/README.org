@@ -1,0 +1,81 @@
+# Offline bundle for dotemacs
+
+This directory builds a self-contained tarball that installs, **without network
+and without sudo**, on a fresh Ubuntu 20.04 x86_64 machine:
+
+* GCC 13.5.0 (built from its official git tag, with `jit`/libgccjit)
+* CMake 4.5.0 (built from its official git tag)
+* libtree-sitter 0.27.2
+* Emacs 31.1 (official git tag) — **with the local tab-display fix applied
+  before compilation**
+* universal-ctags 6.2.1 and GNU global (latest tag)
+* clangd from LLVM `llvmorg-23.1.5` (built on the target, or a bundled
+  prebuilt fallback)
+* the dotemacs configuration with all submodules bumped to their newest
+  upstream release
+* a python3.8 venv for lsp-bridge, and the tree-sitter grammars
+
+## Source packaging policy
+
+* Every compiled component that has an official git repository is shipped as a
+  **depth-1 git repository tarball** (`git clone --depth 1 --branch <ref>`).
+* Components without an official git repository are shipped as the official
+  release source tarball. This is the case for GMP (Mercurial upstream), and
+  for the GCC build prerequisites (GMP/MPFR/MPC/ISL): GCC supports them only as
+  the release tarballs pinned by its own `contrib/download_prerequisites`.
+* Submodules are bumped to the newest release tag (or default-branch HEAD when
+  the project has no tags) at bundle time; the private mirror is only used as a
+  fallback and is recorded in `manifests/resolved.txt`.
+
+## Build (on a machine with network access)
+
+```sh
+cd deploy
+./build.sh                 # -> deploy/dist/dotemacs-offline-31.1-focal-x86_64.tar.xz
+```
+
+Options (environment variables):
+
+| Variable | Meaning |
+|---|---|
+| `JOBS=N` | parallel build jobs |
+| `WITH_CLANGD_PREBUILT=1` | also build a prebuilt clangd fallback (slow) |
+| `DO_VERIFY=1` | run the end-to-end verification after building |
+| `KEEP_WORK=1` | keep intermediate clones under `deploy/dist/work` |
+| `SKIP_TOOLS=1` / `SKIP_PACKAGES=1` / `SKIP_GRAMMARS=1` / `SKIP_WHEELS=1` | iterate without re-cloning |
+
+## Install (on the offline target)
+
+```sh
+tar xf dotemacs-offline-31.1-focal-x86_64.tar.xz
+cd dotemacs-offline-31.1-focal-x86_64
+./install.sh               # ~1-2.5 hours; --no-clangd to skip LLVM
+```
+
+Prerequisites on the target (checked by `install.sh`): a stage0 C/C++ compiler
+(`gcc`/`g++`, focal's 9.4 is enough), `make`, `autoconf`, `automake`, `libtool`,
+`pkg-config`, `texinfo`, `flex`, `bison`, `bzip2`, `zlib1g-dev`,
+`libncurses-dev`, `libtinfo-dev`, `libffi-dev`, `libgnutls28-dev`, `python3.8`,
+`git`, `tar`, `xz`, and at least 25 GB of free space.
+
+Useful options: `--no-clangd`, `--prebuilt-clangd`, `--no-native-comp`,
+`--jobs N`, `--keep-build`, `--rollback`, `--purge`, `--dry-run`, `--yes`.
+
+## What gets installed where
+
+```
+~/.local/opt/dotemacs/gcc-13.5           GCC 13.5.0 + libgccjit
+~/.local/opt/dotemacs/cmake-4.5.0        CMake 4.5.0
+~/.local/opt/dotemacs/emacs-31.1         Emacs 31.1
+~/.local/opt/dotemacs/bin                ctags, global, clangd, dotemacs launcher
+~/.local/bin/emacs                       launcher (sets DOTEMACS_OFFLINE=1)
+~/.emacs.d -> ~/repos/dotemacs           the configuration (a git repository)
+~/repos/mirrors                          local submodule mirrors
+```
+
+## Notes
+
+* `DOTEMACS_OFFLINE=1` (set by the launcher) disables tree-sitter auto-install.
+* Not bundled: basedpyright/Python LSP, rime, pandoc, fonts (TUI only).
+* The tab fix is applied as a commit on `offline/emacs-31.1` inside the bundled
+  Emacs repository; the patch and its provenance are in `repos/patches/`.

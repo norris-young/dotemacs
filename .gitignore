@@ -20,3 +20,6 @@ projects
 /org-persist/
 /history
 /server/
+
+# offline deployment bundle outputs
+/deploy/dist/
