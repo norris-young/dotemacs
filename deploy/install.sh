@@ -55,6 +55,37 @@ warn() { printf '\033[1;33m[warn ]\033[0m %s\n' "$*"; }
 die()  { printf '\033[1;31m[error]\033[0m %s\n' "$*" >&2; exit 1; }
 have() { command -v "$1" >/dev/null 2>&1; }
 
+
+# Only emit -I/-L for directories that actually exist, otherwise GCC prints
+# "-Wmissing-include-dirs" warnings for every compilation unit.
+my_include_flags() {
+    local f="" d
+    for d in "$GCC_PREFIX/include" "$PREFIX/include" \
+             "$HOME/.local/include" "$HOME/usr/local/include" /usr/local/include; do
+        [ -d "$d" ] && f="$f -I$d"
+    done
+    printf '%s' "${f# }"
+}
+
+my_lib_flags() {
+    local f="" d
+    for d in "$PREFIX/lib" "$GCC_PREFIX/lib64" "$GCC_PREFIX/lib" \
+             "$HOME/.local/lib" "$HOME/usr/local/lib" "$HOME/usr/local/lib64" \
+             /usr/local/lib /usr/local/lib64; do
+        [ -d "$d" ] && f="$f -L$d -Wl,-rpath,$d"
+    done
+    printf '%s' "${f# }"
+}
+
+my_pkgconfig_path() {
+    local p="$PREFIX/lib/pkgconfig:$GCC_PREFIX/lib64/pkgconfig:$GCC_PREFIX/lib/pkgconfig" d
+    for d in "$HOME/.local/lib/pkgconfig" "$HOME/usr/local/lib/pkgconfig" \
+             "$HOME/usr/local/lib64/pkgconfig" /usr/local/lib/pkgconfig /usr/local/lib64/pkgconfig; do
+        [ -d "$d" ] && p="$p:$d"
+    done
+    printf '%s' "$p"
+}
+
 run() {
     if [ "$DRY_RUN" = 1 ]; then
         printf '[dry-run] %s\n' "$*"
@@ -375,15 +406,15 @@ build_emacs() {
         cd "$e"
         CC=$GCC_PREFIX/bin/gcc CXX=$GCC_PREFIX/bin/g++ \
         CFLAGS='-O2 -march=native -pipe' \
-        PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig:$GCC_PREFIX/lib64/pkgconfig:$GCC_PREFIX/lib/pkgconfig:$HOME/.local/lib/pkgconfig:$HOME/usr/local/lib/pkgconfig:/usr/local/lib/pkgconfig:/usr/local/lib64/pkgconfig" \
-        CPPFLAGS="-I$GCC_PREFIX/include -I$PREFIX/include -I$HOME/.local/include -I$HOME/usr/local/include -I/usr/local/include" \
-        LDFLAGS="-L$PREFIX/lib -L$GCC_PREFIX/lib64 -L$GCC_PREFIX/lib -L$HOME/.local/lib -L$HOME/usr/local/lib -L$HOME/usr/local/lib64 -L/usr/local/lib -L/usr/local/lib64 -Wl,-rpath,$PREFIX/lib -Wl,-rpath,$GCC_PREFIX/lib64 -Wl,-rpath,$GCC_PREFIX/lib" \
+        PKG_CONFIG_PATH="$(my_pkgconfig_path)" \
+        CPPFLAGS="$(my_include_flags)" \
+        LDFLAGS="$(my_lib_flags)" \
         ./autogen.sh >/dev/null
         CC=$GCC_PREFIX/bin/gcc CXX=$GCC_PREFIX/bin/g++ \
         CFLAGS='-O2 -march=native -pipe' \
-        PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig:$GCC_PREFIX/lib64/pkgconfig:$GCC_PREFIX/lib/pkgconfig:$HOME/.local/lib/pkgconfig:$HOME/usr/local/lib/pkgconfig:/usr/local/lib/pkgconfig:/usr/local/lib64/pkgconfig" \
-        CPPFLAGS="-I$GCC_PREFIX/include -I$PREFIX/include -I$HOME/.local/include -I$HOME/usr/local/include -I/usr/local/include" \
-        LDFLAGS="-L$PREFIX/lib -L$GCC_PREFIX/lib64 -L$GCC_PREFIX/lib -L$HOME/.local/lib -L$HOME/usr/local/lib -L$HOME/usr/local/lib64 -L/usr/local/lib -L/usr/local/lib64 -Wl,-rpath,$PREFIX/lib -Wl,-rpath,$GCC_PREFIX/lib64 -Wl,-rpath,$GCC_PREFIX/lib" \
+        PKG_CONFIG_PATH="$(my_pkgconfig_path)" \
+        CPPFLAGS="$(my_include_flags)" \
+        LDFLAGS="$(my_lib_flags)" \
         ./configure --prefix="$EMACS_PREFIX" --without-x "${ncomp[@]}" \
             --with-gnutls=ifavailable \
             --with-tree-sitter --with-modules --without-compress-install \
@@ -408,8 +439,8 @@ build_ctags_global() {
             [ -x ./configure ] || autoreconf -fi >/dev/null 2>&1 || die "$d: autoreconf failed"
             CC=$GCC_PREFIX/bin/gcc CXX=$GCC_PREFIX/bin/g++ \
             CFLAGS='-O2 -march=native -pipe' \
-            CPPFLAGS="-I$HOME/.local/include -I$HOME/usr/local/include -I/usr/local/include" \
-            LDFLAGS="-L$GCC_PREFIX/lib -L$HOME/.local/lib -L$HOME/usr/local/lib -L$HOME/usr/local/lib64 -L/usr/local/lib -L/usr/local/lib64" \
+            CPPFLAGS="$(my_include_flags)" \
+            LDFLAGS="$(my_lib_flags)" \
             ./configure --prefix="$PREFIX" >/dev/null
             make -j"$JOBS" >/dev/null
             make install >/dev/null
