@@ -338,6 +338,7 @@ assemble() {
 }
 
 main() {
+    export XZ_OPT=${XZ_OPT:--1}
     have git && have curl && have tar && have xz || die "missing basic tools"
     log "bundle version $BUNDLE_VERSION, work dir $WORK"
     [ "$SKIP_TOOLS" = 1 ]    || pack_tools
