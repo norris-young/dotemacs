@@ -88,7 +88,7 @@ while [ $# -gt 0 ]; do
     esac
 done
 
-export PATH="$BIN_DIR:$HOME/.local/bin:$PATH"
+export PATH="$GCC_PREFIX/bin:$CMAKE_PREFIX/bin:$BIN_DIR:$HOME/.local/bin:$PATH"
 
 export LD_LIBRARY_PATH="$GCC_PREFIX/lib64:$GCC_PREFIX/lib:$PREFIX/lib:$HOME/.local/lib64:$HOME/.local/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 
@@ -270,6 +270,7 @@ build_gcc() {
     extract_dep mpc-1.2.1.tar.gz mpc
     extract_dep isl-0.24.tar.bz2 isl
     (
+        set -e
         cd "$g"
         ./configure --prefix="$GCC_PREFIX" --enable-languages=c,c++,jit \
             --enable-host-shared --disable-multilib --disable-bootstrap \
@@ -290,12 +291,15 @@ build_cmake() {
     log "unpacking and building CMake 4.5.0"
     extract_tar "$BUNDLE_DIR/repos/cmake.tar" "$c"
     (
+        set -e
         cd "$c"
         CC=$GCC_PREFIX/bin/gcc CXX=$GCC_PREFIX/bin/g++ \
         CFLAGS='-O2 -march=native -pipe' CXXFLAGS='-O2 -march=native -pipe' \
         ./bootstrap --prefix="$CMAKE_PREFIX" --parallel="$JOBS" \
             -- -DCMAKE_BUILD_TYPE=Release -DBUILD_CursesDialog=OFF \
+               -DCMAKE_USE_OPENSSL=OFF \
                -DCMAKE_EXE_LINKER_FLAGS="-Wl,-rpath,$GCC_PREFIX/lib64"
+        [ -f Makefile ] || die "CMake bootstrap failed (see the output above)"
         make -j"$JOBS"
         make install
     ) || die "CMake build failed (see $c)"
@@ -338,7 +342,9 @@ apply_emacs_patch() {
     local e=$REPOS_DIR/emacs
     extract_tar "$BUNDLE_DIR/repos/emacs.tar" "$e"
     (
+        set -e
         cd "$e"
+        git am --abort >/dev/null 2>&1 || true
         git checkout -q -B offline/emacs-31.1 emacs-31.1
         if git am "$BUNDLE_DIR/repos/patches/0001-fix-tab-dispaly.patch" >/dev/null 2>&1; then
             log "applied tab fix patch with git am"
@@ -365,21 +371,24 @@ build_emacs() {
     local ncomp=(--with-native-compilation=aot)
     [ "$NATIVE_COMP" = 1 ] || ncomp=(--with-native-compilation=no)
     (
+        set -e
         cd "$e"
         CC=$GCC_PREFIX/bin/gcc CXX=$GCC_PREFIX/bin/g++ \
         CFLAGS='-O2 -march=native -pipe' \
-        PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig:$GCC_PREFIX/lib64/pkgconfig:$GCC_PREFIX/lib/pkgconfig:$HOME/.local/lib/pkgconfig:/usr/local/lib/pkgconfig:/usr/local/lib64/pkgconfig" \
-        CPPFLAGS="-I$GCC_PREFIX/include -I$PREFIX/include -I$HOME/.local/include -I/usr/local/include" \
-        LDFLAGS="-L$PREFIX/lib -L$GCC_PREFIX/lib64 -L$HOME/.local/lib -L/usr/local/lib -L/usr/local/lib64 -Wl,-rpath,$PREFIX/lib -Wl,-rpath,$GCC_PREFIX/lib64" \
+        PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig:$GCC_PREFIX/lib64/pkgconfig:$GCC_PREFIX/lib/pkgconfig:$HOME/.local/lib/pkgconfig:$HOME/usr/local/lib/pkgconfig:/usr/local/lib/pkgconfig:/usr/local/lib64/pkgconfig" \
+        CPPFLAGS="-I$GCC_PREFIX/include -I$PREFIX/include -I$HOME/.local/include -I$HOME/usr/local/include -I/usr/local/include" \
+        LDFLAGS="-L$PREFIX/lib -L$GCC_PREFIX/lib64 -L$GCC_PREFIX/lib -L$HOME/.local/lib -L$HOME/usr/local/lib -L$HOME/usr/local/lib64 -L/usr/local/lib -L/usr/local/lib64 -Wl,-rpath,$PREFIX/lib -Wl,-rpath,$GCC_PREFIX/lib64 -Wl,-rpath,$GCC_PREFIX/lib" \
         ./autogen.sh >/dev/null
         CC=$GCC_PREFIX/bin/gcc CXX=$GCC_PREFIX/bin/g++ \
         CFLAGS='-O2 -march=native -pipe' \
-        PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig:$GCC_PREFIX/lib64/pkgconfig:$GCC_PREFIX/lib/pkgconfig:$HOME/.local/lib/pkgconfig:/usr/local/lib/pkgconfig:/usr/local/lib64/pkgconfig" \
-        CPPFLAGS="-I$GCC_PREFIX/include -I$PREFIX/include -I$HOME/.local/include -I/usr/local/include" \
-        LDFLAGS="-L$PREFIX/lib -L$GCC_PREFIX/lib64 -L$HOME/.local/lib -L/usr/local/lib -L/usr/local/lib64 -Wl,-rpath,$PREFIX/lib -Wl,-rpath,$GCC_PREFIX/lib64" \
+        PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig:$GCC_PREFIX/lib64/pkgconfig:$GCC_PREFIX/lib/pkgconfig:$HOME/.local/lib/pkgconfig:$HOME/usr/local/lib/pkgconfig:/usr/local/lib/pkgconfig:/usr/local/lib64/pkgconfig" \
+        CPPFLAGS="-I$GCC_PREFIX/include -I$PREFIX/include -I$HOME/.local/include -I$HOME/usr/local/include -I/usr/local/include" \
+        LDFLAGS="-L$PREFIX/lib -L$GCC_PREFIX/lib64 -L$GCC_PREFIX/lib -L$HOME/.local/lib -L$HOME/usr/local/lib -L$HOME/usr/local/lib64 -L/usr/local/lib -L/usr/local/lib64 -Wl,-rpath,$PREFIX/lib -Wl,-rpath,$GCC_PREFIX/lib64 -Wl,-rpath,$GCC_PREFIX/lib" \
         ./configure --prefix="$EMACS_PREFIX" --without-x "${ncomp[@]}" \
+            --with-gnutls=ifavailable \
             --with-tree-sitter --with-modules --without-compress-install \
             --with-sound=no --without-gsettings --without-libsystemd
+        [ -f Makefile ] || die "Emacs configure failed (no Makefile)"
         make -j"$JOBS"
         make install
     ) || die "Emacs build failed (see $e)"
@@ -393,13 +402,14 @@ build_ctags_global() {
         log "building $d"
         extract_tar "$BUNDLE_DIR/repos/$d.tar" "$BUILD/$d"
         (
+            set -e
             cd "$BUILD/$d"
             if [ -x ./autogen.sh ]; then ./autogen.sh >/dev/null 2>&1 || true; fi
             [ -x ./configure ] || autoreconf -fi >/dev/null 2>&1 || die "$d: autoreconf failed"
             CC=$GCC_PREFIX/bin/gcc CXX=$GCC_PREFIX/bin/g++ \
             CFLAGS='-O2 -march=native -pipe' \
-            CPPFLAGS="-I$HOME/.local/include -I/usr/local/include" \
-            LDFLAGS="-L$HOME/.local/lib -L/usr/local/lib -L/usr/local/lib64" \
+            CPPFLAGS="-I$HOME/.local/include -I$HOME/usr/local/include -I/usr/local/include" \
+            LDFLAGS="-L$GCC_PREFIX/lib -L$HOME/.local/lib -L$HOME/usr/local/lib -L$HOME/usr/local/lib64 -L/usr/local/lib -L/usr/local/lib64" \
             ./configure --prefix="$PREFIX" >/dev/null
             make -j"$JOBS" >/dev/null
             make install >/dev/null
@@ -600,7 +610,8 @@ self_check() {
     local cf=$HOME/.cache/dotemacs-selfcheck.c
     mkdir -p "$(dirname "$cf")"
     printf 'int main(void){return 0;}\n' > "$cf"
-    out=$("$PREFIX/bin/dotemacs" --batch "$cf" --eval '(princ (format "%s" major-mode))' 2>/dev/null || true)
+    out=$("$PREFIX/bin/dotemacs" --batch -l "$EMACS_DIR/init.el" \
+          --eval "(progn (run-hooks 'after-init-hook) (find-file \"$cf\") (princ (format \"%s\" major-mode)))" 2>/dev/null || true)
     case "$out" in *c-ts-mode*) ;; *) echo "  FAIL c-ts-mode: $out"; fail=1 ;; esac
     rm -f "$cf"
 
@@ -617,13 +628,37 @@ main() {
     confirm
     preflight
     verify_bundle
-    backup_existing
-    build_gcc
-    build_cmake
-    build_tree_sitter
-    apply_emacs_patch
-    build_emacs
-    build_ctags_global
+    if [ "${RESUME:-0}" = 1 ]; then
+        mkdir -p "$PREFIX" "$REPOS_DIR" "$BIN_DIR"
+    else
+        backup_existing
+    fi
+    if [ "${RESUME:-0}" = 1 ] && [ -x "$GCC_PREFIX/bin/gcc" ]; then
+        log "resuming: reusing GCC at $GCC_PREFIX"
+    else
+        build_gcc
+    fi
+    if [ "${RESUME:-0}" = 1 ] && [ -x "$CMAKE_PREFIX/bin/cmake" ]; then
+        log "resuming: reusing CMake at $CMAKE_PREFIX"
+    else
+        build_cmake
+    fi
+    if [ "${RESUME:-0}" = 1 ] && ls "$PREFIX"/lib/libtree-sitter.so* >/dev/null 2>&1; then
+        log "resuming: reusing libtree-sitter"
+    else
+        build_tree_sitter
+    fi
+    if [ "${RESUME:-0}" = 1 ] && [ -x "$EMACS_BIN" ]; then
+        log "resuming: reusing Emacs at $EMACS_PREFIX"
+    else
+        apply_emacs_patch
+        build_emacs
+    fi
+    if [ "${RESUME:-0}" = 1 ] && [ -x "$PREFIX/bin/ctags" ] && [ -x "$PREFIX/bin/global" ]; then
+        log "resuming: reusing ctags/global"
+    else
+        build_ctags_global
+    fi
     build_clangd
     install_config
     install_python_env
