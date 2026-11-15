@@ -31,10 +31,11 @@ SKIP_GRAMMARS=${SKIP_GRAMMARS:-0}
 SKIP_WHEELS=${SKIP_WHEELS:-0}
 
 mkdir -p "$DIST"
-if [ "$SKIP_TOOLS$SKIP_PACKAGES$SKIP_GRAMMARS$SKIP_WHEELS" = "0000" ] || [ ! -d "$WORK" ]; then
+mkdir -p "$STAGE"/{repos/submodules,repos/grammars,repos/prereq,repos/patches,manifests,wheels,tarballs,tools}
+mkdir -p "$WORK"/{src,pkgs,grammars,mirrors}
+if [ "$SKIP_TOOLS" != 1 ]; then
     rm -rf "$STAGE"
     mkdir -p "$STAGE"/{repos/submodules,repos/grammars,repos/prereq,repos/patches,manifests,wheels,tarballs,tools}
-    mkdir -p "$WORK"/{src,pkgs,grammars,mirrors}
     : > "$STAGE/manifests/resolved.txt"
     printf '# component\tkind\turl\tref\tcommit\n' >> "$STAGE/manifests/resolved.txt"
 fi
@@ -106,34 +107,90 @@ package_upstream() { # name dir
     printf '%s' "$url"
 }
 
+fast_ls() { timeout 25 git -c http.version=HTTP/1.1 ls-remote "$@" 2>/dev/null; }
+
+mirror_url() { printf '%s:~/repos/dotemacs/packages/%s/.git' "$MIRROR_HOST" "$1"; }
+
+latest_tag_from() { # url
+    fast_ls "$1" --tags --refs \
+        | awk -F/ '{print $NF}' \
+        | grep -E '^v?[0-9]+\.[0-9]+(\.[0-9]+)?$' \
+        | sort -V | tail -1
+}
+
+write_package_worker() {
+    cat > "$WORK/pack-one.sh" <<'WORKER'
+#!/usr/bin/env bash
+set -uo pipefail
+name=$1
+line=$(awk -F'\t' -v n="$name" '$1==n{print;exit}' "$WORK/pkg-list.txt")
+[ -n "$line" ] || { echo "FAILED $name (not listed)" >&2; exit 1; }
+IFS=$'\t' read -r _ url kind <<< "$line"
+# shellcheck source=lib/common.sh
+source "$DEPLOY_DIR/lib/common.sh"
+fast_ls() { timeout 25 git -c http.version=HTTP/1.1 ls-remote "$@" 2>/dev/null; }
+mirror_url() { printf '%s:~/repos/dotemacs/packages/%s/.git' "$MIRROR_HOST" "$1"; }
+latest_tag_from() {
+    fast_ls "$1" --tags --refs | awk -F/ '{print $NF}' \
+        | grep -E '^v?[0-9]+\.[0-9]+(\.[0-9]+)?$' | sort -V | tail -1
+}
+ref=""
+if [ "$kind" = upstream ] && [ -n "$url" ]; then
+    head=$(fast_ls "$url" HEAD || true)
+    if [ -n "$head" ]; then
+        ref=$(latest_tag_from "$url" || true)
+        [ -n "$ref" ] || ref=HEAD
+    fi
+fi
+if [ -z "$ref" ]; then
+    kind=mirror
+    url=$(mirror_url "$name")
+    ref=$(latest_tag_from "$url" || true)
+    [ -n "$ref" ] || ref=HEAD
+fi
+if ! clone_depth1 "$url" "$ref" "$WORK/pkgs/$name" 2>/dev/null; then
+    if [ "$kind" = upstream ]; then
+        url=$(mirror_url "$name"); kind=mirror
+        ref=$(latest_tag_from "$url" || true); [ -n "$ref" ] || ref=HEAD
+        clone_depth1 "$url" "$ref" "$WORK/pkgs/$name" || { echo "FAILED $name" >&2; exit 1; }
+    else
+        echo "FAILED $name" >&2; exit 1
+    fi
+fi
+commit=$(git -C "$WORK/pkgs/$name" rev-parse HEAD)
+printf '%s\t%s\t%s\t%s\t%s\n' "$name" "$kind" "$url" "$ref" "$commit" > "$WORK/results/$name"
+WORKER
+    chmod +x "$WORK/pack-one.sh"
+}
+
 pack_packages() {
-    local dir name url ref kind commit
+    local dir name url kind line
     : > "$PACKAGES_TXT"
+    mkdir -p "$WORK/results" "$WORK/pkgs"
+    : > "$WORK/pkg-list.txt"
+    : > "$WORK/pkg-names.txt"
     for dir in "$REPO_DIR"/packages/*/; do
         name=$(basename "$dir")
         url=$(package_upstream "$name" "$dir")
         kind=upstream
-        if [ -z "$url" ] || ! ls_remote "$url" HEAD >/dev/null 2>&1; then
-            kind=mirror
-            url="$MIRROR_HOST:~/repos/dotemacs/packages/$name/.git"
-            ref=$(ls_remote "$url" HEAD 2>/dev/null | awk '{print $1}' | head -1) || true
-        else
-            ref=$(resolve_ref "$url" | cut -f1) || ref=HEAD
-        fi
-        [ -n "$ref" ] || die "cannot resolve a ref for package $name"
-        log "package $name <- $kind $url @ $ref"
-        if ! clone_depth1 "$url" "$ref" "$WORK/pkgs/$name" 2>/dev/null; then
-            warn "depth-1 clone failed for $name; falling back to mirror"
-            url="$MIRROR_HOST:~/repos/dotemacs/packages/$name/.git"
-            kind=mirror
-            ref=$(ls_remote "$url" HEAD 2>/dev/null | awk '{print $1}' | head -1) || true
-            [ -n "$ref" ] || die "cannot fetch $name"
-            clone_depth1 "$url" "$ref" "$WORK/pkgs/$name" || die "cannot fetch $name from mirror"
-        fi
-        commit=$(git -C "$WORK/pkgs/$name" rev-parse HEAD)
-        printf '%s\t%s\t%s\t%s\t%s\n' "$name" "$kind" "$url" "$ref" "$commit" >> "$PACKAGES_TXT"
-        record "pkg:$name" git "$url" "$ref" "$commit"
+        [ -n "$url" ] || { kind=mirror; url=$(mirror_url "$name"); }
+        printf '%s\t%s\t%s\n' "$name" "$url" "$kind" >> "$WORK/pkg-list.txt"
+        printf '%s\n' "$name" >> "$WORK/pkg-names.txt"
     done
+    write_package_worker
+    export MIRROR_HOST WORK DEPLOY_DIR
+    xargs -P 6 -n 1 -a "$WORK/pkg-names.txt" bash "$WORK/pack-one.sh" || true
+
+    while IFS= read -r name; do
+        if [ -f "$WORK/results/$name" ]; then
+            line=$(cat "$WORK/results/$name")
+            printf '%s\n' "$line" >> "$PACKAGES_TXT"
+            record "pkg:$name" git "$(printf '%s' "$line" | cut -f3)" \
+                   "$(printf '%s' "$line" | cut -f4)" "$(printf '%s' "$line" | cut -f5)"
+        else
+            die "package $name could not be fetched"
+        fi
+    done < "$WORK/pkg-names.txt"
 }
 
 build_dotemacs_tree() {
@@ -157,8 +214,21 @@ build_dotemacs_tree() {
             || die "cannot fetch $name from $url"
         git -C "$sub" checkout --quiet -B offline-deploy FETCH_HEAD 2>/dev/null \
             || git -C "$sub" checkout --quiet -B offline-deploy "$commit"
+        commit=$(git -C "$sub" rev-parse HEAD)
         git -C "$scratch" add "packages/$name"
     done < "$PACKAGES_TXT"
+
+    # Update PACKAGES_TXT to the commits actually checked out (single source
+    # of truth for the parent gitlink, the mirror branch and the manifest).
+    local n nkind nurl nref ncommit
+    : > "$WORK/packages.new"
+    while IFS=$'\t' read -r n nkind nurl nref ncommit; do
+        [ -n "$n" ] || continue
+        ncommit=$(git -C "$scratch/packages/$n" rev-parse HEAD)
+        printf '%s\t%s\t%s\t%s\t%s\n' "$n" "$nkind" "$nurl" "$nref" "$ncommit" \
+            >> "$WORK/packages.new"
+    done < "$PACKAGES_TXT"
+    mv "$WORK/packages.new" "$PACKAGES_TXT"
 
     git -C "$scratch" add -A
     git -C "$scratch" -c user.name='dotemacs deploy' -c user.email='deploy@localhost' \
@@ -217,28 +287,57 @@ grammar_pairs() {
 }
 
 pack_grammars() {
-    local langs lang url ref commit
+    local langs lang url ref
     langs=$(ls "$REPO_DIR"/tree-sitter/*.so 2>/dev/null \
-                | sed 's#.*libtree-sitter-##; s#\.so$##' | tr '\n' ' ')
+                | sed 's#.*libtree-sitter-##; s#\.so$##' | tr '\n' ' ' || true)
+    [ -n "$langs" ] || { warn "no tree-sitter grammars found in the repo"; return 0; }
     grammar_pairs > "$WORK/grammar-pairs.txt"
+    : > "$WORK/grammar-list.txt"
+    : > "$WORK/grammar-names.txt"
     for lang in $langs; do
         url=$(awk -v l="$lang" -F'\t' '$1==l{print $2; exit}' "$WORK/grammar-pairs.txt")
         if [ -z "$url" ]; then
             warn "no upstream URL known for grammar $lang"
             continue
         fi
-        url=${url%.git}
-        ref=$(resolve_ref "$url" | cut -f1) || ref=HEAD
-        log "grammar $lang <- $url @ $ref"
-        if clone_depth1 "$url" "$ref" "$WORK/grammars/$lang"; then
-            commit=$(git -C "$WORK/grammars/$lang" rev-parse HEAD)
-            tar -C "$WORK/grammars/$lang" -cf - . | xz -T0 -1 \
-                > "$STAGE/repos/grammars/$lang.tar"
-            record "grammar:$lang" git "$url" "$ref" "$commit"
-        else
-            warn "cannot fetch grammar $lang from $url"
-        fi
+        printf '%s\t%s\n' "$lang" "${url%.git}" >> "$WORK/grammar-list.txt"
+        printf '%s\n' "$lang" >> "$WORK/grammar-names.txt"
     done
+
+    cat > "$WORK/pack-one-grammar.sh" <<'GWORKER'
+#!/usr/bin/env bash
+set -uo pipefail
+lang=$1
+url=$(awk -F'\t' -v l="$lang" '$1==l{print $2;exit}' "$WORK/grammar-list.txt")
+[ -n "$url" ] || exit 1
+# shellcheck source=lib/common.sh
+source "$DEPLOY_DIR/lib/common.sh"
+fast_ls() { timeout 25 git -c http.version=HTTP/1.1 ls-remote "$@" 2>/dev/null; }
+tag=$(fast_ls "$url" --tags --refs | awk -F/ '{print $NF}' \
+        | grep -E '^v?[0-9]+\.[0-9]+(\.[0-9]+)?$' | sort -V | tail -1)
+ref=${tag:-HEAD}
+if ! clone_depth1 "$url" "$ref" "$WORK/grammars/$lang" 2>/dev/null; then
+    ref=HEAD
+    clone_depth1 "$url" "$ref" "$WORK/grammars/$lang" || { echo "FAILED $lang" >&2; exit 1; }
+fi
+commit=$(git -C "$WORK/grammars/$lang" rev-parse HEAD)
+tar -C "$WORK/grammars/$lang" -cf - . | xz -T0 -1 > "$STAGE/repos/grammars/$lang.tar"
+printf '%s\t%s\t%s\n' "$lang" "$url" "$ref" "$commit" > "$WORK/grammar-results/$lang"
+GWORKER
+    chmod +x "$WORK/pack-one-grammar.sh"
+    mkdir -p "$WORK/grammar-results"
+    export WORK DEPLOY_DIR STAGE
+    xargs -P 6 -n 1 -a "$WORK/grammar-names.txt" bash "$WORK/pack-one-grammar.sh" || true
+    local l
+    while IFS= read -r l; do
+        if [ -f "$WORK/grammar-results/$l" ]; then
+            # shellcheck disable=SC2046
+            record "grammar:$l" git $(cut -f2,3 "$WORK/grammar-results/$l" | tr '\t' '\n' | head -2 | tr '\n' ' ') \
+                "$(cut -f4 "$WORK/grammar-results/$l")"
+        else
+            warn "grammar $l was not packaged"
+        fi
+    done < "$WORK/grammar-names.txt"
 }
 
 # ---------------------------------------------------------------------------
@@ -247,12 +346,21 @@ pack_grammars() {
 pack_wheels() {
     local pip=$REPO_DIR/lsp.bridge.pyenv/bin/pip
     [ -x "$pip" ] || die "no pip at $pip (needed to download cp38 wheels)"
-    log "downloading cp38 wheels"
-    "$pip" download --quiet --only-binary=:all: --python-version 38 \
-        --platform manylinux2014_x86_64 --platform manylinux_2_28_x86_64 \
-        --platform manylinux_2_17_x86_64 \
-        -d "$STAGE/wheels" -r "$DEPLOY_DIR/manifests/python-wheels.txt" \
-        || die "wheel download failed"
+    log "downloading/building cp38 wheels"
+    rm -rf "$STAGE/wheels"; mkdir -p "$STAGE/wheels"
+    local req
+    while IFS= read -r req; do
+        case "$req" in ''|'#'*) continue ;; esac
+        if ! "$pip" download --quiet --no-deps --only-binary=:all: \
+                --python-version 38 --platform manylinux2014_x86_64 \
+                --platform manylinux_2_28_x86_64 --platform manylinux_2_17_x86_64 \
+                -d "$STAGE/wheels" "$req" 2>/dev/null; then
+            log "building pure-python wheel for $req"
+            "$pip" wheel --quiet --no-deps -w "$STAGE/wheels" "$req" \
+                || die "cannot obtain a wheel for $req"
+        fi
+    done < "$DEPLOY_DIR/manifests/python-wheels.txt"
+    ls "$STAGE/wheels"/*.whl >/dev/null 2>&1 || die "no wheels were produced"
 }
 
 # ---------------------------------------------------------------------------
@@ -277,11 +385,10 @@ pack_patch() {
         echo "Applied to Emacs ${EMACS_VERSION} before =./configure= by install.sh."
         echo "=git apply --check= against the bundled Emacs tree is verified at bundle time."
     } > "$STAGE/repos/patches/README.org"
-    if [ -d "$WORK/src/emacs" ]; then
-        git -C "$WORK/src/emacs" apply --check -v "$STAGE/repos/patches/0001-fix-tab-dispaly.diff" \
-            && log "tab patch applies cleanly to Emacs $EMACS_VERSION" \
-            || die "tab patch does not apply to Emacs $EMACS_VERSION"
-    fi
+    [ -d "$WORK/src/emacs" ] || die "no emacs source tree to validate the tab patch against"
+    git -C "$WORK/src/emacs" apply --check -v "$STAGE/repos/patches/0001-fix-tab-dispaly.diff" \
+        && log "tab patch applies cleanly to Emacs $EMACS_VERSION" \
+        || die "tab patch does not apply to Emacs $EMACS_VERSION"
     printf '%s\t%s\n' "$commit" "$(sha256_file "$STAGE/repos/patches/0001-fix-tab-dispaly.diff")" \
         > "$STAGE/manifests/patches.txt"
 }

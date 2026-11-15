@@ -88,7 +88,9 @@ while [ $# -gt 0 ]; do
     esac
 done
 
-export PATH="$HOME/.local/bin:$PATH"
+export PATH="$BIN_DIR:$HOME/.local/bin:$PATH"
+
+export LD_LIBRARY_PATH="$GCC_PREFIX/lib64:$GCC_PREFIX/lib:$PREFIX/lib:$HOME/.local/lib64:$HOME/.local/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 
 EMACS_BIN=$EMACS_PREFIX/bin/emacs
 VENV=$EMACS_DIR/lsp.bridge.pyenv
@@ -97,20 +99,41 @@ TREE_SITTER_DIR=$EMACS_DIR/tree-sitter
 # ---------------------------------------------------------------------------
 # Rollback / purge
 # ---------------------------------------------------------------------------
+remove_profile_block() {
+    [ -f "$HOME/.profile" ] || return 0
+    awk '
+        /^# dotemacs offline launcher$/ { skip = 1; next }
+        skip == 1 && /^case .*\.local\/bin/ { skip = 0; next }
+        { print }
+    ' "$HOME/.profile" > "$HOME/.profile.tmp" && mv "$HOME/.profile.tmp" "$HOME/.profile"
+}
+
 do_rollback() {
     [ -f "$STATE" ] || die "no install state at $STATE"
     # shellcheck disable=SC1090
     . "$STATE"
+    local ts; ts=$(date '+%Y%m%d-%H%M%S')
     if [ -n "${EMACS_BACKUP:-}" ] && [ -e "$EMACS_BACKUP" ]; then
-        rm -rf "$EMACS_DIR"
+        if [ -e "$EMACS_DIR" ] || [ -L "$EMACS_DIR" ]; then
+            mv "$EMACS_DIR" "$EMACS_DIR.pre-rollback.$ts"
+        fi
         mv "$EMACS_BACKUP" "$EMACS_DIR"
         log "restored $EMACS_DIR from $EMACS_BACKUP"
     fi
     if [ -n "${REPOS_BACKUP:-}" ] && [ -e "$REPOS_BACKUP" ]; then
-        rm -rf "$REPOS_DIR"
+        if [ -e "$REPOS_DIR" ]; then
+            mv "$REPOS_DIR" "$REPOS_DIR.pre-rollback.$ts"
+        fi
         mv "$REPOS_BACKUP" "$REPOS_DIR"
         log "restored $REPOS_DIR from $REPOS_BACKUP"
     fi
+    if [ -f "$PREFIX/launcher-backups.txt" ]; then
+        while IFS=$'\t' read -r dst bak; do
+            [ -e "$dst" ] || [ -L "$dst" ] && rm -f "$dst"
+            [ -e "$bak" ] && mv "$bak" "$dst"
+        done < "$PREFIX/launcher-backups.txt"
+    fi
+    remove_profile_block
     log "rollback complete"
 }
 
@@ -118,9 +141,14 @@ do_purge() {
     rm -f "$BIN_DIR/emacs" "$BIN_DIR/emacs31" "$BIN_DIR/emacsclient" "$BIN_DIR/dotemacs"
     if [ -L "$EMACS_DIR" ]; then rm -f "$EMACS_DIR"; fi
     rm -rf "$PREFIX"
+    remove_profile_block
     log "purged prefix and launchers (config dir and backups are kept)"
 }
 
+if [ "$DRY_RUN" = 1 ]; then
+    echo "dry-run: action=$ACTION prefix=$PREFIX emacs-dir=$EMACS_DIR repos=$REPOS_DIR jobs=$JOBS"
+    exit 0
+fi
 [ "$ACTION" = rollback ] && { do_rollback; exit 0; }
 [ "$ACTION" = purge ] && { do_purge; exit 0; }
 
@@ -152,6 +180,11 @@ preflight() {
     done
     { [ -f /usr/include/gnutls/gnutls.h ] || [ -f /usr/local/include/gnutls/gnutls.h ]; } \
         || MISSING="$MISSING libgnutls28-dev"
+    { [ -f /usr/include/zlib.h ] || [ -f /usr/local/include/zlib.h ]; } \
+        || MISSING="$MISSING zlib1g-dev"
+    { [ -f /usr/include/ncurses.h ] || [ -f /usr/local/include/ncurses.h ] \
+      || [ -f "$HOME/.local/include/ncurses.h" ]; } \
+        || MISSING="$MISSING libncurses-dev libtinfo-dev"
     [ -n "$MISSING" ] && die "missing build tools (install them first):$MISSING
 On Ubuntu 20.04: sudo apt install build-essential git autoconf automake libtool pkg-config texinfo flex bison bzip2 zlib1g-dev libncurses-dev libtinfo-dev libffi-dev libgnutls28-dev python3.8 python3.8-venv"
 
@@ -181,23 +214,34 @@ confirm() {
 # 1. backup existing installation
 # ---------------------------------------------------------------------------
 backup_existing() {
-    local ts backup_emacs="" backup_repos=""
+    local ts prev_emacs prev_repos
     ts=$(date '+%Y%m%d-%H%M%S')
+    prev_emacs=""; prev_repos=""
+    if [ -f "$STATE" ]; then
+        prev_emacs=$(sed -n 's/^EMACS_BACKUP=//p' "$STATE" | tail -1)
+        prev_repos=$(sed -n 's/^REPOS_BACKUP=//p' "$STATE" | tail -1)
+        warn "existing install state found; the original backups stay authoritative"
+    fi
+
     if [ -e "$EMACS_DIR" ] || [ -L "$EMACS_DIR" ]; then
-        backup_emacs="$EMACS_DIR.bak.$ts"
-        run mv "$EMACS_DIR" "$backup_emacs"
-        log "backed up $EMACS_DIR -> $backup_emacs"
+        if [ -L "$EMACS_DIR" ] && [ -n "$prev_emacs" ]; then
+            run rm -f "$EMACS_DIR"
+            log "removed previous install symlink $EMACS_DIR"
+        else
+            run mv "$EMACS_DIR" "$EMACS_DIR.bak.$ts"
+            log "backed up $EMACS_DIR -> $EMACS_DIR.bak.$ts"
+            [ -n "$prev_emacs" ] || prev_emacs="$EMACS_DIR.bak.$ts"
+        fi
     fi
     if [ -e "$REPOS_DIR/emacs" ] || [ -e "$REPOS_DIR/dotemacs" ]; then
-        backup_repos="$REPOS_DIR.bak.$ts"
-        run mv "$REPOS_DIR" "$backup_repos"
-        log "backed up $REPOS_DIR -> $backup_repos"
+        run mv "$REPOS_DIR" "$REPOS_DIR.old.$ts"
+        log "moved previous $REPOS_DIR to $REPOS_DIR.old.$ts"
+        [ -n "$prev_repos" ] || prev_repos="$REPOS_DIR.old.$ts"
     fi
-    mkdir -p "$REPOS_DIR"
-    mkdir -p "$PREFIX"
+    mkdir -p "$REPOS_DIR" "$PREFIX"
     {
-        echo "EMACS_BACKUP=$backup_emacs"
-        echo "REPOS_BACKUP=$backup_repos"
+        echo "EMACS_BACKUP=$prev_emacs"
+        echo "REPOS_BACKUP=$prev_repos"
         echo "EMACS_DIR=$EMACS_DIR"
         echo "REPOS_DIR=$REPOS_DIR"
         echo "PREFIX=$PREFIX"
@@ -235,7 +279,9 @@ build_gcc() {
         make install
     ) || die "GCC build failed (see $g)"
     "$GCC_PREFIX/bin/gcc" --version | head -1 | grep -q '13\.5\.0' || die "GCC did not install correctly"
-    [ -f "$GCC_PREFIX/include/gccjit.h" ] || die "libgccjit headers missing"
+    [ -f "$GCC_PREFIX/include/libgccjit.h" ] || die "libgccjit headers missing"
+    { [ -e "$GCC_PREFIX/lib64/libgccjit.so" ] || [ -e "$GCC_PREFIX/lib/libgccjit.so" ]; } \
+        || die "libgccjit shared library missing"
     log "GCC 13.5.0 installed at $GCC_PREFIX"
 }
 
@@ -369,8 +415,13 @@ build_clangd() {
         warn "skipping clangd (--no-clangd)"
         return 0
     fi
-    if [ "$PREBUILT_CLANGD" = 1 ] || [ ! -d "$BUNDLE_DIR/repos/llvm-project.tar" ]; then
-        install_prebuilt_clangd && return 0
+    if [ "$PREBUILT_CLANGD" = 1 ]; then
+        install_prebuilt_clangd || die "--prebuilt-clangd requested but the bundle has no prebuilt clangd"
+        return 0
+    fi
+    if [ ! -f "$BUNDLE_DIR/repos/llvm-project.tar" ]; then
+        install_prebuilt_clangd || die "no llvm-project sources and no prebuilt clangd in the bundle"
+        return 0
     fi
     log "building clangd from LLVM sources (this takes 40-90 minutes)"
     local l=$BUILD/llvm-project b=$BUILD/llvm-build
@@ -416,6 +467,8 @@ install_config() {
     local name path commit tarfile url mirror
     while IFS=$'\t' read -r name path commit tarfile url; do
         [ -n "$name" ] || continue
+        [ -f "$BUNDLE_DIR/repos/submodules/$tarfile" ] \
+            || die "missing submodule mirror: $tarfile"
         mirror=$MIRRORS/$(basename "$tarfile" .git.tar).git
         extract_tar "$BUNDLE_DIR/repos/submodules/$tarfile" "$mirror"
     done < "$BUNDLE_DIR/manifests/submodules.txt"
@@ -442,7 +495,9 @@ install_python_env() {
     python3.8 -m venv --without-pip "$VENV" >/dev/null
     local whl site
     site=$VENV/lib/python3.8/site-packages
+    local whl
     for whl in "$BUNDLE_DIR"/wheels/*.whl; do
+        [ -e "$whl" ] || continue
         python3.8 -m zipfile -e "$whl" "$site" >/dev/null
     done
     "$VENV/bin/python" - <<'PY' || die "python dependencies are incomplete"
@@ -493,9 +548,23 @@ export GTAGSCONF="\$PREFIX/share/gtags/gtags.conf"
 exec "\$PREFIX/emacs-31.1/bin/emacs" "\$@"
 EOF
     chmod +x "$PREFIX/bin/dotemacs"
-    ln -sfn "$PREFIX/bin/dotemacs" "$BIN_DIR/emacs"
-    ln -sfn "$PREFIX/bin/dotemacs" "$BIN_DIR/emacs31"
-    ln -sfn "$EMACS_PREFIX/bin/emacsclient" "$BIN_DIR/emacsclient"
+    : > "$PREFIX/launcher-backups.txt"
+    local ts name target dst
+    ts=$(date '+%Y%m%d-%H%M%S')
+    for name in emacs emacs31 emacsclient; do
+        dst=$BIN_DIR/$name
+        case "$name" in
+            emacsclient) target=$EMACS_PREFIX/bin/emacsclient ;;
+            *) target=$PREFIX/bin/dotemacs ;;
+        esac
+        if [ -e "$dst" ] || [ -L "$dst" ]; then
+            if [ "$(readlink -f "$dst" 2>/dev/null)" != "$(readlink -f "$target" 2>/dev/null)" ]; then
+                mv "$dst" "$dst.bak.$ts"
+                printf '%s\t%s\n' "$dst" "$dst.bak.$ts" >> "$PREFIX/launcher-backups.txt"
+            fi
+        fi
+        ln -sfn "$target" "$dst"
+    done
     if [ "$NO_PROFILE" = 0 ] && ! grep -q 'dotemacs offline launcher' "$HOME/.profile" 2>/dev/null; then
         {
             echo ''
@@ -563,8 +632,7 @@ main() {
     self_check
     [ "$KEEP_BUILD" = 1 ] || rm -rf "$BUILD"
     log "done. Start Emacs with: $BIN_DIR/emacs (or re-login and run 'emacs')"
-    log "log file: $REPOS_DIR/dotemacs-deploy.log"
+    log "log file: $HOME/dotemacs-deploy.log"
 }
 
-[ "$DRY_RUN" = 1 ] && { echo "dry-run: would install into $PREFIX, config $EMACS_DIR, repos $REPOS_DIR"; exit 0; }
 main "$@" 2>&1 | tee "$HOME/dotemacs-deploy.log"

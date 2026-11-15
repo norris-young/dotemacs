@@ -18,11 +18,17 @@ while [ $# -gt 0 ]; do
         --prefix) PREFIX=$2; shift 2 ;;
         --emacs-dir) EMACS_DIR=$2; shift 2 ;;
         --bin-dir) BIN_DIR=$2; shift 2 ;;
-        *) shift ;;
+        *) echo "unknown option: $1" >&2; exit 2 ;;
     esac
 done
 
 echo "[uninstall] removing launchers"
+if [ -f "$PREFIX/launcher-backups.txt" ]; then
+    while IFS=$'\t' read -r dst bak; do
+        rm -f "$dst"
+        [ -e "$bak" ] && mv "$bak" "$dst"
+    done < "$PREFIX/launcher-backups.txt"
+fi
 rm -f "$BIN_DIR/emacs" "$BIN_DIR/emacs31" "$BIN_DIR/emacsclient" "$BIN_DIR/dotemacs"
 
 if [ -L "$EMACS_DIR" ]; then
@@ -30,6 +36,14 @@ if [ -L "$EMACS_DIR" ]; then
     echo "[uninstall] removed symlink $EMACS_DIR"
 elif [ -d "$EMACS_DIR" ]; then
     echo "[uninstall] $EMACS_DIR is a real directory, leaving it alone"
+fi
+
+if [ -f "$HOME/.profile" ]; then
+    awk '
+        /^# dotemacs offline launcher$/ { skip = 1; next }
+        skip == 1 && /^case .*\.local\/bin/ { skip = 0; next }
+        { print }
+    ' "$HOME/.profile" > "$HOME/.profile.tmp" && mv "$HOME/.profile.tmp" "$HOME/.profile"
 fi
 
 if [ "$PURGE" = 1 ]; then

@@ -16,7 +16,7 @@ die()  { printf '\033[1;31m[error]\033[0m %s\n' "$*" >&2; exit 1; }
 have() { command -v "$1" >/dev/null 2>&1; }
 
 retry() {
-    local n="${RETRY_ATTEMPTS:-4}" delay="${RETRY_DELAY:-3}" i=1
+    local n="${RETRY_ATTEMPTS:-2}" delay="${RETRY_DELAY:-2}" i=1
     while :; do
         if "$@"; then return 0; fi
         if [ "$i" -ge "$n" ]; then
@@ -32,8 +32,8 @@ retry() {
 
 # Git over flaky TLS: force HTTP/1.1 and retry.
 git_net() {
-    retry "$GIT" -c http.version=HTTP/1.1 -c http.lowSpeedLimit=1024 \
-          -c http.lowSpeedTime=60 "$@"
+    retry timeout 45 "$GIT" -c http.version=HTTP/1.1 -c http.lowSpeedLimit=1024 \
+          -c http.lowSpeedTime=30 "$@"
 }
 
 ls_remote() { # ls_remote URL [extra args...]
