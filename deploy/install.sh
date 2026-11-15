@@ -175,7 +175,7 @@ preflight() {
     [ "${VERSION_ID:-}" = "20.04" ] || warn "not Ubuntu 20.04 ($VERSION_ID); continuing anyway"
     [ "$(uname -m)" = x86_64 ] || die "only x86_64 is supported"
 
-    for t in git tar xz make python3.8 gcc g++ autoconf automake libtoolize pkg-config makeinfo flex bison bzip2 awk; do
+    for t in git tar xz make python3 gcc g++ autoconf automake libtoolize pkg-config makeinfo flex bison bzip2 awk; do
         check_tool "$t" "$t"
     done
     { [ -f /usr/include/gnutls/gnutls.h ] || [ -f /usr/local/include/gnutls/gnutls.h ]; } \
@@ -186,7 +186,7 @@ preflight() {
       || [ -f "$HOME/.local/include/ncurses.h" ]; } \
         || MISSING="$MISSING libncurses-dev libtinfo-dev"
     [ -n "$MISSING" ] && die "missing build tools (install them first):$MISSING
-On Ubuntu 20.04: sudo apt install build-essential git autoconf automake libtool pkg-config texinfo flex bison bzip2 zlib1g-dev libncurses-dev libtinfo-dev libffi-dev libgnutls28-dev python3.8 python3.8-venv"
+On Ubuntu 20.04: sudo apt install build-essential git autoconf automake libtool pkg-config texinfo flex bison bzip2 zlib1g-dev libncurses-dev libtinfo-dev libffi-dev libgnutls28-dev python3 python3-venv"
 
     mkdir -p "$PREFIX" "$REPOS_DIR" "$BIN_DIR"
     local free_kb
@@ -501,18 +501,104 @@ install_config() {
 }
 
 install_python_env() {
-    log "creating lsp-bridge python environment"
-    python3.8 -m venv --without-pip "$VENV" >/dev/null
-    local whl site
-    site=$VENV/lib/python3.8/site-packages
-    local whl
-    for whl in "$BUNDLE_DIR"/wheels/*.whl; do
-        [ -e "$whl" ] || continue
-        python3.8 -m zipfile -e "$whl" "$site" >/dev/null
-    done
-    "$VENV/bin/python" - <<'PY' || die "python dependencies are incomplete"
-import epc, orjson, rapidfuzz, watchdog, sexpdata, six, paramiko, packaging
-print("python deps OK")
+    log "creating lsp-bridge python environment (using $(python3 -V 2>&1))"
+    rm -rf "$VENV"
+    mkdir -p "$VENV/bin"
+    local site
+    if python3 -m venv --without-pip "$VENV" >/dev/null 2>&1; then
+        site=$(ls -d "$VENV"/lib/python*/site-packages 2>/dev/null | head -1)
+    fi
+    if [ -z "${site:-}" ] || [ ! -d "$site" ]; then
+        rm -rf "$VENV"
+        mkdir -p "$VENV/bin" "$VENV/lib/site-packages"
+        site=$VENV/lib/site-packages
+        cat > "$VENV/bin/python" <<EOF
+#!/bin/sh
+export PYTHONPATH="$site\${PYTHONPATH:+:\$PYTHONPATH}"
+exec python3 "\$@"
+EOF
+        chmod +x "$VENV/bin/python"
+        warn "python3 -m venv unavailable; using a python3 wrapper at $VENV/bin/python"
+    fi
+
+    log "installing wheels compatible with $(python3 -V 2>&1) into $site"
+    python3 - "$BUNDLE_DIR/wheels" "$site" <<'PY' || die "wheel installation failed"
+import os, re, sys, zipfile
+
+wheels_dir, site = sys.argv[1], sys.argv[2]
+target = sys.version_info[:2]
+target_cp = "cp%d%d" % target
+
+def parse(fn):
+    parts = fn[:-4].split("-")
+    if len(parts) < 5:
+        return None
+    return parts[0], parts[-3], parts[-2], parts[-1]
+
+def py_ok(pytag):
+    for t in pytag.split("."):
+        if t in ("py3", "py2", "py2.py3"):
+            return True
+        m = re.fullmatch(r"cp(\d)(\d+)", t)
+        if m and (int(m.group(1)), int(m.group(2))) <= target:
+            return True
+    return False
+
+def abi_ok(abitag):
+    if abitag == "none":
+        return True
+    m = re.fullmatch(r"cp(\d)(\d+).*", abitag)
+    return bool(m) and (int(m.group(1)), int(m.group(2))) <= target
+
+cands = {}
+for fn in sorted(os.listdir(wheels_dir)):
+    if not fn.endswith(".whl"):
+        continue
+    info = parse(fn)
+    if not info:
+        continue
+    name, pytag, abitag, plat = info
+    if "linux" not in plat and plat != "any":
+        continue
+    if not py_ok(pytag) or not abi_ok(abitag):
+        continue
+    cands.setdefault(name, []).append((fn, pytag, abitag))
+
+chosen = {}
+for name, lst in cands.items():
+    exact = [c for c in lst if target_cp in c[1].split(".")]
+    if exact:
+        chosen[name] = exact[0]
+        continue
+    abi3 = [c for c in lst if c[2] == "abi3"]
+    if abi3:
+        def ver(c):
+            m = re.search(r"cp(\d)(\d+)", c[1])
+            return (int(m.group(1)), int(m.group(2))) if m else (0, 0)
+        chosen[name] = max(abi3, key=ver)
+        continue
+    pure = [c for c in lst if c[2] == "none"]
+    if pure:
+        chosen[name] = pure[0]
+
+for name, (fn, pytag, abitag) in sorted(chosen.items()):
+    with zipfile.ZipFile(os.path.join(wheels_dir, fn)) as z:
+        z.extractall(site)
+    print("installed", fn)
+PY
+
+    "$VENV/bin/python" - <<'PY' || die "required python dependencies are incomplete"
+import epc, sexpdata, six, watchdog
+print("required python deps OK")
+PY
+    "$VENV/bin/python" - <<'PY' || true
+import importlib.util
+mods = ["orjson", "rapidfuzz", "paramiko", "packaging"]
+missing = [m for m in mods if not importlib.util.find_spec(m)]
+if missing:
+    print("optional python deps missing (fine): " + ", ".join(missing))
+else:
+    print("all optional python deps available")
 PY
 }
 
@@ -618,7 +704,7 @@ self_check() {
     check "$PREFIX/bin/ctags" --version
     check "$PREFIX/bin/global" --version
     [ "$SKIP_CLANGD" = 1 ] || check "$PREFIX/bin/clangd" --version
-    check "$VENV/bin/python" -c 'import epc, orjson, rapidfuzz, watchdog, sexpdata, six, paramiko, packaging'
+    check "$VENV/bin/python" -c 'import epc, sexpdata, six, watchdog'
     [ "$fail" = 0 ] || die "self checks failed; run '$0 --rollback' to restore the previous state"
     log "all self checks passed"
 }

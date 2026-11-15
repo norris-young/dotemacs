@@ -345,9 +345,9 @@ GWORKER
 # ---------------------------------------------------------------------------
 pack_wheels() {
     local pip=$REPO_DIR/lsp.bridge.pyenv/bin/pip
-    [ -x "$pip" ] || die "no pip at $pip (needed to download cp38 wheels)"
-    log "downloading/building cp38 wheels"
+    [ -x "$pip" ] || die "no pip at $pip (needed to download wheels)"
     rm -rf "$STAGE/wheels"; mkdir -p "$STAGE/wheels"
+    log "downloading required (universal) lsp-bridge wheels"
     local req
     while IFS= read -r req; do
         case "$req" in ''|'#'*) continue ;; esac
@@ -355,12 +355,13 @@ pack_wheels() {
                 --python-version 38 --platform manylinux2014_x86_64 \
                 --platform manylinux_2_28_x86_64 --platform manylinux_2_17_x86_64 \
                 -d "$STAGE/wheels" "$req" 2>/dev/null; then
-            log "building pure-python wheel for $req"
+            warn "no wheel for $req; building one from source"
             "$pip" wheel --quiet --no-deps -w "$STAGE/wheels" "$req" \
                 || die "cannot obtain a wheel for $req"
         fi
     done < "$DEPLOY_DIR/manifests/python-wheels.txt"
     ls "$STAGE/wheels"/*.whl >/dev/null 2>&1 || die "no wheels were produced"
+    log "wheel set: $(ls "$STAGE/wheels" | wc -l) files"
 }
 
 # ---------------------------------------------------------------------------
@@ -455,11 +456,11 @@ main() {
     pack_patch
     pack_clangd_prebuilt
     assemble
-    ( cd "$DIST" && tar -cJf "$BUNDLE_NAME.tar.xz" "$BUNDLE_NAME" )
-    sha256sum "$DIST/$BUNDLE_NAME.tar.xz" > "$DIST/$BUNDLE_NAME.tar.xz.sha256"
-    log "bundle: $DIST/$BUNDLE_NAME.tar.xz"
-    cat "$DIST/$BUNDLE_NAME.tar.xz.sha256"
-    [ "$DO_VERIFY" = 1 ] && { "$DEPLOY_DIR/lib/verify.sh" "$DIST/$BUNDLE_NAME.tar.xz" \
+    ( cd "$DIST" && tar -czf "$BUNDLE_NAME.tar.gz" "$BUNDLE_NAME" )
+    sha256sum "$DIST/$BUNDLE_NAME.tar.gz" > "$DIST/$BUNDLE_NAME.tar.gz.sha256"
+    log "bundle: $DIST/$BUNDLE_NAME.tar.gz"
+    cat "$DIST/$BUNDLE_NAME.tar.gz.sha256"
+    [ "$DO_VERIFY" = 1 ] && { "$DEPLOY_DIR/lib/verify.sh" "$DIST/$BUNDLE_NAME.tar.gz" \
                                   || die "verification failed"; }
     [ "$KEEP_WORK" = 1 ] || true
 }

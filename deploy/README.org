@@ -13,7 +13,8 @@ and without sudo**, on a fresh Ubuntu 20.04 x86_64 machine:
   prebuilt fallback)
 * the dotemacs configuration with all submodules bumped to their newest
   upstream release
-* a python3.8 venv for lsp-bridge, and the tree-sitter grammars
+* a venv for lsp-bridge using whatever =python3= the target provides
+  (any Python 3; the bundled wheels are universal), and the tree-sitter grammars
 
 ## Source packaging policy
 
@@ -55,7 +56,7 @@ cd dotemacs-offline-31.1-focal-x86_64
 Prerequisites on the target (checked by `install.sh`): a stage0 C/C++ compiler
 (`gcc`/`g++`, focal's 9.4 is enough), `make`, `autoconf`, `automake`, `libtool`,
 `pkg-config`, `texinfo`, `flex`, `bison`, `bzip2`, `zlib1g-dev`,
-`libncurses-dev`, `libtinfo-dev`, `libffi-dev`, `libgnutls28-dev`, `python3.8`,
+`libncurses-dev`, `libtinfo-dev`, `libffi-dev`, `libgnutls28-dev`, `python3`,
 `git`, `tar`, `xz`, and at least 25 GB of free space.
 
 Useful options: `--no-clangd`, `--prebuilt-clangd`, `--no-native-comp`,
@@ -92,7 +93,7 @@ self checks:
 - libtree-sitter 0.27.2 built and installed
 - Emacs 31.1 built and installed; the tab-display fix was applied with =git am=
   before =configure=
-- =ctags=, GNU =global=, lsp-bridge python3.8 venv, all 54 submodules (0
+- =ctags=, GNU =global=, lsp-bridge venv (any =python3=), all 54 submodules (0
   uninitialized, clean =git status=) and 14 tree-sitter grammars installed
 - =emacs --version= = 31.1; =.c= files open in =c-ts-mode=; the full
   =init.el= loads without errors
@@ -109,3 +110,16 @@ Notes from that run:
 - The final archive is =dotemacs-offline-31.1-focal-x86_64.tar.gz= (gzip is
   used for the outer archive because the inner component tarballs are already
   xz-compressed; this keeps packaging fast with the same size).
+
+* Python version policy
+
+install.sh accepts any =python3= on =PATH= (no 3.8 pinning):
+
+- it creates the venv with =python3 -m venv --without-pip=; if the =venv= module is
+  unavailable it falls back to a tiny =python3= wrapper at
+  =~/.emacs.d/lsp.bridge.pyenv/bin/python= with a private =site-packages=;
+- the bundled wheels are universal (=epc=, =sexpdata=, =six=, =watchdog=), so they
+  load on any Python 3 (verified with 3.8 and 3.14);
+- optional extras (=orjson=, =rapidfuzz=, =paramiko=) are not bundled because their
+  wheels are interpreter-specific. lsp-bridge falls back to stdlib =json= without
+  =orjson=; install them later with pip if you need the faster path or remote files.
