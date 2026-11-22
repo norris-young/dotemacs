@@ -180,7 +180,7 @@ fast_ls() { timeout 25 git -c http.version=HTTP/1.1 ls-remote "$@" 2>/dev/null; 
 mirror_url() { printf '%s:~/repos/dotemacs/packages/%s/.git' "$MIRROR_HOST" "$1"; }
 
 latest_tag_from() { # url
-    fast_ls "$1" --tags --refs \
+    fast_ls --tags --refs "$1" \
         | awk -F/ '{print $NF}' \
         | grep -E '^v?[0-9]+\.[0-9]+(\.[0-9]+)?$' \
         | sort -V | tail -1
@@ -199,7 +199,7 @@ source "$DEPLOY_DIR/lib/common.sh"
 fast_ls() { timeout 25 git -c http.version=HTTP/1.1 ls-remote "$@" 2>/dev/null; }
 mirror_url() { printf '%s:~/repos/dotemacs/packages/%s/.git' "$MIRROR_HOST" "$1"; }
 latest_tag_from() {
-    fast_ls "$1" --tags --refs | awk -F/ '{print $NF}' \
+    fast_ls --tags --refs "$1" | awk -F/ '{print $NF}' \
         | grep -E '^v?[0-9]+\.[0-9]+(\.[0-9]+)?$' | sort -V | tail -1
 }
 ref=""
@@ -264,7 +264,7 @@ pack_packages() {
             local head tags
             head=$(fast_ls "$url" HEAD || true)
             if [ -n "$head" ]; then
-                tags=$(fast_ls "$url" --tags --refs || true)
+                tags=$(fast_ls --tags --refs "$url" || true)
                 [ -n "$tags" ] && ref=$(printf '%s\n' "$tags" | awk -F/ '{print $NF}' \
                     | grep -E '^v?[0-9]+\.[0-9]+(\.[0-9]+)?$' | sort -V | tail -1)
                 [ -n "$ref" ] || ref=HEAD
@@ -273,7 +273,7 @@ pack_packages() {
         if [ -z "$ref" ]; then
             kind=mirror
             url=$(mirror_url "$name")
-            ref=$(fast_ls "$url" --tags --refs 2>/dev/null | awk -F/ '{print $NF}' \
+            ref=$(fast_ls --tags --refs "$url" 2>/dev/null | awk -F/ '{print $NF}' \
                     | grep -E '^v?[0-9]+\.[0-9]+(\.[0-9]+)?$' | sort -V | tail -1) || true
             [ -n "$ref" ] || ref=HEAD
         fi
@@ -449,7 +449,7 @@ url=$(awk -F'\t' -v l="$lang" '$1==l{print $2;exit}' "$WORK/grammar-list.txt")
 # shellcheck source=lib/common.sh
 source "$DEPLOY_DIR/lib/common.sh"
 fast_ls() { timeout 25 git -c http.version=HTTP/1.1 ls-remote "$@" 2>/dev/null; }
-tag=$(fast_ls "$url" --tags --refs | awk -F/ '{print $NF}' \
+tag=$(fast_ls --tags --refs "$url" | awk -F/ '{print $NF}' \
         | grep -E '^v?[0-9]+\.[0-9]+(\.[0-9]+)?$' | sort -V | tail -1)
 ref=${tag:-HEAD}
 if ! clone_depth1 "$url" "$ref" "$WORK/grammars/$lang" 2>/dev/null; then
