@@ -163,3 +163,16 @@ so an interrupted run can simply be re-executed with the same command line.
 - =FORCE_INSTALL=1 ./install.sh ...= redoes every step (useful after changing
   build options such as =--no-native-comp=).
 - =self_check= always runs at the end, even when every step was skipped.
+
+** install.sh must run inside the bundle
+
+=install.sh= uses its own directory as the bundle root and verifies
+=SHA256SUMS= plus =repos/*.tar=. Run it from the extracted tarball, e.g.:
+
+#+begin_src bash
+cd dotemacs-offline-31.1-focal-x86_64
+./install.sh
+#+end_src
+
+Running =deploy/install.sh= from the source checkout fails with
+"bundle is incomplete (missing SHA256SUMS)" by design.

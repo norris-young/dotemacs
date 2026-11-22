@@ -246,7 +246,7 @@ preflight() {
     if [ "$SKIP_PREFLIGHT" = 1 ]; then
         warn "skipping prerequisite checks (--skip-preflight)"
         mkdir -p "$PREFIX" "$REPOS_DIR" "$BIN_DIR"
-        [ -f "$BUNDLE_DIR/SHA256SUMS" ] || die "bundle is incomplete (missing SHA256SUMS)"
+        [ -f "$BUNDLE_DIR/SHA256SUMS" ] || die "bundle is incomplete (missing SHA256SUMS); run install.sh from the extracted bundle directory (e.g. deploy/dist/dotemacs-offline-31.1-focal-x86_64/ or the directory created by tar xf), not from deploy/"
         return 0
     fi
     MISSING=""
@@ -276,7 +276,7 @@ On Ubuntu 20.04: sudo apt install build-essential git autoconf automake libtool 
     if [ "$free_kb" -lt $((25 * 1024 * 1024)) ]; then
         warn "less than 25GB free on $HOME (${free_kb}KB); build may fail"
     fi
-    [ -f "$BUNDLE_DIR/SHA256SUMS" ] || die "bundle is incomplete (missing SHA256SUMS)"
+    [ -f "$BUNDLE_DIR/SHA256SUMS" ] || die "bundle is incomplete (missing SHA256SUMS); run install.sh from the extracted bundle directory (e.g. deploy/dist/dotemacs-offline-31.1-focal-x86_64/ or the directory created by tar xf), not from deploy/"
     log "preflight OK (prefix=$PREFIX, emacs-dir=$EMACS_DIR, jobs=$JOBS)"
 }
 
