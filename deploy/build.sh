@@ -31,57 +31,125 @@ SKIP_GRAMMARS=${SKIP_GRAMMARS:-0}
 SKIP_WHEELS=${SKIP_WHEELS:-0}
 
 mkdir -p "$DIST"
+if [ "${CLEAN:-0}" = 1 ]; then
+    log "CLEAN=1: removing previous build state and artifacts"
+    rm -rf "$STAGE" "$WORK"
+fi
 mkdir -p "$STAGE"/{repos/submodules,repos/grammars,repos/prereq,repos/patches,manifests,wheels,tarballs,tools}
 mkdir -p "$WORK"/{src,pkgs,grammars,mirrors}
-if [ "$SKIP_TOOLS" != 1 ]; then
-    rm -rf "$STAGE"
-    mkdir -p "$STAGE"/{repos/submodules,repos/grammars,repos/prereq,repos/patches,manifests,wheels,tarballs,tools}
-    : > "$STAGE/manifests/resolved.txt"
-    printf '# component\tkind\turl\tref\tcommit\n' >> "$STAGE/manifests/resolved.txt"
-fi
 
 RESOLVED=$STAGE/manifests/resolved.txt
-record() { printf '%s\t%s\t%s\t%s\t%s\n' "$@" >> "$RESOLVED"; }
+[ -f "$RESOLVED" ] || printf '# component\tkind\turl\tref\tcommit\n' > "$RESOLVED"
+
+# Rewrite the record for a component instead of appending a duplicate.
+record() {
+    local name=$1
+    { grep -v "^$name	" "$RESOLVED" 2>/dev/null || true
+      printf '%s\t%s\t%s\t%s\t%s\n' "$@" ; } > "$RESOLVED.tmp"
+    mv "$RESOLVED.tmp" "$RESOLVED"
+}
+
+# --- resumable step state ---------------------------------------------------
+# Format: <key> <TAB> <status> <TAB> <signature> <TAB> <timestamp>
+STATE=${BUILD_STATE:-$WORK/build-state}
+FORCE_BUILD=${FORCE_BUILD:-0}
+touch "$STATE"
+
+step_sig() { printf '%s' "$*" | sha256sum | cut -d' ' -f1 | cut -c1-16; }
+step_status() { awk -F'\t' -v k="$1" '$1==k{print $2; exit}' "$STATE" 2>/dev/null; }
+step_signature() { awk -F'\t' -v k="$1" '$1==k{print $3; exit}' "$STATE" 2>/dev/null; }
+step_set() { # key status [sig]
+    local key=$1 st=$2 sig=${3:-}
+    { grep -v "^$key	" "$STATE" 2>/dev/null || true
+      printf '%s\t%s\t%s\t%s\n' "$key" "$st" "$sig" "$(date -u +%FT%TZ)" ; } > "$STATE.tmp"
+    mv "$STATE.tmp" "$STATE"
+}
+step_done() { # key sig [artifact-check...]
+    local key=$1 sig=$2
+    shift 2
+    [ "$FORCE_BUILD" = 1 ] && return 1
+    [ "$(step_status "$key")" = ok ] || return 1
+    [ "$(step_signature "$key")" = "$sig" ] || return 1
+    "$@"
+}
+step_start() { # key sig
+    local prev
+    prev=$(step_status "$1")
+    [ "$prev" = failed ] && warn "step $1 failed in the previous run; retrying"
+    step_set "$1" running "$2"
+}
+step_ok() { step_set "$1" ok "$2"; }
+step_fail() { step_set "$1" failed "$2"; }
 
 # ---------------------------------------------------------------------------
 # 1. Tool sources (GCC, CMake, Emacs, LLVM, ...)
 # ---------------------------------------------------------------------------
-pack_tool() { # name kind url ref
-    local name=$1 kind=$2 url=$3 ref=$4 commit
-    if [ "$kind" = tarball ]; then
-        log "fetching tarball $name: $url"
-        download "$url" "$STAGE/tarballs/$(basename "$url")"
-        record "$name" tarball "$url" "$(basename "$url")" \
-               "$(sha256_file "$STAGE/tarballs/$(basename "$url")")"
-        return 0
-    fi
-    if [ "$kind" = tarball-src ]; then
-        # Official source tarball used as a build tree (no upstream git).
-        local tf=$WORK/tarballs/$(basename "$url")
-        mkdir -p "$WORK/tarballs"
-        log "fetching source tarball $name: $url"
-        download "$url" "$tf"
-        rm -rf "$WORK/src/$name"; mkdir -p "$WORK/src/$name"
-        tar -xf "$tf" -C "$WORK/src/$name" --strip-components=1
-        record "$name" tarball-src "$url" "$(basename "$url")" "$(sha256_file "$tf")"
-        tar -C "$WORK/src/$name" -cf - . | xz -T0 -1 > "$STAGE/repos/$name.tar"
-        return 0
-    fi
-    if [ -z "$ref" ]; then
-        local resolved
-        resolved=$(resolve_ref "$url") || die "cannot resolve ref for $name ($url)"
-        ref=${resolved%%$'\t'*}
-    fi
-    log "cloning $name @ $ref (depth 1)"
-    if ! clone_depth1 "$url" "$ref" "$WORK/src/$name"; then
-        warn "git clone failed for $name; trying default-branch HEAD"
-        clone_depth1 "$url" "$(default_head "$url")" "$WORK/src/$name" \
-            || die "cannot fetch $name from $url"
-    fi
-    commit=$(git -C "$WORK/src/$name" rev-parse HEAD)
-    record "$name" git "$url" "$ref" "$commit"
-    tar -C "$WORK/src/$name" -cf - . | xz -T0 -1 > "$STAGE/repos/$name.tar"
+tool_artifact_ok() { # kind url name
+    case "$1" in
+        tarball)   [ -f "$STAGE/tarballs/$(basename "$2")" ] ;;
+        *)         [ -f "$STAGE/repos/$3.tar" ] ;;
+    esac
 }
+
+pack_tool() { # name kind url ref
+    local name=$1 kind=$2 url=$3 ref=$4 commit sig
+    sig=$(step_sig "$kind|$url|$ref")
+    if step_done "tool:$name" "$sig" tool_artifact_ok "$kind" "$url" "$name"; then
+        log "step tool:$name: already done, skipping"
+        case "$kind" in
+            tarball)
+                record "$name" tarball "$url" "$(basename "$url")" \
+                       "$(sha256_file "$STAGE/tarballs/$(basename "$url")")" ;;
+            tarball-src)
+                record "$name" tarball-src "$url" "$(basename "$url")" \
+                       "$(sha256_file "$WORK/tarballs/$(basename "$url")")" ;;
+            git)
+                record "$name" git "$url" "$ref" \
+                       "$(git -C "$WORK/src/$name" rev-parse HEAD 2>/dev/null || echo unknown)" ;;
+        esac
+        return 0
+    fi
+    step_start "tool:$name" "$sig"
+    case "$kind" in
+        tarball)
+            log "fetching tarball $name: $url"
+            download "$url" "$STAGE/tarballs/$(basename "$url")" \
+                || { step_fail "tool:$name" "$sig"; die "download failed: $url"; }
+            record "$name" tarball "$url" "$(basename "$url")" \
+                   "$(sha256_file "$STAGE/tarballs/$(basename "$url")")"
+            ;;
+        tarball-src)
+            local tf=$WORK/tarballs/$(basename "$url")
+            mkdir -p "$WORK/tarballs"
+            log "fetching source tarball $name: $url"
+            download "$url" "$tf" \
+                || { step_fail "tool:$name" "$sig"; die "download failed: $url"; }
+            rm -rf "$WORK/src/$name"; mkdir -p "$WORK/src/$name"
+            tar -xf "$tf" -C "$WORK/src/$name" --strip-components=1 \
+                || { step_fail "tool:$name" "$sig"; die "cannot unpack $tf"; }
+            record "$name" tarball-src "$url" "$(basename "$url")" "$(sha256_file "$tf")"
+            tar -C "$WORK/src/$name" -cf - . | xz -T0 -1 > "$STAGE/repos/$name.tar"
+            ;;
+        git)
+            if [ -z "$ref" ]; then
+                local resolved
+                resolved=$(resolve_ref "$url") || { step_fail "tool:$name" "$sig"; die "cannot resolve ref for $name ($url)"; }
+                ref=${resolved%%$'\t'*}
+            fi
+            log "cloning $name @ $ref (depth 1)"
+            if ! clone_depth1 "$url" "$ref" "$WORK/src/$name"; then
+                warn "git clone failed for $name; trying default-branch HEAD"
+                clone_depth1 "$url" "$(default_head "$url")" "$WORK/src/$name" \
+                    || { step_fail "tool:$name" "$sig"; die "cannot fetch $name from $url"; }
+            fi
+            commit=$(git -C "$WORK/src/$name" rev-parse HEAD)
+            record "$name" git "$url" "$ref" "$commit"
+            tar -C "$WORK/src/$name" -cf - . | xz -T0 -1 > "$STAGE/repos/$name.tar"
+            ;;
+    esac
+    step_ok "tool:$name" "$sig"
+}
+
 
 pack_tools() {
     local name kind url ref
@@ -163,38 +231,80 @@ WORKER
     chmod +x "$WORK/pack-one.sh"
 }
 
+pkg_artifacts_ok() { # name
+    [ -f "$WORK/results/$1" ] && git -C "$WORK/pkgs/$1" rev-parse HEAD >/dev/null 2>&1
+}
+
 pack_packages() {
-    local dir name url kind line
+    local dir name url ref kind commit sig line
     : > "$PACKAGES_TXT"
     mkdir -p "$WORK/results" "$WORK/pkgs"
-    : > "$WORK/pkg-list.txt"
-    : > "$WORK/pkg-names.txt"
     for dir in "$REPO_DIR"/packages/*/; do
         name=$(basename "$dir")
         url=$(package_upstream "$name" "$dir")
         kind=upstream
         [ -n "$url" ] || { kind=mirror; url=$(mirror_url "$name"); }
-        printf '%s\t%s\t%s\n' "$name" "$url" "$kind" >> "$WORK/pkg-list.txt"
-        printf '%s\n' "$name" >> "$WORK/pkg-names.txt"
-    done
-    write_package_worker
-    export MIRROR_HOST WORK DEPLOY_DIR
-    xargs -P 6 -n 1 -a "$WORK/pkg-names.txt" bash "$WORK/pack-one.sh" || true
+        local up
+        up=$(awk -v n="$name" -F'\t' '$1==n{print $2; exit}' \
+                 "$DEPLOY_DIR/manifests/upstreams.txt" 2>/dev/null || true)
+        sig=$(step_sig "$name|${up:-mirror}")
 
-    while IFS= read -r name; do
-        if [ -f "$WORK/results/$name" ]; then
+        if step_done "pkg:$name" "$sig" pkg_artifacts_ok "$name"; then
+            log "step pkg:$name: already done, skipping"
             line=$(cat "$WORK/results/$name")
             printf '%s\n' "$line" >> "$PACKAGES_TXT"
             record "pkg:$name" git "$(printf '%s' "$line" | cut -f3)" \
                    "$(printf '%s' "$line" | cut -f4)" "$(printf '%s' "$line" | cut -f5)"
-        else
-            die "package $name could not be fetched"
+            continue
         fi
-    done < "$WORK/pkg-names.txt"
+
+        step_start "pkg:$name" "$sig"
+        ref=""
+        if [ "$kind" = upstream ]; then
+            local head tags
+            head=$(fast_ls "$url" HEAD || true)
+            if [ -n "$head" ]; then
+                tags=$(fast_ls "$url" --tags --refs || true)
+                [ -n "$tags" ] && ref=$(printf '%s\n' "$tags" | awk -F/ '{print $NF}' \
+                    | grep -E '^v?[0-9]+\.[0-9]+(\.[0-9]+)?$' | sort -V | tail -1)
+                [ -n "$ref" ] || ref=HEAD
+            fi
+        fi
+        if [ -z "$ref" ]; then
+            kind=mirror
+            url=$(mirror_url "$name")
+            ref=$(fast_ls "$url" --tags --refs 2>/dev/null | awk -F/ '{print $NF}' \
+                    | grep -E '^v?[0-9]+\.[0-9]+(\.[0-9]+)?$' | sort -V | tail -1) || true
+            [ -n "$ref" ] || ref=HEAD
+        fi
+        log "package $name <- $kind $url @ $ref"
+        if ! clone_depth1 "$url" "$ref" "$WORK/pkgs/$name" 2>/dev/null; then
+            warn "depth-1 clone failed for $name; falling back to mirror"
+            url=$(mirror_url "$name"); kind=mirror; ref=HEAD
+            clone_depth1 "$url" "$ref" "$WORK/pkgs/$name" \
+                || { step_fail "pkg:$name" "$sig"; die "cannot fetch $name from $url"; }
+        fi
+        commit=$(git -C "$WORK/pkgs/$name" rev-parse HEAD)
+        printf '%s\t%s\t%s\t%s\t%s\n' "$name" "$kind" "$url" "$ref" "$commit" \
+            >> "$WORK/results/$name"
+        printf '%s\t%s\t%s\t%s\t%s\n' "$name" "$kind" "$url" "$ref" "$commit" >> "$PACKAGES_TXT"
+        record "pkg:$name" git "$url" "$ref" "$commit"
+        step_ok "pkg:$name" "$sig"
+    done
 }
+
+
+dotemacs_tree_ok() { [ -f "$STAGE/repos/dotemacs.tar" ] && [ -s "$STAGE/manifests/submodules.txt" ]; }
 
 build_dotemacs_tree() {
     local scratch=$WORK/dotemacs
+    local sig
+    sig=$(step_sig "dotemacs|$(sha256_file "$PACKAGES_TXT")")
+    if step_done dotemacs-tree "$sig" dotemacs_tree_ok; then
+        log "step dotemacs-tree: already done, skipping"
+        return 0
+    fi
+    step_start dotemacs-tree "$sig"
     log "creating scratch copy of dotemacs"
     rm -rf "$scratch"
     mkdir -p "$scratch"
@@ -271,6 +381,7 @@ build_dotemacs_tree() {
     tar -C "$scratch" --exclude='./eln-cache' --exclude='./lsp.bridge.pyenv' \
         --exclude='./auto-save-list' --exclude='./transient' \
         -cf - . | xz -T0 -1 > "$STAGE/repos/dotemacs.tar"
+    step_ok dotemacs-tree "$sig"
 }
 
 # ---------------------------------------------------------------------------
@@ -300,6 +411,12 @@ pack_grammars() {
             warn "no upstream URL known for grammar $lang"
             continue
         fi
+        if [ -f "$STAGE/repos/grammars/$lang.tar" ] && [ -f "$WORK/grammar-results/$lang" ]; then
+            log "step grammar:$lang: already done, skipping"
+            record "grammar:$lang" git "$(cut -f2 "$WORK/grammar-results/$lang")" \
+                   "$(cut -f3 "$WORK/grammar-results/$lang")" "$(cut -f4 "$WORK/grammar-results/$lang")"
+            continue
+        fi
         printf '%s\t%s\n' "$lang" "${url%.git}" >> "$WORK/grammar-list.txt"
         printf '%s\n' "$lang" >> "$WORK/grammar-names.txt"
     done
@@ -322,7 +439,7 @@ if ! clone_depth1 "$url" "$ref" "$WORK/grammars/$lang" 2>/dev/null; then
 fi
 commit=$(git -C "$WORK/grammars/$lang" rev-parse HEAD)
 tar -C "$WORK/grammars/$lang" -cf - . | xz -T0 -1 > "$STAGE/repos/grammars/$lang.tar"
-printf '%s\t%s\t%s\n' "$lang" "$url" "$ref" "$commit" > "$WORK/grammar-results/$lang"
+printf '%s\t%s\t%s\t%s\n' "$lang" "$url" "$ref" "$commit" > "$WORK/grammar-results/$lang"
 GWORKER
     chmod +x "$WORK/pack-one-grammar.sh"
     mkdir -p "$WORK/grammar-results"
@@ -332,8 +449,8 @@ GWORKER
     while IFS= read -r l; do
         if [ -f "$WORK/grammar-results/$l" ]; then
             # shellcheck disable=SC2046
-            record "grammar:$l" git $(cut -f2,3 "$WORK/grammar-results/$l" | tr '\t' '\n' | head -2 | tr '\n' ' ') \
-                "$(cut -f4 "$WORK/grammar-results/$l")"
+            record "grammar:$l" git "$(cut -f2 "$WORK/grammar-results/$l")" \
+                   "$(cut -f3 "$WORK/grammar-results/$l")" "$(cut -f4 "$WORK/grammar-results/$l")"
         else
             warn "grammar $l was not packaged"
         fi
@@ -343,9 +460,18 @@ GWORKER
 # ---------------------------------------------------------------------------
 # 4. Python wheels for lsp-bridge
 # ---------------------------------------------------------------------------
+wheels_ok() { [ -d "$STAGE/wheels" ] && [ "$(ls "$STAGE/wheels"/*.whl 2>/dev/null | wc -l)" -ge 4 ]; }
+
 pack_wheels() {
     local pip=$REPO_DIR/lsp.bridge.pyenv/bin/pip
     [ -x "$pip" ] || die "no pip at $pip (needed to download wheels)"
+    local sig
+    sig=$(step_sig "wheels|$(sha256_file "$DEPLOY_DIR/manifests/python-wheels.txt")")
+    if step_done wheels "$sig" wheels_ok; then
+        log "step wheels: already done, skipping"
+        return 0
+    fi
+    step_start wheels "$sig"
     rm -rf "$STAGE/wheels"; mkdir -p "$STAGE/wheels"
     log "downloading required (universal) lsp-bridge wheels"
     local req
@@ -362,6 +488,7 @@ pack_wheels() {
     done < "$DEPLOY_DIR/manifests/python-wheels.txt"
     ls "$STAGE/wheels"/*.whl >/dev/null 2>&1 || die "no wheels were produced"
     log "wheel set: $(ls "$STAGE/wheels" | wc -l) files"
+    step_ok wheels "$sig"
 }
 
 # ---------------------------------------------------------------------------
@@ -370,6 +497,16 @@ pack_wheels() {
 pack_patch() {
     local src=$REPO_DIR/../emacs
     local commit=8a81ef94438f1cafd49f7a678097f16493422f1b
+    local sig
+    sig=$(step_sig "patch|$commit")
+    patch_ok() { [ -f "$STAGE/repos/patches/0001-fix-tab-dispaly.patch" ] \
+                 && [ -f "$STAGE/repos/patches/0001-fix-tab-dispaly.diff" ] \
+                 && [ -f "$STAGE/repos/patches/README.org" ]; }
+    if step_done patch "$sig" patch_ok; then
+        log "step patch: already done, skipping"
+        return 0
+    fi
+    step_start patch "$sig"
     [ -d "$src/.git" ] || die "cannot find local emacs repo at $src"
     git -C "$src" cat-file -e "$commit^{commit}" || die "commit $commit missing in $src"
     git -C "$src" format-patch -1 "$commit" --stdout \
@@ -392,6 +529,7 @@ pack_patch() {
         || die "tab patch does not apply to Emacs $EMACS_VERSION"
     printf '%s\t%s\n' "$commit" "$(sha256_file "$STAGE/repos/patches/0001-fix-tab-dispaly.diff")" \
         > "$STAGE/manifests/patches.txt"
+    step_ok patch "$sig"
 }
 
 # ---------------------------------------------------------------------------
@@ -449,6 +587,11 @@ main() {
     export XZ_OPT=${XZ_OPT:--1}
     have git && have curl && have tar && have xz || die "missing basic tools"
     log "bundle version $BUNDLE_VERSION, work dir $WORK"
+    if [ -s "$STATE" ]; then
+        local prev
+        prev=$(awk -F'\t' '$2!="ok"{printf "%s(%s) ", $1, $2}' "$STATE")
+        [ -n "$prev" ] && log "resuming; unfinished steps: $prev"
+    fi
     [ "$SKIP_TOOLS" = 1 ]    || pack_tools
     [ "$SKIP_PACKAGES" = 1 ] || { pack_packages; build_dotemacs_tree; }
     [ "$SKIP_GRAMMARS" = 1 ] || pack_grammars

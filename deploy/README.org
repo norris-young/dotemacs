@@ -52,7 +52,9 @@ Options (environment variables):
 | `WITH_CLANGD_PREBUILT=1` | also build a prebuilt clangd fallback (slow) |
 | `DO_VERIFY=1` | run the end-to-end verification after building |
 | `KEEP_WORK=1` | keep intermediate clones under `deploy/dist/work` |
-| `SKIP_TOOLS=1` / `SKIP_PACKAGES=1` / `SKIP_GRAMMARS=1` / `SKIP_WHEELS=1` | iterate without re-cloning |
+| `SKIP_TOOLS=1` / `SKIP_PACKAGES=1` / `SKIP_GRAMMARS=1` / `SKIP_WHEELS=1` | skip whole phases (force) |
+| `CLEAN=1` | wipe `dist/` state and rebuild everything from scratch |
+| `FORCE_BUILD=1` | ignore recorded build steps and redo them |
 
 ## Install (on the offline target)
 
@@ -112,8 +114,11 @@ Notes from that run:
 - The E2E run used =--no-native-comp= to save time. The default bundle uses
   =--with-native-compilation=aot=; its configure stage (libgccjit smoke test)
   was verified, but the full AOT compile was not run to completion here.
-- =RESUME=1 ./install.sh ...= resumes an interrupted install, reusing already
-  built GCC/CMake/libtree-sitter/Emacs.
+- =install.sh= records every completed step in
+  =~/.local/opt/dotemacs/install-progress=; if a step fails (network timeout,
+  missing dependency, ...) fix the cause and run the same command again: it
+  retries only the failed step and everything after it. =RESUME=1= is no longer
+  needed (accepted for compatibility); =FORCE_INSTALL=1= redoes all steps.
 - =--with-gnutls=ifavailable= is used, so a target without gnutls-dev still
   builds (TLS support disabled, irrelevant for offline use).
 - The final archive is =dotemacs-offline-31.1-focal-x86_64.tar.gz= (gzip is
@@ -132,3 +137,29 @@ install.sh accepts any =python3= on =PATH= (no 3.8 pinning):
 - optional extras (=orjson=, =rapidfuzz=, =paramiko=) are not bundled because their
   wheels are interpreter-specific. lsp-bridge falls back to stdlib =json= without
   =orjson=; install them later with pip if you need the faster path or remote files.
+
+* Resumable builds and installs
+
+Both scripts persist per-step state and verify artifacts before skipping a step,
+so an interrupted run can simply be re-executed with the same command line.
+
+** build.sh
+
+- State: =dist/work/build-state=, keyed per tool/package/grammar/wheel/patch step
+  with a content signature (URL/ref/commit/manifest hash).
+- On re-run, steps whose state is =ok= *and* whose artifact still exists are
+  skipped without touching the network; a missing/corrupt artifact or changed
+  signature causes only that step to be rebuilt.
+- =CLEAN=1 ./build.sh= starts from scratch; =FORCE_BUILD=1= ignores the state.
+
+** install.sh
+
+- State: =$PREFIX/install-progress= (=~/.local/opt/dotemacs/install-progress=).
+- Steps: gcc, cmake, tree-sitter, emacs-patch, emacs, ctags-global, clangd,
+  config, python-env, grammars, launcher. Each step has an artifact check
+  (binary exists and reports the expected version, imports work, every grammar
+  .so is present, ...); a step marked =ok= is skipped, a =failed= step is
+  retried with a warning.
+- =FORCE_INSTALL=1 ./install.sh ...= redoes every step (useful after changing
+  build options such as =--no-native-comp=).
+- =self_check= always runs at the end, even when every step was skipped.

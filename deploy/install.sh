@@ -127,6 +127,57 @@ EMACS_BIN=$EMACS_PREFIX/bin/emacs
 VENV=$EMACS_DIR/lsp.bridge.pyenv
 TREE_SITTER_DIR=$EMACS_DIR/tree-sitter
 
+# --- resumable step state ---------------------------------------------------
+# Format: <key> <TAB> <status> <TAB> <timestamp>
+PROGRESS=${INSTALL_PROGRESS:-$PREFIX/install-progress}
+FORCE_INSTALL=${FORCE_INSTALL:-0}
+
+progress_status() { [ -f "$PROGRESS" ] || return 0; awk -F'\t' -v k="$1" '$1==k{print $2; exit}' "$PROGRESS" 2>/dev/null || true; }
+progress_set() { # key status
+    local key=$1 st=$2
+    mkdir -p "$(dirname "$PROGRESS")"
+    { grep -v "^$key	" "$PROGRESS" 2>/dev/null || true
+      printf '%s\t%s\t%s\n' "$key" "$st" "$(date -u +%FT%TZ)" ; } > "$PROGRESS.tmp"
+    mv "$PROGRESS.tmp" "$PROGRESS"
+}
+
+step_run() { # key function check-function
+    local key=$1 fn=$2 chk=$3 prev
+    prev=$(progress_status "$key")
+    if [ "$FORCE_INSTALL" != 1 ] && [ "$prev" = ok ] && "$chk"; then
+        log "step $key: already completed, skipping"
+        return 0
+    fi
+    [ "$prev" = failed ] && warn "step $key failed in the previous run; retrying"
+    progress_set "$key" running
+    if ( "$fn" ); then
+        progress_set "$key" ok
+        return 0
+    fi
+    progress_set "$key" failed
+    return 1
+}
+
+check_gcc()        { [ -x "$GCC_PREFIX/bin/gcc" ] && "$GCC_PREFIX/bin/gcc" --version 2>/dev/null | head -1 | grep -q '13\.5\.0'; }
+check_cmake()      { [ -x "$CMAKE_PREFIX/bin/cmake" ]; }
+check_tree_sitter(){ ls "$PREFIX"/lib/libtree-sitter.so* >/dev/null 2>&1; }
+check_emacs_patch(){ [ -d "$REPOS_DIR/emacs/.git" ] \
+                     && [ "$(git -C "$REPOS_DIR/emacs" log -1 --format=%s 2>/dev/null)" = "fix tab dispaly" ] \
+                     && grep -q dpvec_index "$REPOS_DIR/emacs/src/term.c" 2>/dev/null; }
+check_emacs()      { [ -x "$EMACS_BIN" ] && "$EMACS_BIN" --version 2>/dev/null | head -1 | grep -q '31\.1'; }
+check_ctags_global(){ [ -x "$PREFIX/bin/ctags" ] && [ -x "$PREFIX/bin/global" ]; }
+check_clangd()     { [ "${SKIP_CLANGD:-0}" = 1 ] || [ -x "$PREFIX/bin/clangd" ]; }
+check_config()     { [ -L "$EMACS_DIR" ] && [ -d "$EMACS_DIR/packages" ] \
+                     && [ -z "$(git -C "$EMACS_DIR" submodule status 2>/dev/null | grep '^-')" ]; }
+check_python()     { [ -x "$VENV/bin/python" ] && "$VENV/bin/python" -c 'import epc, sexpdata, six, watchdog' >/dev/null 2>&1; }
+check_grammars()   { local tar lang
+                     for tar in "$BUNDLE_DIR"/repos/grammars/*.tar; do
+                         [ -e "$tar" ] || continue
+                         lang=$(basename "$tar" .tar)
+                         [ -f "$TREE_SITTER_DIR/libtree-sitter-$lang.so" ] || return 1
+                     done; }
+check_launcher()   { [ -e "$BIN_DIR/emacs" ]; }
+
 # ---------------------------------------------------------------------------
 # Rollback / purge
 # ---------------------------------------------------------------------------
@@ -640,6 +691,10 @@ build_grammars() {
     for tar in "$BUNDLE_DIR"/repos/grammars/*.tar; do
         [ -e "$tar" ] || continue
         lang=$(basename "$tar" .tar)
+        if [ -f "$TREE_SITTER_DIR/libtree-sitter-$lang.so" ]; then
+            log "grammar $lang: already compiled, skipping"
+            continue
+        fi
         tmp=$BUILD/grammar-$lang
         rm -rf "$tmp"; mkdir -p "$tmp"
         tar -xf "$tar" -C "$tmp"
@@ -745,45 +800,29 @@ main() {
     confirm
     preflight
     verify_bundle
-    if [ "${RESUME:-0}" = 1 ]; then
+    if [ -f "$STATE" ]; then
         mkdir -p "$PREFIX" "$REPOS_DIR" "$BIN_DIR"
+        log "previous install state found; continuing (completed steps are skipped)"
     else
         backup_existing
     fi
-    if [ "${RESUME:-0}" = 1 ] && [ -x "$GCC_PREFIX/bin/gcc" ]; then
-        log "resuming: reusing GCC at $GCC_PREFIX"
-    else
-        build_gcc
-    fi
-    if [ "${RESUME:-0}" = 1 ] && [ -x "$CMAKE_PREFIX/bin/cmake" ]; then
-        log "resuming: reusing CMake at $CMAKE_PREFIX"
-    else
-        build_cmake
-    fi
-    if [ "${RESUME:-0}" = 1 ] && ls "$PREFIX"/lib/libtree-sitter.so* >/dev/null 2>&1; then
-        log "resuming: reusing libtree-sitter"
-    else
-        build_tree_sitter
-    fi
-    if [ "${RESUME:-0}" = 1 ] && [ -x "$EMACS_BIN" ]; then
-        log "resuming: reusing Emacs at $EMACS_PREFIX"
-    else
-        apply_emacs_patch
-        build_emacs
-    fi
-    if [ "${RESUME:-0}" = 1 ] && [ -x "$PREFIX/bin/ctags" ] && [ -x "$PREFIX/bin/global" ]; then
-        log "resuming: reusing ctags/global"
-    else
-        build_ctags_global
-    fi
-    build_clangd
-    install_config
-    install_python_env
-    build_grammars
-    install_launcher
+
+    step_run gcc           build_gcc            check_gcc            || die "GCC step failed; fix the cause and re-run to resume"
+    step_run cmake         build_cmake          check_cmake          || die "CMake step failed; fix the cause and re-run to resume"
+    step_run tree-sitter   build_tree_sitter    check_tree_sitter    || die "libtree-sitter step failed; fix the cause and re-run to resume"
+    step_run emacs-patch   apply_emacs_patch    check_emacs_patch    || die "tab patch step failed; fix the cause and re-run to resume"
+    step_run emacs         build_emacs          check_emacs          || die "Emacs step failed; fix the cause and re-run to resume"
+    step_run ctags-global  build_ctags_global   check_ctags_global   || die "ctags/global step failed; fix the cause and re-run to resume"
+    step_run clangd        build_clangd         check_clangd         || die "clangd step failed; fix the cause and re-run to resume"
+    step_run config        install_config       check_config         || die "dotemacs config step failed; fix the cause and re-run to resume"
+    step_run python-env    install_python_env   check_python         || die "python environment step failed; fix the cause and re-run to resume"
+    step_run grammars      build_grammars       check_grammars       || die "tree-sitter grammars step failed; fix the cause and re-run to resume"
+    step_run launcher      install_launcher     check_launcher       || die "launcher step failed; fix the cause and re-run to resume"
+
     self_check
     [ "$KEEP_BUILD" = 1 ] || rm -rf "$BUILD"
     log "done. Start Emacs with: $BIN_DIR/emacs (or re-login and run 'emacs')"
+    log "progress file: $PROGRESS"
     log "log file: $HOME/dotemacs-deploy.log"
 }
 
