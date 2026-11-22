@@ -342,6 +342,9 @@ build_dotemacs_tree() {
                 die "scratch tree is incomplete ($sub missing) and there is no cached clone for $name; remove $scratch and re-run"
             fi
         fi
+        if ! git -C "$sub" rev-parse HEAD >/dev/null 2>&1; then
+            die "package $name is still not a usable git checkout after restore: sub=$sub cached=$WORK/pkgs/$name"
+        fi
         if [ "$(git -C "$sub" rev-parse HEAD 2>/dev/null || true)" = "$commit" ]; then
             log "$name: already at $commit"
             git -C "$scratch" add "packages/$name"
