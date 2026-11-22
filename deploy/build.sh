@@ -10,6 +10,10 @@
 
 set -euo pipefail
 
+# If anything aborts unexpectedly (set -e), say so instead of silently returning
+# to the prompt; the persisted state lets the next run resume.
+trap 'rc=$?; if [ "$rc" -ne 0 ]; then printf "\033[1;31m[error]\033[0m build stopped (exit %s); re-run ./build.sh to resume\n" "$rc" >&2; fi' EXIT
+
 DEPLOY_DIR=$(cd "$(dirname "$0")" && pwd)
 REPO_DIR=$(dirname "$DEPLOY_DIR")
 # shellcheck source=lib/common.sh
@@ -75,7 +79,9 @@ step_done() { # key sig [artifact-check...]
 step_start() { # key sig
     local prev
     prev=$(step_status "$1")
-    [ "$prev" = failed ] && warn "step $1 failed in the previous run; retrying"
+    if [ "$prev" = failed ]; then
+        warn "step $1 failed in the previous run; retrying"
+    fi
     step_set "$1" running "$2"
 }
 step_ok() { step_set "$1" ok "$2"; }
@@ -266,8 +272,10 @@ pack_packages() {
             head=$(fast_ls "$url" HEAD || true)
             if [ -n "$head" ]; then
                 tags=$(fast_ls --tags --refs "$url" || true)
-                [ -n "$tags" ] && ref=$(printf '%s\n' "$tags" | awk -F/ '{print $NF}' \
-                    | grep -E '^v?[0-9]+\.[0-9]+(\.[0-9]+)?$' | sort -V | tail -1)
+                if [ -n "$tags" ]; then
+                    ref=$(printf '%s\n' "$tags" | awk -F/ '{print $NF}' \
+                        | grep -E '^v?[0-9]+\.[0-9]+(\.[0-9]+)?$' | sort -V | tail -1)
+                fi
                 [ -n "$ref" ] || ref=HEAD
             fi
         fi
@@ -610,7 +618,9 @@ main() {
     if [ -s "$STATE" ]; then
         local prev
         prev=$(awk -F'\t' '$2!="ok"{printf "%s(%s) ", $1, $2}' "$STATE")
-        [ -n "$prev" ] && log "resuming; unfinished steps: $prev"
+        if [ -n "$prev" ]; then
+            log "resuming; unfinished steps: $prev"
+        fi
     fi
     [ "$SKIP_TOOLS" = 1 ]    || pack_tools
     [ "$SKIP_PACKAGES" = 1 ] || { pack_packages; build_dotemacs_tree; }
@@ -623,8 +633,9 @@ main() {
     sha256sum "$DIST/$BUNDLE_NAME.tar.gz" > "$DIST/$BUNDLE_NAME.tar.gz.sha256"
     log "bundle: $DIST/$BUNDLE_NAME.tar.gz"
     cat "$DIST/$BUNDLE_NAME.tar.gz.sha256"
-    [ "$DO_VERIFY" = 1 ] && { "$DEPLOY_DIR/lib/verify.sh" "$DIST/$BUNDLE_NAME.tar.gz" \
-                                  || die "verification failed"; }
+    if [ "$DO_VERIFY" = 1 ]; then
+        "$DEPLOY_DIR/lib/verify.sh" "$DIST/$BUNDLE_NAME.tar.gz" || die "verification failed"
+    fi
     [ "$KEEP_WORK" = 1 ] || true
 }
 
