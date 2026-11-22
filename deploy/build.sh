@@ -332,7 +332,7 @@ build_dotemacs_tree() {
     while IFS=$'\t' read -r name kind url ref commit; do
         [ -n "$name" ] || continue
         sub=$scratch/packages/$name
-        if [ ! -d "$sub" ]; then
+        if ! git -C "$sub" rev-parse HEAD >/dev/null 2>&1; then
             if [ -d "$WORK/pkgs/$name/.git" ]; then
                 log "restoring missing package directory $name in the scratch tree"
                 mkdir -p "$(dirname "$sub")"
