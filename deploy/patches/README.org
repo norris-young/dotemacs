@@ -1,0 +1,8 @@
+* Tab display fix patch
+
+Source commit: =8a81ef94438f1cafd49f7a678097f16493422f1b= (local emacs repo, branch emacs30)
+Author: Arto Young <arto.young@outlook.com> (authored 2022-06-23)
+Files: src/term.c, src/xdisp.c (2 files, 16 insertions)
+
+Applied to Emacs 31.1 before =./configure= by install.sh.
+=git apply --check= against the bundled Emacs tree is verified at bundle time.

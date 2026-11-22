@@ -474,7 +474,8 @@ pack_grammars() {
     cat > "$WORK/pack-one-grammar.sh" <<'GWORKER'
 #!/usr/bin/env bash
 set -uo pipefail
-lang=$1
+lang=${1:-}
+[ -n "$lang" ] || exit 0
 url=$(awk -F'\t' -v l="$lang" '$1==l{print $2;exit}' "$WORK/grammar-list.txt")
 [ -n "$url" ] || exit 1
 # shellcheck source=lib/common.sh
@@ -494,7 +495,9 @@ GWORKER
     chmod +x "$WORK/pack-one-grammar.sh"
     mkdir -p "$WORK/grammar-results"
     export WORK DEPLOY_DIR STAGE
-    xargs -P 6 -n 1 -a "$WORK/grammar-names.txt" bash "$WORK/pack-one-grammar.sh" || true
+    if [ -s "$WORK/grammar-names.txt" ]; then
+        xargs -P 6 -n 1 -a "$WORK/grammar-names.txt" bash "$WORK/pack-one-grammar.sh" || true
+    fi
     local l
     while IFS= read -r l; do
         if [ -f "$WORK/grammar-results/$l" ]; then
@@ -558,6 +561,7 @@ pack_wheels() {
 pack_patch() {
     local src=$REPO_DIR/../emacs
     local commit=8a81ef94438f1cafd49f7a678097f16493422f1b
+    local repo_patches=$DEPLOY_DIR/patches
     local sig
     sig=$(step_sig "patch|$commit")
     patch_ok() { [ -f "$STAGE/repos/patches/0001-fix-tab-dispaly.patch" ] \
@@ -568,26 +572,43 @@ pack_patch() {
         return 0
     fi
     step_start patch "$sig"
-    [ -d "$src/.git" ] || die "cannot find local emacs repo at $src"
-    git -C "$src" cat-file -e "$commit^{commit}" || die "commit $commit missing in $src"
-    git -C "$src" format-patch -1 "$commit" --stdout \
-        > "$STAGE/repos/patches/0001-fix-tab-dispaly.patch"
-    git -C "$src" diff "$commit^" "$commit" -- src/term.c src/xdisp.c \
-        > "$STAGE/repos/patches/0001-fix-tab-dispaly.diff"
-    {
-        echo "* Tab display fix patch"
-        echo
-        echo "Source commit: =$commit= (local emacs repo, branch emacs30)"
-        echo "Author: Arto Young <arto.young@outlook.com> (authored 2022-06-23)"
-        echo "Files: src/term.c, src/xdisp.c (2 files, 16 insertions)"
-        echo
-        echo "Applied to Emacs ${EMACS_VERSION} before =./configure= by install.sh."
-        echo "=git apply --check= against the bundled Emacs tree is verified at bundle time."
-    } > "$STAGE/repos/patches/README.org"
-    [ -d "$WORK/src/emacs" ] || die "no emacs source tree to validate the tab patch against"
-    git -C "$WORK/src/emacs" apply --check -v "$STAGE/repos/patches/0001-fix-tab-dispaly.diff" \
-        && log "tab patch applies cleanly to Emacs $EMACS_VERSION" \
-        || die "tab patch does not apply to Emacs $EMACS_VERSION"
+    mkdir -p "$STAGE/repos/patches"
+
+    if [ -f "$repo_patches/0001-fix-tab-dispaly.patch" ] \
+       && [ -f "$repo_patches/0001-fix-tab-dispaly.diff" ]; then
+        # The patch is checked in, so building does not require a local Emacs
+        # repository at $REPO_DIR/../emacs.
+        cp "$repo_patches/0001-fix-tab-dispaly.patch" "$STAGE/repos/patches/"
+        cp "$repo_patches/0001-fix-tab-dispaly.diff" "$STAGE/repos/patches/"
+        if [ -f "$repo_patches/README.org" ]; then
+            cp "$repo_patches/README.org" "$STAGE/repos/patches/README.org"
+        fi
+        log "using checked-in tab display patch"
+    else
+        [ -d "$src/.git" ] || die "cannot find local emacs repo at $src (and deploy/patches is missing)"
+        git -C "$src" cat-file -e "$commit^{commit}" || die "commit $commit missing in $src"
+        git -C "$src" format-patch -1 "$commit" --stdout \
+            > "$STAGE/repos/patches/0001-fix-tab-dispaly.patch"
+        git -C "$src" diff "$commit^" "$commit" -- src/term.c src/xdisp.c \
+            > "$STAGE/repos/patches/0001-fix-tab-dispaly.diff"
+        {
+            echo "* Tab display fix patch"
+            echo
+            echo "Source commit: =$commit="
+            echo "Author: Arto Young <arto.young@outlook.com> (authored 2022-06-23)"
+            echo "Files: src/term.c, src/xdisp.c (2 files, 16 insertions)"
+            echo
+            echo "Applied to Emacs ${EMACS_VERSION} before =./configure= by install.sh."
+        } > "$STAGE/repos/patches/README.org"
+    fi
+
+    if [ -d "$WORK/src/emacs" ]; then
+        git -C "$WORK/src/emacs" apply --check -v "$STAGE/repos/patches/0001-fix-tab-dispaly.diff" \
+            && log "tab patch applies cleanly to Emacs $EMACS_VERSION" \
+            || die "tab patch does not apply to Emacs $EMACS_VERSION"
+    else
+        warn "no Emacs source tree available to verify the tab patch (skipping --check)"
+    fi
     printf '%s\t%s\n' "$commit" "$(sha256_file "$STAGE/repos/patches/0001-fix-tab-dispaly.diff")" \
         > "$STAGE/manifests/patches.txt"
     step_ok patch "$sig"

@@ -1,0 +1,38 @@
+diff --git a/src/term.c b/src/term.c
+index 8ce68f0f768..ddc398b0643 100644
+--- a/src/term.c
++++ b/src/term.c
+@@ -1653,6 +1653,14 @@ produce_glyphs (struct it *it)
+ 	   * it->tab_width);
+       if (!NILP (Vdisplay_line_numbers) && it->line_number_produced_p)
+ 	next_tab_x += it->lnum_pixel_width;
++      /*
++       * For tab-mark display vector like [?» ?\t],
++       * we should not display "»\t" but only "»" at
++       * tab-width boundry, or tab real length will
++       * be tab-width+1, so we decrease tab-width here.
++       */
++      if (it->dpvec && it->current.dpvec_index > 0 && next_tab_x - x0 == it->tab_width)
++	  next_tab_x -= it->tab_width;
+       int nspaces;
+ 
+       /* If part of the TAB has been displayed on the previous line
+diff --git a/src/xdisp.c b/src/xdisp.c
+index eb00c510aaa..a7c95323bba 100644
+--- a/src/xdisp.c
++++ b/src/xdisp.c
+@@ -32903,6 +32903,14 @@ gui_produce_glyphs (struct it *it)
+ 		 tab stop after that.  */
+ 	      if (next_tab_x - x < font->space_width)
+ 		next_tab_x += tab_width;
++	      /*
++	       * For tab-mark display vector like [?» ?\t],
++	       * we should not display "»\t" but only "»" at
++	       * tab-width boundry, or tab real length will
++	       * be tab-width+1, so we decrease tab-width here.
++	       */
++	      if (it->dpvec && it->current.dpvec_index > 0 && next_tab_x - x == tab_width)
++		next_tab_x -= tab_width;
+ 	      if (!NILP (Vdisplay_line_numbers) && it->line_number_produced_p)
+ 		{
+ 		  next_tab_x += it->lnum_pixel_width;
