@@ -24,6 +24,12 @@ and without sudo**, on a fresh Ubuntu 20.04 x86_64 machine:
   release source tarball. This is the case for GMP (Mercurial upstream), and
   for the GCC build prerequisites (GMP/MPFR/MPC/ISL): GCC supports them only as
   the release tarballs pinned by its own `contrib/download_prerequisites`.
+* **China mirror:** GCC itself, GNU global and the GCC prerequisites
+  (GMP/MPFR/MPC) are downloaded from the SJTU GNU mirror
+  (=https://mirror.sjtu.edu.cn/gnu/=). GCC is therefore shipped as its official
+  release tarball (=gcc-13.5.0.tar.xz=) instead of a depth-1 git repository;
+  ISL is not mirrored there and still comes from
+  =https://gcc.gnu.org/pub/gcc/infrastructure/isl-0.24.tar.bz2=.
 * Submodules are bumped to the newest release tag (or default-branch HEAD when
   the project has no tags) at bundle time; the private mirror is only used as a
   fallback and is recorded in `manifests/resolved.txt`.
