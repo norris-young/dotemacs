@@ -10,7 +10,7 @@ cmake	git	https://github.com/Kitware/CMake.git	v4.5.0
 tree-sitter	git	https://github.com/tree-sitter/tree-sitter.git	v0.27.2
 ctags	git	https://github.com/universal-ctags/ctags.git	v6.2.1
 global	tarball-src	https://mirror.sjtu.edu.cn/gnu/global/global-6.7.tar.gz	global-6.7
-llvm-project	git	https://github.com/llvm/llvm-project.git	llvmorg-23.1.5
+llvm-project	git	https://mirror.sjtu.edu.cn/git/llvm-project.git	llvmorg-23.1.5
 gmp	tarball	https://mirror.sjtu.edu.cn/gnu/gmp/gmp-6.2.1.tar.bz2	gmp-6.2.1
 mpfr	tarball	https://mirror.sjtu.edu.cn/gnu/mpfr/mpfr-4.1.0.tar.bz2	mpfr-4.1.0
 mpc	tarball	https://mirror.sjtu.edu.cn/gnu/mpc/mpc-1.2.1.tar.gz	mpc-1.2.1
