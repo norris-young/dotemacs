@@ -315,7 +315,8 @@ build_dotemacs_tree() {
         return 0
     fi
     step_start dotemacs-tree "$sig"
-    if [ -d "$scratch/.git" ]; then
+    if [ -d "$scratch/.git" ] && [ -d "$scratch/packages" ] \
+       && git -C "$scratch" rev-parse HEAD >/dev/null 2>&1; then
         log "reusing the existing scratch copy of dotemacs (resuming)"
     else
         log "creating scratch copy of dotemacs"
@@ -331,6 +332,15 @@ build_dotemacs_tree() {
     while IFS=$'\t' read -r name kind url ref commit; do
         [ -n "$name" ] || continue
         sub=$scratch/packages/$name
+        if [ ! -d "$sub" ]; then
+            if [ -d "$WORK/pkgs/$name/.git" ]; then
+                log "restoring missing package directory $name in the scratch tree"
+                mkdir -p "$(dirname "$sub")"
+                cp -a "$WORK/pkgs/$name" "$sub"
+            else
+                die "scratch tree is incomplete ($sub missing) and there is no cached clone for $name; remove $scratch and re-run"
+            fi
+        fi
         if [ "$(git -C "$sub" rev-parse HEAD 2>/dev/null || true)" = "$commit" ]; then
             log "$name: already at $commit"
             git -C "$scratch" add "packages/$name"
