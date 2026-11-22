@@ -167,8 +167,13 @@ check_emacs_patch(){ [ -d "$REPOS_DIR/emacs/.git" ] \
 check_emacs()      { [ -x "$EMACS_BIN" ] && "$EMACS_BIN" --version 2>/dev/null | head -1 | grep -q '31\.1'; }
 check_ctags_global(){ [ -x "$PREFIX/bin/ctags" ] && [ -x "$PREFIX/bin/global" ]; }
 check_clangd()     { [ "${SKIP_CLANGD:-0}" = 1 ] || [ -x "$PREFIX/bin/clangd" ]; }
-check_config()     { [ -L "$EMACS_DIR" ] && [ -d "$EMACS_DIR/packages" ] \
-                     && [ -z "$(git -C "$EMACS_DIR" submodule status 2>/dev/null | grep '^-')" ]; }
+check_config()     { local repo
+                     [ -f "$EMACS_DIR/init.el" ] && [ -d "$EMACS_DIR/lisp" ] \
+                         && [ -d "$EMACS_DIR/packages" ] || return 1
+                     repo=$(readlink -f "$EMACS_DIR/init.el" 2>/dev/null || true)
+                     [ -n "$repo" ] || return 1
+                     repo=$(dirname "$repo")
+                     [ -z "$(git -C "$repo" submodule status 2>/dev/null | grep '^-')" ]; }
 check_python()     { [ -x "$VENV/bin/python" ] && "$VENV/bin/python" -c 'import epc, sexpdata, six, watchdog' >/dev/null 2>&1; }
 check_grammars()   { local tar lang
                      for tar in "$BUNDLE_DIR"/repos/grammars/*.tar; do
@@ -578,8 +583,33 @@ install_config() {
             die "dotemacs working tree is dirty after submodule checkout"
         fi
     ) || die "config/submodule installation failed"
-    ln -sfn "$d" "$EMACS_DIR"
-    log "dotemacs installed at $EMACS_DIR -> $d"
+    if [ -L "$EMACS_DIR" ]; then
+        ln -sfn "$d" "$EMACS_DIR"
+        log "dotemacs installed at $EMACS_DIR -> $d"
+    elif [ -d "$EMACS_DIR" ]; then
+        # ~/.emacs.d already exists as a real directory (e.g. it holds
+        # lsp.bridge.pyenv / tree-sitter / eln-cache).  Replacing it would
+        # destroy those, and "ln -sfn repo ~/.emacs.d" would wrongly create
+        # ~/.emacs.d/dotemacs.  Link the repository entries individually.
+        log "existing $EMACS_DIR directory; linking dotemacs entries into it"
+        [ -L "$EMACS_DIR/dotemacs" ] && rm -f "$EMACS_DIR/dotemacs"
+        : > "$EMACS_DIR/.dotemacs-links"
+        local entry name
+        for entry in "$d"/* "$d"/.[!.]*; do
+            [ -e "$entry" ] || continue
+            name=$(basename "$entry")
+            case "$name" in
+                .git|.gitignore|deploy|lsp.bridge.pyenv|eln-cache|tree-sitter|auto-save-list|transient) continue ;;
+            esac
+            ln -sfn "$entry" "$EMACS_DIR/$name"
+            printf '%s\n' "$name" >> "$EMACS_DIR/.dotemacs-links"
+        done
+        log "dotemacs entries linked into $EMACS_DIR"
+    else
+        mkdir -p "$(dirname "$EMACS_DIR")"
+        ln -sfn "$d" "$EMACS_DIR"
+        log "dotemacs installed at $EMACS_DIR -> $d"
+    fi
 }
 
 install_python_env() {

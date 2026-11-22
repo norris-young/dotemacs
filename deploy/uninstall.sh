@@ -34,6 +34,13 @@ rm -f "$BIN_DIR/emacs" "$BIN_DIR/emacs31" "$BIN_DIR/emacsclient" "$BIN_DIR/dotem
 if [ -L "$EMACS_DIR" ]; then
     rm -f "$EMACS_DIR"
     echo "[uninstall] removed symlink $EMACS_DIR"
+elif [ -f "$EMACS_DIR/.dotemacs-links" ]; then
+    while IFS= read -r name; do
+        [ -n "$name" ] || continue
+        rm -f "$EMACS_DIR/$name"
+    done < "$EMACS_DIR/.dotemacs-links"
+    rm -f "$EMACS_DIR/.dotemacs-links"
+    echo "[uninstall] removed dotemacs entry links from $EMACS_DIR (kept venv/tree-sitter)"
 elif [ -d "$EMACS_DIR" ]; then
     echo "[uninstall] $EMACS_DIR is a real directory, leaving it alone"
 fi
