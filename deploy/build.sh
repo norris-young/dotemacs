@@ -332,18 +332,20 @@ build_dotemacs_tree() {
     while IFS=$'\t' read -r name kind url ref commit; do
         [ -n "$name" ] || continue
         sub=$scratch/packages/$name
-        if ! git -C "$sub" rev-parse HEAD >/dev/null 2>&1; then
-            if [ -d "$WORK/pkgs/$name/.git" ]; then
-                log "restoring missing package directory $name in the scratch tree"
-                mkdir -p "$(dirname "$sub")"
-                rm -rf "$sub"
-                cp -a "$WORK/pkgs/$name" "$sub"
-            else
-                die "scratch tree is incomplete ($sub missing) and there is no cached clone for $name; remove $scratch and re-run"
-            fi
+        # Always materialise the package from the freshly-cloned work tree.
+        # The source repo may have empty submodule directories, and a previous
+        # interrupted scratch copy may be incomplete; copying the cached clone
+        # is deterministic and also means most packages are already at the
+        # resolved commit (no extra fetch needed below).
+        if [ -d "$WORK/pkgs/$name/.git" ]; then
+            rm -rf "$sub"
+            mkdir -p "$(dirname "$sub")"
+            cp -a "$WORK/pkgs/$name" "$sub"
+        elif [ ! -d "$sub" ]; then
+            die "no cached clone for $name and $sub is missing"
         fi
         if ! git -C "$sub" rev-parse HEAD >/dev/null 2>&1; then
-            die "package $name is still not a usable git checkout after restore: sub=$sub cached=$WORK/pkgs/$name"
+            die "package $name is not a usable git checkout: sub=$sub cached=$WORK/pkgs/$name"
         fi
         if [ "$(git -C "$sub" rev-parse HEAD 2>/dev/null || true)" = "$commit" ]; then
             log "$name: already at $commit"
