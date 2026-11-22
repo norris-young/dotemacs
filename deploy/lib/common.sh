@@ -79,6 +79,10 @@ clone_depth1() { # URL REF DEST
         return 0
     fi
     # Fallback: init + fetch the exact commit (works for bare commit refs).
+    # A failed clone can leave a partial worktree behind; clean it, otherwise
+    # the checkout below aborts with "untracked working tree files would be
+    # overwritten".
+    rm -rf "$dest"
     mkdir -p "$dest"
     git -C "$dest" init --quiet
     git_net -C "$dest" remote add origin "$url" 2>/dev/null || true

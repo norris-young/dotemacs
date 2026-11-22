@@ -138,9 +138,10 @@ pack_tool() { # name kind url ref
             fi
             log "cloning $name @ $ref (depth 1)"
             if ! clone_depth1 "$url" "$ref" "$WORK/src/$name"; then
-                warn "git clone failed for $name; trying default-branch HEAD"
-                clone_depth1 "$url" "$(default_head "$url")" "$WORK/src/$name" \
-                    || { step_fail "tool:$name" "$sig"; die "cannot fetch $name from $url"; }
+                # Never silently replace a pinned release with the default
+                # branch: that changes the shipped version.
+                step_fail "tool:$name" "$sig"
+                die "cannot fetch pinned $name@$ref from $url (network? re-run to resume; use FORCE_BUILD=1 to retry)"
             fi
             commit=$(git -C "$WORK/src/$name" rev-parse HEAD)
             record "$name" git "$url" "$ref" "$commit"
