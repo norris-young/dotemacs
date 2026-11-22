@@ -13,6 +13,7 @@ set -euo pipefail
 # If anything aborts unexpectedly (set -e), say so instead of silently returning
 # to the prompt; the persisted state lets the next run resume.
 trap 'rc=$?; if [ "$rc" -ne 0 ]; then printf "\033[1;31m[error]\033[0m build stopped (exit %s); re-run ./build.sh to resume\n" "$rc" >&2; fi' EXIT
+trap 'rc=$?; if [ "$rc" -ne 0 ]; then printf "\033[1;31m[error]\033[0m command failed (exit %s): %s\n" "$rc" "$BASH_COMMAND" >&2; fi' ERR
 
 DEPLOY_DIR=$(cd "$(dirname "$0")" && pwd)
 REPO_DIR=$(dirname "$DEPLOY_DIR")
@@ -189,7 +190,7 @@ mirror_url() { printf '%s:~/repos/dotemacs/packages/%s/.git' "$MIRROR_HOST" "$1"
 latest_tag_from() { # url
     fast_ls --tags --refs "$1" \
         | awk -F/ '{print $NF}' \
-        | grep -E '^v?[0-9]+\.[0-9]+(\.[0-9]+)?$' \
+        | grep -E '^v?[0-9]+(\.[0-9]+)*$' \
         | sort -V | tail -1
 }
 
@@ -207,7 +208,7 @@ fast_ls() { timeout 25 git -c http.version=HTTP/1.1 ls-remote "$@" 2>/dev/null; 
 mirror_url() { printf '%s:~/repos/dotemacs/packages/%s/.git' "$MIRROR_HOST" "$1"; }
 latest_tag_from() {
     fast_ls --tags --refs "$1" | awk -F/ '{print $NF}' \
-        | grep -E '^v?[0-9]+\.[0-9]+(\.[0-9]+)?$' | sort -V | tail -1
+        | grep -E '^v?[0-9]+(\.[0-9]+)*$' | sort -V | tail -1
 }
 ref=""
 if [ "$kind" = upstream ] && [ -n "$url" ]; then
@@ -274,7 +275,7 @@ pack_packages() {
                 tags=$(fast_ls --tags --refs "$url" || true)
                 if [ -n "$tags" ]; then
                     ref=$(printf '%s\n' "$tags" | awk -F/ '{print $NF}' \
-                        | grep -E '^v?[0-9]+\.[0-9]+(\.[0-9]+)?$' | sort -V | tail -1)
+                        | grep -E '^v?[0-9]+(\.[0-9]+)*$' | sort -V | tail -1 || true)
                 fi
                 [ -n "$ref" ] || ref=HEAD
             fi
@@ -283,7 +284,7 @@ pack_packages() {
             kind=mirror
             url=$(mirror_url "$name")
             ref=$(fast_ls --tags --refs "$url" 2>/dev/null | awk -F/ '{print $NF}' \
-                    | grep -E '^v?[0-9]+\.[0-9]+(\.[0-9]+)?$' | sort -V | tail -1) || true
+                    | grep -E '^v?[0-9]+(\.[0-9]+)*$' | sort -V | tail -1) || true
             [ -n "$ref" ] || ref=HEAD
         fi
         log "package $name <- $kind $url @ $ref"
@@ -459,7 +460,7 @@ url=$(awk -F'\t' -v l="$lang" '$1==l{print $2;exit}' "$WORK/grammar-list.txt")
 source "$DEPLOY_DIR/lib/common.sh"
 fast_ls() { timeout 25 git -c http.version=HTTP/1.1 ls-remote "$@" 2>/dev/null; }
 tag=$(fast_ls --tags --refs "$url" | awk -F/ '{print $NF}' \
-        | grep -E '^v?[0-9]+\.[0-9]+(\.[0-9]+)?$' | sort -V | tail -1)
+        | grep -E '^v?[0-9]+(\.[0-9]+)*$' | sort -V | tail -1)
 ref=${tag:-HEAD}
 if ! clone_depth1 "$url" "$ref" "$WORK/grammars/$lang" 2>/dev/null; then
     ref=HEAD
