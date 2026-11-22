@@ -336,6 +336,7 @@ build_dotemacs_tree() {
             if [ -d "$WORK/pkgs/$name/.git" ]; then
                 log "restoring missing package directory $name in the scratch tree"
                 mkdir -p "$(dirname "$sub")"
+                rm -rf "$sub"
                 cp -a "$WORK/pkgs/$name" "$sub"
             else
                 die "scratch tree is incomplete ($sub missing) and there is no cached clone for $name; remove $scratch and re-run"
