@@ -31,9 +31,14 @@ retry() {
 }
 
 # Git over flaky TLS: force HTTP/1.1 and retry.
+# Cap for one network git operation. Large repositories (LLVM is ~1 GB of
+# shallow history) cannot finish in the old 45 s window, so the default is
+# generous; override with GIT_NET_TIMEOUT if needed. Stalled transfers are
+# still caught by lowSpeedLimit/lowSpeedTime.
+GIT_NET_TIMEOUT=${GIT_NET_TIMEOUT:-}
 git_net() {
-    retry timeout 45 "$GIT" -c http.version=HTTP/1.1 -c http.lowSpeedLimit=1024 \
-          -c http.lowSpeedTime=30 "$@"
+    retry timeout "${GIT_NET_TIMEOUT:-300}" "$GIT" -c http.version=HTTP/1.1 \
+          -c http.lowSpeedLimit=1024 -c http.lowSpeedTime=120 "$@"
 }
 
 ls_remote() { # ls_remote URL [extra args...]
@@ -68,6 +73,7 @@ download() { # download URL DEST
 # when possible and fall back to fetch-by-commit.
 clone_depth1() { # URL REF DEST
     local url=$1 ref=$2 dest=$3
+    local GIT_NET_TIMEOUT=${GIT_NET_TIMEOUT:-900}
     rm -rf "$dest"
     if printf '%s' "$ref" | grep -qE '^[0-9a-f]{40}$'; then
         # A commit: the default branch tip is expected to be that commit.
