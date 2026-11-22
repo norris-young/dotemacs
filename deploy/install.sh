@@ -579,8 +579,14 @@ install_config() {
         done < "$BUNDLE_DIR/manifests/submodules.txt"
         git -c protocol.file.allow=always submodule update --init --recursive >/dev/null 2>&1 \
             || die "submodule checkout failed"
-        if git status --porcelain | grep -v '^??' | grep -q .; then
-            die "dotemacs working tree is dirty after submodule checkout"
+        # The installer may be unpacked over an existing checkout (the user's
+        # ~/repos/dotemacs), so local modifications are possible and harmless;
+        # report them instead of aborting.  Untracked files are ignored.
+        local dirty
+        dirty=$(git status --porcelain --ignore-submodules=all 2>/dev/null | grep -v '^??' || true)
+        if [ -n "$dirty" ]; then
+            warn "dotemacs working tree has local changes (kept):"
+            printf '%s\n' "$dirty" | head -n 10 >&2
         fi
     ) || die "config/submodule installation failed"
     if [ -L "$EMACS_DIR" ]; then
