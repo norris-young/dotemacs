@@ -444,10 +444,15 @@ grammar_pairs() {
 
 pack_grammars() {
     local langs lang url ref
-    langs=$(ls "$REPO_DIR"/tree-sitter/*.so 2>/dev/null \
-                | sed 's#.*libtree-sitter-##; s#\.so$##' | tr '\n' ' ' || true)
-    [ -n "$langs" ] || { warn "no tree-sitter grammars found in the repo"; return 0; }
-    grammar_pairs > "$WORK/grammar-pairs.txt"
+    if [ -f "$DEPLOY_DIR/manifests/grammars.txt" ]; then
+        grep -v '^#' "$DEPLOY_DIR/manifests/grammars.txt" | grep -v '^$' > "$WORK/grammar-pairs.txt"
+        langs=$(cut -f1 "$WORK/grammar-pairs.txt" | tr '\n' ' ')
+    else
+        langs=$(ls "$REPO_DIR"/tree-sitter/*.so 2>/dev/null \
+                    | sed 's#.*libtree-sitter-##; s#\.so$##' | tr '\n' ' ' || true)
+        [ -n "$langs" ] || { warn "no tree-sitter grammars configured (manifests/grammars.txt missing)"; return 0; }
+        grammar_pairs > "$WORK/grammar-pairs.txt"
+    fi
     : > "$WORK/grammar-list.txt"
     : > "$WORK/grammar-names.txt"
     for lang in $langs; do
@@ -508,26 +513,37 @@ GWORKER
 wheels_ok() { [ -d "$STAGE/wheels" ] && [ "$(ls "$STAGE/wheels"/*.whl 2>/dev/null | wc -l)" -ge 4 ]; }
 
 pack_wheels() {
-    local pip=$REPO_DIR/lsp.bridge.pyenv/bin/pip
-    [ -x "$pip" ] || die "no pip at $pip (needed to download wheels)"
     local sig
     sig=$(step_sig "wheels|$(sha256_file "$DEPLOY_DIR/manifests/python-wheels.txt")")
     if step_done wheels "$sig" wheels_ok; then
         log "step wheels: already done, skipping"
         return 0
     fi
+    local -a pipcmd=()
+    local cand
+    for cand in "$REPO_DIR/lsp.bridge.pyenv/bin/pip" \
+                "$HOME/.emacs.d/lsp.bridge.pyenv/bin/pip" \
+                "$(command -v pip3 2>/dev/null || true)" \
+                "$(command -v pip 2>/dev/null || true)"; do
+        [ -n "$cand" ] && [ -x "$cand" ] && { pipcmd=("$cand"); break; }
+    done
+    if [ ${#pipcmd[@]} -eq 0 ] && python3 -m pip --version >/dev/null 2>&1; then
+        pipcmd=(python3 -m pip)
+    fi
+    [ ${#pipcmd[@]} -gt 0 ] || die "no pip available to download wheels (install python3-pip or set up ~/.emacs.d/lsp.bridge.pyenv)"
+    log "using ${pipcmd[*]} for wheel downloads"
     step_start wheels "$sig"
     rm -rf "$STAGE/wheels"; mkdir -p "$STAGE/wheels"
     log "downloading required (universal) lsp-bridge wheels"
     local req
     while IFS= read -r req; do
         case "$req" in ''|'#'*) continue ;; esac
-        if ! "$pip" download --quiet --no-deps --only-binary=:all: \
+        if ! "${pipcmd[@]}" download --quiet --no-deps --only-binary=:all: \
                 --python-version 38 --platform manylinux2014_x86_64 \
                 --platform manylinux_2_28_x86_64 --platform manylinux_2_17_x86_64 \
                 -d "$STAGE/wheels" "$req" 2>/dev/null; then
             warn "no wheel for $req; building one from source"
-            "$pip" wheel --quiet --no-deps -w "$STAGE/wheels" "$req" \
+            "${pipcmd[@]}" wheel --quiet --no-deps -w "$STAGE/wheels" "$req" \
                 || die "cannot obtain a wheel for $req"
         fi
     done < "$DEPLOY_DIR/manifests/python-wheels.txt"
