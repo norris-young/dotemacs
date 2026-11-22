@@ -77,11 +77,11 @@ clone_depth1() { # URL REF DEST
     rm -rf "$dest"
     if printf '%s' "$ref" | grep -qE '^[0-9a-f]{40}$'; then
         # A commit: the default branch tip is expected to be that commit.
-        if git_net clone --quiet --depth 1 "$url" "$dest" 2>/dev/null \
+        if git_net clone --progress --depth 1 "$url" "$dest" \
            && [ "$(git -C "$dest" rev-parse HEAD)" = "$ref" ]; then
             return 0
         fi
-    elif git_net clone --quiet --depth 1 --single-branch --branch "$ref" "$url" "$dest" 2>/dev/null; then
+    elif git_net clone --progress --depth 1 --single-branch --branch "$ref" "$url" "$dest"; then
         return 0
     fi
     # Fallback: init + fetch the exact commit (works for bare commit refs).
@@ -92,7 +92,7 @@ clone_depth1() { # URL REF DEST
     mkdir -p "$dest"
     git -C "$dest" init --quiet
     git_net -C "$dest" remote add origin "$url" 2>/dev/null || true
-    git_net -C "$dest" fetch --quiet --depth 1 origin "$ref" \
+    git_net -C "$dest" fetch --progress --depth 1 origin "$ref" \
         && git -C "$dest" checkout --quiet FETCH_HEAD
 }
 
