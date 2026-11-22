@@ -251,7 +251,7 @@ pack_packages() {
 
         if step_done "pkg:$name" "$sig" pkg_artifacts_ok "$name"; then
             log "step pkg:$name: already done, skipping"
-            line=$(cat "$WORK/results/$name")
+            line=$(tail -1 "$WORK/results/$name")
             printf '%s\n' "$line" >> "$PACKAGES_TXT"
             record "pkg:$name" git "$(printf '%s' "$line" | cut -f3)" \
                    "$(printf '%s' "$line" | cut -f4)" "$(printf '%s' "$line" | cut -f5)"
@@ -286,7 +286,7 @@ pack_packages() {
         fi
         commit=$(git -C "$WORK/pkgs/$name" rev-parse HEAD)
         printf '%s\t%s\t%s\t%s\t%s\n' "$name" "$kind" "$url" "$ref" "$commit" \
-            >> "$WORK/results/$name"
+            > "$WORK/results/$name"
         printf '%s\t%s\t%s\t%s\t%s\n' "$name" "$kind" "$url" "$ref" "$commit" >> "$PACKAGES_TXT"
         record "pkg:$name" git "$url" "$ref" "$commit"
         step_ok "pkg:$name" "$sig"
@@ -305,18 +305,27 @@ build_dotemacs_tree() {
         return 0
     fi
     step_start dotemacs-tree "$sig"
-    log "creating scratch copy of dotemacs"
-    rm -rf "$scratch"
-    mkdir -p "$scratch"
-    tar -C "$REPO_DIR" \
-        --exclude='./deploy/dist' --exclude='./eln-cache' --exclude='./lsp.bridge.pyenv' \
-        --exclude='./auto-save-list' --exclude='./transient' \
-        -cf - . | tar -C "$scratch" -xf -
+    if [ -d "$scratch/.git" ]; then
+        log "reusing the existing scratch copy of dotemacs (resuming)"
+    else
+        log "creating scratch copy of dotemacs"
+        rm -rf "$scratch"
+        mkdir -p "$scratch"
+        tar -C "$REPO_DIR" \
+            --exclude='./deploy/dist' --exclude='./eln-cache' --exclude='./lsp.bridge.pyenv' \
+            --exclude='./auto-save-list' --exclude='./transient' \
+            -cf - . | tar -C "$scratch" -xf -
+    fi
 
     local name kind url ref commit sub
     while IFS=$'\t' read -r name kind url ref commit; do
         [ -n "$name" ] || continue
         sub=$scratch/packages/$name
+        if [ "$(git -C "$sub" rev-parse HEAD 2>/dev/null || true)" = "$commit" ]; then
+            log "$name: already at $commit"
+            git -C "$scratch" add "packages/$name"
+            continue
+        fi
         log "bumping $name -> $commit"
         git -C "$sub" fetch --quiet --depth 1 "$url" "$ref" 2>/dev/null \
             || git -C "$sub" fetch --quiet --depth 1 "$url" "$commit" 2>/dev/null \
@@ -340,9 +349,18 @@ build_dotemacs_tree() {
     done < "$PACKAGES_TXT"
     mv "$WORK/packages.new" "$PACKAGES_TXT"
 
+    # Drop .gitmodules sections whose path is no longer a gitlink in the index
+    # (e.g. a submodule that was removed from the package list).
+    while IFS=' ' read -r key path; do
+        if ! git -C "$scratch" ls-files -s -- "$path" 2>/dev/null | grep -q '^160000'; then
+            warn "removing stale submodule entry $key ($path)"
+            git -C "$scratch" config -f .gitmodules --remove-section "${key%.path}"
+        fi
+    done < <(git -C "$scratch" config -f .gitmodules --get-regexp '^submodule\..*\.path$')
+
     git -C "$scratch" add -A
     git -C "$scratch" -c user.name='dotemacs deploy' -c user.email='deploy@localhost' \
-        -c commit.gpgsign=false commit --quiet -m \
+        -c commit.gpgsign=false commit --quiet --allow-empty -m \
         'deploy: bump submodules to latest and apply offline config' \
         || warn "nothing to commit in dotemacs scratch"
 
@@ -362,6 +380,7 @@ build_dotemacs_tree() {
     done < "$PACKAGES_TXT"
 
     # Map each submodule name (as in .gitmodules) to its path and mirror.
+    : > "$STAGE/manifests/submodules.txt"
     while read -r key path; do
         local sname=${key#submodule.}
         sname=${sname%.path}
